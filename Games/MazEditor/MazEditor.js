@@ -68,7 +68,7 @@ const INI = {
 };
 
 const PRG = {
-  VERSION: "0.17.1",
+  VERSION: "0.17.2",
   NAME: "MazEditor",
   YEAR: "2022, 2023, 2024, 2025",
   CSS: "color: #239AFF;",
@@ -1218,8 +1218,10 @@ const GAME = {
     }
 
     /** monster */
-    for (const monsterType in MONSTER_TYPE) {
-      $("#monster_type").append(`<option value="${monsterType}">${monsterType} A: ${MONSTER_TYPE[monsterType].attack} D: ${MONSTER_TYPE[monsterType].defense} H: ${MONSTER_TYPE[monsterType].health} M: ${MONSTER_TYPE[monsterType].magic} XP: ${MONSTER_TYPE[monsterType].xp}</option>`);
+    if (typeof MONSTER_TYPE !== "undefined") {
+      for (const monsterType in MONSTER_TYPE) {
+        $("#monster_type").append(`<option value="${monsterType}">${monsterType} A: ${MONSTER_TYPE[monsterType].attack} D: ${MONSTER_TYPE[monsterType].defense} H: ${MONSTER_TYPE[monsterType].health} M: ${MONSTER_TYPE[monsterType].magic} XP: ${MONSTER_TYPE[monsterType].xp}</option>`);
+      }
     }
 
     /** scrolls */
