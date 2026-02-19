@@ -26,11 +26,11 @@ const MAP = {
     killsRequiredToStopSpawning: 99,
     spawnDelay: -1,
     data: '{"width":7,"height":7,"depth":1,"map":"BB3AA4BB2AA2BAA6BB6ABB3ABABB3ABB6ABB5$BA"}',
-    wall: "RockWall_SDXL_003",
-    floor: "Wood1",
-    ceil: "DetailedFloor1",
+    wall: "BlackWall45",
+    floor: "GreyFloor27",
+    ceil: "GreyFloor27",
     start: '[17,1]',
-    lights: '[[45,1,"Candelabra01","standard"]]',
+    //lights: '[[45,1,"Candelabra01","standard"]]',
   }
 };
 
@@ -68,7 +68,7 @@ const INI = {
 };
 
 const PRG = {
-  VERSION: "0.17.0",
+  VERSION: "0.17.1",
   NAME: "MazEditor",
   YEAR: "2022, 2023, 2024, 2025",
   CSS: "color: #239AFF;",
@@ -1054,6 +1054,7 @@ const GAME = {
     ENGINE.resizeAndFill(LAYER.texturecanvas, textureTexture, INI.CANVAS_RESOLUTION);
     const ids = ["wall_resolution", "floor_resolution", "ceil_resolution"];
     for (const [i, pTexture] of [wallTexture, floorTexture, ceilTexture].entries()) {
+      if (!pTexture) continue;
       let res = GAME.getResolution(pTexture);
       $(`#${ids[i]}`).html(`width: ${res[0]}, height: ${res[1]}`);
     }
@@ -1131,31 +1132,37 @@ const GAME = {
     $("#swap").on("click", GAME.swapGates);
 
     /** pictures */
-    for (const pic of DECAL_PAINTINGS) {
-      $("#picture_decal").append(`<option value="${pic}">${pic}</option>`);
+    if (DECAL_PAINTINGS.length > 0) {
+      for (const pic of DECAL_PAINTINGS) {
+        $("#picture_decal").append(`<option value="${pic}">${pic}</option>`);
+      }
+      $("#picture_decal").change(function () {
+        ENGINE.drawToId("picturecanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#picture_decal")[0].value], INI.CANVAS_RESOLUTION));
+      });
+      $("#picture_decal").trigger("change");
     }
-    $("#picture_decal").change(function () {
-      ENGINE.drawToId("picturecanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#picture_decal")[0].value], INI.CANVAS_RESOLUTION));
-    });
-    $("#picture_decal").trigger("change");
 
     /** crests */
-    for (const crest of DECAL_CRESTS) {
-      $("#crest_decal").append(`<option value="${crest}">${crest}</option>`);
+    if (DECAL_CRESTS.length > 0) {
+      for (const crest of DECAL_CRESTS) {
+        $("#crest_decal").append(`<option value="${crest}">${crest}</option>`);
+      }
+      $("#crest_decal").change(function () {
+        ENGINE.drawToId("crestcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#crest_decal")[0].value], INI.CANVAS_RESOLUTION));
+      });
+      $("#crest_decal").trigger("change");
     }
-    $("#crest_decal").change(function () {
-      ENGINE.drawToId("crestcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#crest_decal")[0].value], INI.CANVAS_RESOLUTION));
-    });
-    $("#crest_decal").trigger("change");
 
     /** lights */
-    for (const light of LIGHT_DECALS) {
-      $("#light_decal").append(`<option value="${light}">${light}</option>`);
+    if (LIGHT_DECALS.length > 0) {
+      for (const light of LIGHT_DECALS) {
+        $("#light_decal").append(`<option value="${light}">${light}</option>`);
+      }
+      $("#light_decal").change(function () {
+        ENGINE.drawToId("lightcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#light_decal")[0].value], INI.CANVAS_RESOLUTION));
+      });
+      $("#light_decal").trigger("change");
     }
-    $("#light_decal").change(function () {
-      ENGINE.drawToId("lightcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[$("#light_decal")[0].value], INI.CANVAS_RESOLUTION));
-    });
-    $("#light_decal").trigger("change");
 
     for (const light in LIGHT_COLORS) {
       $("#lighttype").append(`<option value="${light}">${light}</option>`);
@@ -1172,37 +1179,43 @@ const GAME = {
     $("#materialtype").change(GAME.printMaterialDetails);
 
     /** gates */
-    for (const gateType of GATE_TYPES) {
-      $("#gatetype").append(`<option value="${gateType}">${gateType}</option>`);
-    }
-    ENGINE.drawToId("gatecanvas", 0, 0, ENGINE.resizeCanvas(SPRITE[`DungeonDoor_${$("#gatetype")[0].value}`], INI.CANVAS_RESOLUTION));
-
-    $("#gatetype").change(function () {
+    if (typeof GATE_TYPES !== "undefined") {
+      for (const gateType of GATE_TYPES) {
+        $("#gatetype").append(`<option value="${gateType}">${gateType}</option>`);
+      }
       ENGINE.drawToId("gatecanvas", 0, 0, ENGINE.resizeCanvas(SPRITE[`DungeonDoor_${$("#gatetype")[0].value}`], INI.CANVAS_RESOLUTION));
-    });
+
+      $("#gatetype").change(function () {
+        ENGINE.drawToId("gatecanvas", 0, 0, ENGINE.resizeCanvas(SPRITE[`DungeonDoor_${$("#gatetype")[0].value}`], INI.CANVAS_RESOLUTION));
+      });
+    }
 
     /** keys */
-    for (const keyType of KEY_TYPES) {
-      $("#key_type").append(`<option value="${keyType}" style="background-color: ${keyType.toLowerCase()}">${keyType}</option>`);
-    }
-    $("#key_type").change(function () {
-      let selectedOption = $("#key_type").val().toLowerCase();
-
-      ENGINE.drawToId("keycanvas", 0, 0, SPRITE[`${selectedOption.capitalize()}Key`]);
-
-      switch (selectedOption) {
-        case "emerald":
-          selectedOption = "#50C878";
-          break;
-        case "pearl":
-          selectedOption = "WhiteSmoke";
-          break;
-
+    if (typeof KEY_TYPES !== "undefined") {
+      for (const keyType of KEY_TYPES) {
+        $("#key_type").append(`<option value="${keyType}" style="background-color: ${keyType.toLowerCase()}">${keyType}</option>`);
       }
-      $("#key_selection").css("background-color", selectedOption);
 
-    });
-    $("#key_type").trigger("change");
+      $("#key_type").change(function () {
+        let selectedOption = $("#key_type").val().toLowerCase();
+
+        ENGINE.drawToId("keycanvas", 0, 0, SPRITE[`${selectedOption.capitalize()}Key`]);
+
+        switch (selectedOption) {
+          case "emerald":
+            selectedOption = "#50C878";
+            break;
+          case "pearl":
+            selectedOption = "WhiteSmoke";
+            break;
+
+        }
+        $("#key_selection").css("background-color", selectedOption);
+
+      });
+
+      $("#key_type").trigger("change");
+    }
 
     /** monster */
     for (const monsterType in MONSTER_TYPE) {
@@ -1210,55 +1223,66 @@ const GAME = {
     }
 
     /** scrolls */
-    for (const scrollType of SCROLL_TYPE) {
-      $("#scroll_type").append(`<option value="${scrollType}">${scrollType}`);
+    if (typeof SCROLL_TYPE !== "undefined") {
+      for (const scrollType of SCROLL_TYPE) {
+        $("#scroll_type").append(`<option value="${scrollType}">${scrollType}`);
+      }
+      $("#scroll_type").change(function () {
+        ENGINE.drawToId("scrollcanvas", 0, 0, SPRITE[`SCR_${$("#scroll_type")[0].value}`]);
+      });
+      $("#scroll_type").trigger("change");
     }
-    $("#scroll_type").change(function () {
-      ENGINE.drawToId("scrollcanvas", 0, 0, SPRITE[`SCR_${$("#scroll_type")[0].value}`]);
-    });
-    $("#scroll_type").trigger("change");
 
-    for (const goldType in GOLD_ITEM_TYPE) {
-      $("#gold_type").append(`<option value="${goldType}">${goldType}</option>`);
+    /** gold */
+    if (typeof GOLD_ITEM_TYPE !== "undefined") {
+      for (const goldType in GOLD_ITEM_TYPE) {
+        $("#gold_type").append(`<option value="${goldType}">${goldType}</option>`);
+      }
+      $("#gold_type").change(function () {
+        const sprite = $("#gold_type")[0].value;
+        ENGINE.drawToId("gold_canvas", 0, 0, SPRITE[sprite]);
+      });
+      $("#gold_type").trigger("change");
     }
-    $("#gold_type").change(function () {
-      const sprite = $("#gold_type")[0].value;
-      ENGINE.drawToId("gold_canvas", 0, 0, SPRITE[sprite]);
-    });
-    $("#gold_type").trigger("change");
 
     //skills
-    for (const skillType in SKILL_ITEM_TYPE) {
-      $("#skill_type").append(`<option value="${skillType}">${skillType}</option>`);
+    if (typeof SKILL_ITEM_TYPE !== "undefined") {
+      for (const skillType in SKILL_ITEM_TYPE) {
+        $("#skill_type").append(`<option value="${skillType}">${skillType}</option>`);
+      }
+      $("#skill_type").change(function () {
+        const skill_type = $("#skill_type")[0].value;
+        ENGINE.drawToId("skillcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[SKILL_ITEM_TYPE[skill_type].inventorySprite], INI.CANVAS_RESOLUTION));
+      });
+      $("#skill_type").trigger("change");
     }
-    $("#skill_type").change(function () {
-      const skill_type = $("#skill_type")[0].value;
-      ENGINE.drawToId("skillcanvas", 0, 0, ENGINE.conditionalResize(SPRITE[SKILL_ITEM_TYPE[skill_type].inventorySprite], INI.CANVAS_RESOLUTION));
-    });
-    $("#skill_type").trigger("change");
 
     //containers
-    for (const containerType in CONTAINER_ITEM_TYPE) {
-      $("#container_type").append(`<option value="${containerType}">${containerType}</option>`);
+    if (typeof CONTAINER_ITEM_TYPE !== "undefined") {
+      for (const containerType in CONTAINER_ITEM_TYPE) {
+        $("#container_type").append(`<option value="${containerType}">${containerType}</option>`);
+      }
+      $("#container_type").change(function () {
+        const container_type = $("#container_type")[0].value;
+        ENGINE.drawToId("containercanvas", 0, 0, ENGINE.conditionalResize(TEXTURE[CONTAINER_ITEM_TYPE[container_type].texture], INI.CANVAS_RESOLUTION));
+      });
+      $("#container_type").trigger("change");
     }
-    $("#container_type").change(function () {
-      const container_type = $("#container_type")[0].value;
-      ENGINE.drawToId("containercanvas", 0, 0, ENGINE.conditionalResize(TEXTURE[CONTAINER_ITEM_TYPE[container_type].texture], INI.CANVAS_RESOLUTION));
-    });
-    $("#container_type").trigger("change");
 
     //container content
-    for (const contentType of CONTAINER_CONTENT_LIST) {
-      $("#content_type").append(`<option value="${contentType}">${contentType}</option>`);
+    if (typeof CONTAINER_CONTENT_LIST !== "undefined") {
+      for (const contentType of CONTAINER_CONTENT_LIST) {
+        $("#content_type").append(`<option value="${contentType}">${contentType}</option>`);
+      }
+      $("#content_type").change(function () {
+        const sprite = $("#content_type")[0].value.split(".")[1];
+        ENGINE.drawToId("container_item_canvas", 0, 0, SPRITE[sprite]);
+      });
+      $("#content_type").trigger("change");
     }
-    $("#content_type").change(function () {
-      const sprite = $("#content_type")[0].value.split(".")[1];
-      ENGINE.drawToId("container_item_canvas", 0, 0, SPRITE[sprite]);
-    });
-    $("#content_type").trigger("change");
 
     //shrines
-    if (Object.keys(SHRINE_TYPE).length > 0) {
+    if (typeof SHRINE_TYPE !== "undefined" && Object.keys(SHRINE_TYPE).length > 0) {
       for (const shrineType in SHRINE_TYPE) {
         $("#shrine_type").append(`<option value="${shrineType}">${shrineType}</option>`);
       }
@@ -1269,7 +1293,7 @@ const GAME = {
       $("#shrine_type").trigger("change");
     }
 
-    if (Object.keys(INTERACTION_SHRINE).length > 0) {
+    if (typeof INTERACTION_SHRINE !== "undefined" && Object.keys(INTERACTION_SHRINE).length > 0) {
       for (const item_shrine_type in INTERACTION_SHRINE) {
         $("#item_shrine_type").append(`<option value="${item_shrine_type}">${item_shrine_type}</option>`);
       }
@@ -1280,7 +1304,7 @@ const GAME = {
       $("#item_shrine_type").trigger("change");
     }
 
-    if (Object.keys(ORACLE_TYPE).length > 0) {
+    if (typeof ORACLE_TYPE !== "undefined" && Object.keys(ORACLE_TYPE).length > 0) {
       for (const oracleType in ORACLE_TYPE) {
         $("#oracle_type").append(`<option value="${oracleType}">${oracleType}</option>`);
       }
@@ -1292,23 +1316,30 @@ const GAME = {
     }
 
     //fires
-    for (const fire in FIRE_TYPES) {
-      $("#fire_type").append(`<option value="${fire}">${fire}</option>`);
+    if (typeof FIRE_TYPES !== "undefined" && Object.keys(FIRE_TYPES).length > 0) {
+      for (const fire in FIRE_TYPES) {
+        $("#fire_type").append(`<option value="${fire}">${fire}</option>`);
+      }
     }
+
     //triggers
-    for (const triggerDecal of TRIGGER_DECALS) {
-      $("#trigger_decal").append(`<option value="${triggerDecal}">${triggerDecal}</option>`);
-    }
-    $("#trigger_decal").change(function () {
-      ENGINE.drawToId("triggercanvas", 0, 0, SPRITE[$("#trigger_decal")[0].value]);
-    });
-    $("#trigger_decal").trigger("change");
-
-    for (const action of TRIGGER_ACTIONS) {
-      $("#trigger_actions").append(`<option value="${action}">${action}</option>`);
+    if (typeof TRIGGER_DECALS !== "undefined") {
+      for (const triggerDecal of TRIGGER_DECALS) {
+        $("#trigger_decal").append(`<option value="${triggerDecal}">${triggerDecal}</option>`);
+      }
+      $("#trigger_decal").change(function () {
+        ENGINE.drawToId("triggercanvas", 0, 0, SPRITE[$("#trigger_decal")[0].value]);
+      });
+      $("#trigger_decal").trigger("change");
     }
 
-    if (Object.keys(INTERACTION_ENTITY).length > 0) {
+    if (typeof TRIGGER_ACTIONS !== "undefined") {
+      for (const action of TRIGGER_ACTIONS) {
+        $("#trigger_actions").append(`<option value="${action}">${action}</option>`);
+      }
+    }
+
+    if (typeof INTERACTION_ENTITY !== "undefined" && Object.keys(INTERACTION_ENTITY).length > 0) {
       for (const entity in INTERACTION_ENTITY) {
         $("#entity_type").append(`<option value="${entity}">${entity}</option>`);
       }
@@ -1321,40 +1352,49 @@ const GAME = {
     }
 
     //interaction objects
-    for (const obj in INTERACTION_OBJECT) {
-      $("#interaction_object_type").append(`<option value="${obj}">${obj}</option>`);
-    }
+    if (typeof INTERACTION_OBJECT !== "undefined") {
+      for (const obj in INTERACTION_OBJECT) {
+        $("#interaction_object_type").append(`<option value="${obj}">${obj}</option>`);
+      }
 
-    $("#interaction_object_type").change(function () {
-      ENGINE.drawToId("object_canvas", 0, 0, SPRITE[INTERACTION_OBJECT[$("#interaction_object_type")[0].value].inventorySprite]);
-    });
-    $("#interaction_object_type").trigger("change");
+      $("#interaction_object_type").change(function () {
+        ENGINE.drawToId("object_canvas", 0, 0, SPRITE[INTERACTION_OBJECT[$("#interaction_object_type")[0].value].inventorySprite]);
+      });
+      $("#interaction_object_type").trigger("change");
+    }
 
     //movables
-    for (const obj in MOVABLE_INTERACTION_OBJECT) {
-      $("#movable_type").append(`<option value="${obj}">${obj}</option>`);
+    if (typeof MOVABLE_INTERACTION_OBJECT !== "undefined") {
+      for (const obj in MOVABLE_INTERACTION_OBJECT) {
+        $("#movable_type").append(`<option value="${obj}">${obj}</option>`);
+      }
+
+      $("#movable_type").change(function () {
+        ENGINE.drawToId("movable_canvas", 0, 0, SPRITE[MOVABLE_INTERACTION_OBJECT[$("#movable_type")[0].value].inventorySprite]);
+      });
+      $("#movable_type").trigger("change");
     }
 
-    $("#movable_type").change(function () {
-      ENGINE.drawToId("movable_canvas", 0, 0, SPRITE[MOVABLE_INTERACTION_OBJECT[$("#movable_type")[0].value].inventorySprite]);
-    });
-    $("#movable_type").trigger("change");
-
-    for (const obj in INTERACTOR) {
-      $("#interactor_type").append(`<option value="${obj}">${obj}</option>`);
+    //interactors
+    if (typeof INTERACTOR !== "undefined") {
+      for (const obj in INTERACTOR) {
+        $("#interactor_type").append(`<option value="${obj}">${obj}</option>`);
+      }
     }
 
     //traps
-    for (const action of TRAP_ACTION_LIST) {
-      $("#trap_type").append(`<option value="${action}">${action}</option>`);
-    }
-    $("#trap_type").change(() => {
-      $("#trap_entity").html("");
-      for (const val of TRAP_ACTIONS[$("#trap_type")[0].value]) {
-        $("#trap_entity").append(`<option value="${val}">${val}</option>`);
+    if (typeof TRAP_ACTION_LIST !== "undefined") {
+      for (const action of TRAP_ACTION_LIST) {
+        $("#trap_type").append(`<option value="${action}">${action}</option>`);
       }
-    });
-    $("#trap_type").trigger("change");
+      $("#trap_type").change(() => {
+        $("#trap_entity").html("");
+        for (const val of TRAP_ACTIONS[$("#trap_type")[0].value]) {
+          $("#trap_entity").append(`<option value="${val}">${val}</option>`);
+        }
+      });
+      $("#trap_type").trigger("change");
+    }
 
     //lairs
     if (LAIR_DECALS.length > 0) {
