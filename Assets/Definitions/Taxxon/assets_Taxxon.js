@@ -34,12 +34,12 @@ LoadTextures = [
 
 
     //title
-    //{ srcName: "Title/HTH_title_768.webp", name: "Title" },
+    { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
 
 ];
 
 LoadAudio = [
-    //{ srcName: "LaughingSkull-Graveyard In The Moonlight.mp3", name: "Title" },
+    { srcName: "LaughingSkull - Ex Nihilo.mp3", name: "Title" },
 
     //action sounds
     { srcName: "Explosion1.mp3", name: "Explosion" },
