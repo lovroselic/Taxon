@@ -84,6 +84,7 @@ const WebGL = {
         FALL_DAMAGE_MULTIPLIER: 7.5,
         LOOK_AROUND_QUANT: 0.025,
         MAX_LOOK_AROUND_Y: 0.20,
+        AMBIENT_LIGHT_STRENGTH: 0.30,
     },
     CONFIG: {
         firstperson: true,
@@ -183,6 +184,10 @@ const WebGL = {
     hero: null,
     sys_textures: {
         fire: ["Fire_color_map", "Fire_noise"]
+    },
+    ambient_light_strength: 0.30,
+    setAmbientStrength(ambient = WebGL.INI.AMBIENT_LIGHT_STRENGTH) {
+        this.ambient_light_strength = ambient;
     },
     cleanupResources() {
         const gl = this.CTX;
@@ -801,7 +806,8 @@ const WebGL = {
                 uMaterialSpecularColor: gl.getUniformLocation(shaderProgram, 'uMaterial.specularColor'),
                 uMaterialShininess: gl.getUniformLocation(shaderProgram, 'uMaterial.shininess'),
                 uOcclusionMap: gl.getUniformLocation(shaderProgram, "uOcclusionMap"),
-                uGridSize: gl.getUniformLocation(shaderProgram, "uGridSize")
+                uGridSize: gl.getUniformLocation(shaderProgram, "uGridSize"),
+                innerAmbientStrength: gl.getUniformLocation(shaderProgram, "innerAmbientStrength"),
             },
         };
 
@@ -950,6 +956,8 @@ const WebGL = {
         gl.uniform1i(this.program.uniformLocations.uOcclusionMap, 1);
         gl.uniform3fv(this.program.uniformLocations.uGridSize, new Float32Array([map.width, map.height, map.depth]));
 
+        //defaults that can be changed
+        gl.uniform1f(this.program.uniformLocations.innerAmbientStrength, this.ambient_light_strength);
 
         /** MODEL */
         //set global uniforms for model program - could be extended to loop over more programs if required

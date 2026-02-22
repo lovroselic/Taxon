@@ -47,7 +47,7 @@ LoadAudio = [
 ];
 
 LoadShaders = [
-    'vShader_1_1.glsl', 'fShader_1_2.glsl', 'pick_vShader_1_0.glsl', 'pick_fShader_1_0.glsl',
+    'vShader_1_1.glsl', 'fShader_1_3.glsl', 'pick_vShader_1_0.glsl', 'pick_fShader_1_0.glsl',
     'particle_render_fShader_1_1.glsl', 'particle_render_vShader_1_0.glsl', 'particle_transform_fShader_1_0.glsl', 'particle_transform_vShader_1_1.glsl',
     'model_vShader_1_2.glsl', 'fire_transform_vShader_1_0.glsl', 'fire_render_fShader_1_0.glsl'
 ];

@@ -204,7 +204,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.1.0",
+    VERSION: "0.1.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -411,11 +411,11 @@ const GAME = {
         ENGINE.GAME.start(16);
 
         AI.immobileWander = true;
+        WebGL.setAmbientStrength(2.5);
 
         GAME.completed = false;
         GAME.lives = 1;
         GAME.level = 1;
-        GAME.gold = 13;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -439,11 +439,14 @@ const GAME = {
     levelExecute() {
         GAME.drawFirstFrame(GAME.level);
         ENGINE.GAME.resume();
-    
+
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.9, new Vector3(0, -0.5, 0), 1, 70);
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 1.5, new Vector3(0.0, -0.02, -0.5), 3.0);
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.5, new Vector3(0.0, -0.5, -1.5), 3.0);
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.0, new Vector3(0.0, -0.5, -1.0), 3.0);
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.0, new Vector3(0.0, -0.45, -1.25), 3.5);
         //WebGL.hero.topCameraLowAngle = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.13, new Vector3(0, -0.35, 0), 0.70);
         //WebGL.hero.overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 2.5, new Vector3(0, -1, 0), 1, 80);
         //WebGL.hero.orto_overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 0.4, 80);
@@ -650,27 +653,6 @@ const GAME = {
         }
 
         //controls
-        if (map[ENGINE.KEY.map.left]) {
-            TITLE.stack.scrollIndex--;
-            TITLE.stack.scrollIndex = Math.max(0, TITLE.stack.scrollIndex);
-            TITLE.scrolls();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.left] = false;
-            return;
-        }
-        if (map[ENGINE.KEY.map.right]) {
-            TITLE.stack.scrollIndex++;
-            TITLE.stack.scrollIndex = Math.min(HERO.inventory.scroll.size() - 1, TITLE.stack.scrollIndex);
-            TITLE.scrolls();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.right] = false;
-            return;
-        }
-        if (map[ENGINE.KEY.map.enter]) {
-            if (HERO.inventory.scroll.size() === 0) return;
-            let scroll = HERO.inventory.scroll.remove(TITLE.stack.scrollIndex);
-            scroll.action();
-            TITLE.scrolls();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.enter] = false;
-        }
         if (map[ENGINE.KEY.map.ctrl]) {
             HERO.shoot();
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
@@ -678,13 +660,21 @@ const GAME = {
         }
         if (map[ENGINE.KEY.map.up]) { }
         if (map[ENGINE.KEY.map.down]) { }
-        if (map[ENGINE.KEY.map.space]) {
-            HERO.player.attack();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.space] = false; //NO repeat
+
+
+
+        //setup
+        if (map[ENGINE.KEY.map.plus]) {
+            WebGL.ambient_light_strength += 0.05;
+            WebGL.ambient_light_strength = Math.min(WebGL.ambient_light_strength, 5.0);
+            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength);
+            return;
         }
-        if (map[ENGINE.KEY.map.shift]) {
-            HERO.requestJump();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.shift] = false;
+        if (map[ENGINE.KEY.map.minus]) {
+            WebGL.ambient_light_strength -= 0.05;
+            WebGL.ambient_light_strength = Math.max(WebGL.ambient_light_strength, 0.0);
+            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength);
+            return;
         }
 
         return;
@@ -697,11 +687,6 @@ const GAME = {
         GAME.fps.update(fps);
         CTX.fillText(GAME.fps.getFps(), 5, 10);
     },
-
-
-
- 
-
     lifeLostRun(lapsedTime) {
         if (ENGINE.GAME.stopAnimation) return;
         if (ENGINE.GAME.keymap[ENGINE.KEY.map.enter]) {
@@ -775,16 +760,6 @@ const GAME = {
     },
     wonFrameDraw() {
         GAME.endingCreditText.draw();
-    },
-    slideRun(lapsedTime) {
-        if (ENGINE.GAME.stopAnimation) return;
-        GAME.previously.process(lapsedTime);
-        GAME.slideFrameDraw();
-        if (ENGINE.GAME.keymap[ENGINE.KEY.map.enter]) GAME.previously.next();
-
-    },
-    slideFrameDraw() {
-        GAME.previously.verticalText.draw();
     },
 };
 

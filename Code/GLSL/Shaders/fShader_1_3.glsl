@@ -1,7 +1,7 @@
 #version 300 es
 ///fShader///
 /*
-* v1.2
+* v1.3
 * last change in Haunting The Hauntessa
 */
 
@@ -31,13 +31,15 @@ uniform Material uMaterial;
 uniform sampler3D uOcclusionMap;                                // Occlusion map
 uniform vec3 uGridSize;                                         // Size of the grid in the occlusion map
 
+uniform float innerAmbientStrength;
+
 in vec3 FragPos;
 in vec3 v_normal;
 in vec2 vTextureCoord;
 
 //bloody hardcoded constants
 const vec3 innerLightColor = vec3(1.0f, 1.0f, 1.0f);
-const float innerAmbientStrength = 0.30f;                        //0.30
+//const float innerAmbientStrength = 0.30f;                        //0.30
 const float innerDiffuseStrength = 25.0f;                        //20.0
 const float innerSpecularStrength = 5.0f;                        //5.0
 

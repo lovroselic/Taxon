@@ -18,9 +18,9 @@ const HERO_TYPE = {
     Taxxon: {
         name: "Taxxon",
         model: "SpaceShip",
-        scale: 1.0 / 2 ** 4,
+        scale: 1.4 / 2 ** 5,
         rotateToNorth: Math.PI,
-        material: MATERIAL.standard,
+        material: MATERIAL.redShine,
         moveSpeed: 2.0
     }
 };
