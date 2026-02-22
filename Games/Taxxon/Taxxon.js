@@ -204,7 +204,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.1.1",
+    VERSION: "0.1.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -443,13 +443,7 @@ const GAME = {
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 1.5, new Vector3(0.0, -0.02, -0.5), 3.0);
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.5, new Vector3(0.0, -0.5, -1.5), 3.0);
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.0, new Vector3(0.0, -0.5, -1.0), 3.0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 3.0, new Vector3(0.0, -0.45, -1.25), 3.5);
-        //WebGL.hero.topCameraLowAngle = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.13, new Vector3(0, -0.35, 0), 0.70);
-        //WebGL.hero.overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 2.5, new Vector3(0, -1, 0), 1, 80);
-        //WebGL.hero.orto_overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 0.4, 80);
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(-0.05, -0.5, -1.0), 3.0);
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -485,8 +479,6 @@ const GAME = {
 
         start_grid = new Vector3(start_grid.x + 0.5, start_grid.z + HERO.height, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
-
-        //console.log("start_dir", start_dir, "start_grid", start_grid, "HERO.player", HERO.player);
 
         GAME.setCameraView();
         AI.initialize(HERO.player, "3D3");
@@ -528,6 +520,33 @@ const GAME = {
     setup() {
         console.log("GAME SETUP started");
         $("#conv").remove();
+
+        $("#changeCamera").on("click", GAME.setCamera);
+    },
+    setCamera() {
+        console.info("setting camera");
+
+        const translation_direction = new Vector3($("#translation_direction_x").val(), $("#translation_direction_y").val(), $("#translation_direction_z").val(),);
+        const translation_offset = $("#translation_offset").val();
+        const direction = new Vector3($("#direction_offset_x").val(), $("#direction_offset_y").val(), $("#direction_offset_z").val(),);
+        const back_offset = $("#back_offset").val();
+
+        console.warn(translation_direction);
+        console.warn(translation_offset);
+        console.warn(direction);
+        console.warn(back_offset);
+
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, translation_direction, translation_offset, direction, back_offset);
+
+        WebGL.hero.topCamera.translation_direction.x = translation_direction.x;
+        WebGL.hero.topCamera.translation_direction.y = translation_direction.y;
+        WebGL.hero.topCamera.translation_direction.z = translation_direction.z;
+        WebGL.hero.topCamera.translation_offset = translation_offset;
+        WebGL.hero.topCamera.back_offset = back_offset;
+        WebGL.hero.topCamera.direction_offset.x = direction.x;
+        WebGL.hero.topCamera.direction_offset.y = direction.y;
+        WebGL.hero.topCamera.direction_offset.z = direction.z;
+        WebGL.hero.topCamera.update();
     },
     setTitle() {
         const text = GAME.generateTitleText();

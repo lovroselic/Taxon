@@ -48,6 +48,63 @@
             </div>
         </div>
 
+        <div>
+            <p>Camera:</p>
+            <form id="camera_form" class="camera-form">
+                <fieldset class="camera">
+                    <legend>Camera Parameters</legend>
+
+                    <!-- Translation direction -->
+                    <div class="camera">
+                        <label for="translation_direction_x">Translation direction X</label>
+                        <input class="camera" type="number" id="translation_direction_x" name="translation_direction_x"
+                            step="0.05" value="0.0" />
+                    </div>
+                    <div class="camera">
+                        <label for="translation_direction_y">Translation direction Y</label>
+                        <input class="camera" type="number" id="translation_direction_y" name="translation_direction_y"
+                            step="0.05" value="1" />
+                    </div>
+                    <div class="camera">
+                        <label for="translation_direction_z">Translation direction Z</label>
+                        <input class="camera" type="number" id="translation_direction_z" name="translation_direction_z"
+                            step="0.05" value="1" />
+                    </div>
+
+                    <!-- Translation offset -->
+                    <div class="camera">
+                        <label for="translation_offset">Translation offset</label>
+                        <input class="camera" type="number" id="translation_offset" name="translation_offset" step="0.05"
+                            value="3.5" />
+                    </div>
+
+                    <!-- Direction offset -->
+                    <div class="camera">
+                        <label for="direction_offset_x">Direction offset X</label>
+                        <input class="camera" type="number" id="direction_offset_x" name="direction_offset_x" step="0.05"
+                            value="-0.05" />
+                    </div>
+                    <div class="camera">
+                        <label for="direction_offset_y">Direction offset Y</label>
+                        <input class="camera" type="number" id="direction_offset_y" name="direction_offset_y" step="0.05"
+                            value="-0.5" />
+                    </div>
+                    <div class="camera">
+                        <label for="direction_offset_z">Direction offset Z</label>
+                        <input class="camera" type="number" id="direction_offset_z" name="direction_offset_z" step="0.05"
+                            value="-1.0" />
+                    </div>
+
+                    <!-- Back offset -->
+                    <div class="camera">
+                        <label for="back_offset">Back offset</label>
+                        <input class="camera" type="number" id="back_offset" name="back_offset" step="0.05"
+                            value="3.0" />
+                    </div>
+                    <input type='button' id='changeCamera' value='changeCamera'>
+                </fieldset>
+            </form>
+        </div>
 
         <div>
             <p id="buttons">
