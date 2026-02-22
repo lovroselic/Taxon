@@ -182,7 +182,7 @@ const ENGINE = {
         CTX.fillRect(0, 0, CTX.canvas.width, CTX.canvas.height);
     },
     resizeCanvas(img, targetSize) {
-         if (!img) return null;
+        if (!img) return null;
         LAYER.temp.canvas.width = targetSize;
         LAYER.temp.canvas.height = targetSize;
         LAYER.temp.drawImage(img, 0, 0, img.width, img.height, 0, 0, targetSize, targetSize);
@@ -388,7 +388,7 @@ const ENGINE = {
         CTX.fill();
         return;
     },
-    drawLine(CTX, pFrom, pTo, color, width) {
+    drawLine(CTX, pFrom, pTo, color, width = 1) {
         CTX.beginPath();
         CTX.moveTo(pFrom.x, pFrom.y);
         CTX.lineTo(pTo.x, pTo.y);
@@ -2570,7 +2570,8 @@ const ENGINE = {
             let grid = this.GA.indexTo2DGridSlice(start[0], z);
             if (!grid) return;
             let mid = GRID.gridToCenterPX(grid);
-            ENGINE.drawCircle(this.CTX, mid, ENGINE.DD.decalWidth * 2, "#000000");
+            ENGINE.drawCircle(this.CTX, mid, ENGINE.DD.decalWidth * 2, "#FFFF00");
+            ENGINE.drawLine(this.CTX, mid, mid.add(Vector.fromInt(start[1]), ENGINE.INI.GRIDPIX / 2), "#FFFF00");
         },
         light(light, z) {
             let grid = this.GA.indexTo2DGridSlice(light[0], z);

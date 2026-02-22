@@ -23,7 +23,7 @@ const DEBUG = {
     AUTO_TEST: false,
     FPS: false,
     VERBOSE: true,
-    _2D_display: false,
+    _2D_display: true,
     INVINCIBLE: false,
     FREE_MAGIC: false,
     keys: false,
@@ -204,7 +204,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.0.1",
+    VERSION: "0.1.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -314,6 +314,7 @@ const PRG = {
 const HERO = {
     construct() {
         this.player = null;
+        this.height = 0.0;
 
         this.reset();
     },
@@ -388,7 +389,7 @@ const HERO = {
  */
 
 const GAME = {
-    gold: 0,                                // WebGl relies on this as default gold source, keep! 
+    //gold: 0,                                // WebGl relies on this as default gold source, keep! 
     restarted: false,
     start() {
         console.log("GAME started");
@@ -416,18 +417,11 @@ const GAME = {
         GAME.level = 1;
         GAME.gold = 13;
 
-
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
         GAME.fps = new FPS_short_term_measurement(300);
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
-
-        /** DEBUG */
-        //DEBUG.checkPoint();
-        /** END DEBUG */
-
-        throw "DEBUG";
         GAME.levelStart();
     },
     deathPlaceDecals: [],
@@ -435,7 +429,8 @@ const GAME = {
         console.log("starting level", GAME.level);
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
-        WebGL.GAME.setFirstPerson();                        //my preference
+        //WebGL.GAME.setFirstPerson();                        //my preference
+        WebGL.GAME.setThirdPerson();                        //taxxon
         GAME.continueLevel(GAME.level);
     },
     continueLevel(level) {
@@ -443,16 +438,15 @@ const GAME = {
     },
     levelExecute() {
         GAME.drawFirstFrame(GAME.level);
-        LAIR.start();
         ENGINE.GAME.resume();
-        HERO.speak("Haunting or hunting, Hauntessa will kneel, soon she will feel my very sharp heel.");
+    
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.9, new Vector3(0, -0.5, 0), 1, 70);
-        WebGL.hero.topCameraLowAngle = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.13, new Vector3(0, -0.35, 0), 0.70);
-        WebGL.hero.overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 2.5, new Vector3(0, -1, 0), 1, 80);
-        WebGL.hero.orto_overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 0.4, 80);
+        //WebGL.hero.topCameraLowAngle = new $3D_Camera(WebGL.hero.player, DIR_UP, 0.13, new Vector3(0, -0.35, 0), 0.70);
+        //WebGL.hero.overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 2.5, new Vector3(0, -1, 0), 1, 80);
+        //WebGL.hero.orto_overheadCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 0.4, 80);
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -477,29 +471,24 @@ const GAME = {
     },
     initLevel(level) {
         if (DEBUG.VERBOSE) console.info("init level", level);
+
         this.newDungeon(level);
         WebGL.MOUSE.initialize("ROOM");
         WebGL.setContext('webgl');
         this.buildWorld(level);
-        let start_dir, start_grid;
 
-        if (GAME.fromCheckpoint) {
-            start_dir = MAP[level].map[GAME.loadWayPoint].vector;
-            start_grid = MAP[level].map[GAME.loadWayPoint].grid.add(start_dir); //3d +2d vector -> 3D
-            GAME.fromCheckpoint = false;
-        } else {
-            start_dir = MAP[level].map.startPosition.vector;
-            start_grid = MAP[level].map.startPosition.grid;
-        }
+        const start_dir = MAP[level].map.startPosition.vector;
+        let start_grid = MAP[level].map.startPosition.grid;
 
         start_grid = new Vector3(start_grid.x + 0.5, start_grid.z + HERO.height, start_grid.y + 0.5);
-        HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.ThePrincess);
-        HERO.player.addToTextureMap("invisible", TEXTURE.TheInvisiblePrincess);
+        HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
+
+        //console.log("start_dir", start_dir, "start_grid", start_grid, "HERO.player", HERO.player);
+
         GAME.setCameraView();
         AI.initialize(HERO.player, "3D3");
         GAME.setWorld(level);
         ENTITY3D.resetTime();
-        MINIMAP.init(MAP[level].map, INI.MINIMAP_W, INI.MINIMAP_H, HERO.player);
     },
     setWorld(level, decalsAreSet = false) {
         console.time("setWorld");
@@ -522,29 +511,6 @@ const GAME = {
     buildWorld(level) {
         if (DEBUG.VERBOSE) console.info(" ******** building world, room/dungeon/level:", level, "ressurection", HERO.ressurection, "restart", GAME.restarted);
         WebGL.init_required_IAM(MAP[level].map, HERO);
-
-        if (HERO.ressurection) {
-            GAME.reloadIAM(level);
-        } else {
-            SPAWN_TOOLS.spawn(level);
-        }
-
-        HERO.ressurection = false;
-
-        /* adding death places*/
-        for (const dp of GAME.deathPlaceDecals) {
-            DECAL3D.add(dp);
-        }
-        GAME.deathPlaceDecals.clear();
-
-        if (GAME.fromCheckpoint) {
-            if (DEBUG.VERBOSE) console.log(`%c ... loading part 3: affecting MAP and SPAWN from checkpoint ...`, GAME.CSS);
-            SAVE_MAP_IAM.load_map(MAP);
-            WebGL.CTX.pixelStorei(WebGL.CTX.UNPACK_FLIP_Y_WEBGL, true);
-            MAP_TOOLS.applyStorageActions(level);
-            MAP_TOOLS.MAP[GAME.level].unused_storage.clear();
-            WebGL.CTX.pixelStorei(WebGL.CTX.UNPACK_FLIP_Y_WEBGL, false);
-        }
         MAP[level].world = WORLD.build(MAP[level].map);
     },
     newDungeon(level) {
@@ -601,24 +567,20 @@ const GAME = {
     run(lapsedTime) {
         if (ENGINE.GAME.stopAnimation) return;
         const date = Date.now();
-        HERO.player.updateJump(lapsedTime);
         HERO.player.animateAction();
-        VANISHING3D.manage(lapsedTime);
+
         MISSILE3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
-        DYNAMIC_ITEM3D.manage(lapsedTime, date);
-        ITEM_DROPPER3D.manage(lapsedTime);
+
         GAME.respond(lapsedTime);
         ENGINE.TIMERS.update();
-
-        const interaction = WebGL.MOUSE.click(HERO);
-        if (interaction) GAME.processInteraction(interaction);
 
         MAP.manage(GAME.level);
         GAME.frameDraw(lapsedTime);
         HERO.concludeAction();
+
         if (HERO.dead) IAM.checkIfProcessesComplete([EXPLOSION3D], HERO.death);
         if (GAME.completed) GAME.won();
     },
@@ -627,9 +589,6 @@ const GAME = {
             GAME.drawPlayer();
         }
         WebGL.renderScene(MAP[GAME.level].map);
-        TITLE.compassNeedle();
-        TITLE.time();
-        MINIMAP.draw(HERO.radar);
 
         if (DEBUG.FPS) {
             GAME.FPS(lapsedTime);
@@ -644,154 +603,7 @@ const GAME = {
             GRID.paintCoord3D("coord", MAP[GAME.level].map, HERO.player.depth);
         }
     },
-    processInteraction(interaction) {
-        if (DEBUG.VERBOSE) console.info("interaction:", interaction);
-        if (interaction.text) TURN.subtitle(interaction.text);
-        switch (interaction.category) {
-            case 'error':
-                switch (interaction.which) {
-                    case "inventory_full":
-                        if (!HERO.canComplain) break;
-                        const variants = [
-                            "I can't carry any more.",
-                            "My bag is full.",
-                            "My bag is breaking at the seams.",
-                            "Don't you see my bag is already full, fool?",
-                            "Put where? There is no space left.",
-                            "You are a greedy bastard, aren't you?",
-                            "I'm carrying the castle on my back.",
-                            "Bag capacity reached, mission abort.",
-                            "No more room for knick-knacks.",
-                            "I'm not a pack mule.",
-                            "My bag says 'No more, please.'",
-                            "I'd need a second bag for that.",
-                            "Full to the brim, no more can fit.",
-                            "My bag is stuffed like a turkey.",
-                            "No vacancy in my bag.",
-                            "Trying to turn me into a hoarder?",
-                        ];
-                        HERO.speak(variants.chooseRandom());
-                        HERO.canComplain = false;
-                        setTimeout(() => HERO.canComplain = true, INI.COMPLAIN_TIMEOUT);
-                        break;
-                    default:
-                        console.error("Usupported interaction error:", interaction.which);
-                }
-                break;
-            case 'title':
-                TITLE[interaction.section]();
-                MAP_TOOLS.setOcclusionMap(GAME.level);
-                break;
-            case 'gold':
-                GAME.gold += interaction.value;
-                TITLE.gold();
-                AUDIO.Pick.play();
-                TURN.display(interaction.value, "#AB8D3F");
-                break;
-            case 'key':
-                let key = new Key(interaction.color, interaction.inventorySprite);
-                HERO.inventory.key.push(key);
-                AUDIO.Keys.play();
-                display(interaction.inventorySprite);
-                delete MAP[GAME.level].map.keys[interaction.color];
-                if (interaction.text) TURN.subtitle(interaction.text);
-                break;
-            case 'action_item':
-                if (DEBUG.VERBOSE) console.warn("action_item", interaction.which, interaction.inventorySprite);
-                let aItem = new ActionItem(interaction.which, interaction.inventorySprite);
-                HERO.inventory.scroll.add(aItem);
-                TITLE.stack.scrollIndex = Math.max(TITLE.stack.scrollIndex, 0);
-                TITLE.scrolls();
-                display(interaction.inventorySprite);
-                break;
-            case 'scroll':
-                let type = null;
-                if (interaction.scrollType) {
-                    type = interaction.scrollType;
-                } else {
-                    type = SCROLL_TYPE[interaction.instanceIdentification];
-                }
 
-                let scroll = new Scroll(type);
-                display(scroll.inventorySprite);
-                HERO.inventory.scroll.add(scroll);
-                TITLE.stack.scrollIndex = Math.max(TITLE.stack.scrollIndex, 0);
-                TITLE.scrolls();
-                AUDIO.Scroll.play();
-                break;
-            case 'shrine':
-                if (interaction.which === 'health' || interaction.which === 'mana') {
-                    interaction.category = 'status';
-                    return GAME.processInteraction(interaction);
-                }
-                HERO.raiseStat(interaction.which, interaction.level);
-                display(interaction.inventorySprite);
-                AUDIO.LevelUp.play();
-                HERO.restore();
-                TITLE.skills();
-                break;
-            case 'scrollshop':
-                return this.processInteraction({
-                    category: "scroll",
-                    scrollType: interaction.which,
-                });
-            case 'oracle':
-                break;
-            case 'skill':
-                if (DEBUG.VERBOSE) console.log("SKILL", interaction);
-                HERO.raiseStat(interaction.which, interaction.level);
-                display(interaction.inventorySprite);
-                AUDIO.LevelUp.play();
-                break;
-            case "life":
-                if (DEBUG.VERBOSE) console.info("LIFE", interaction);
-                display(interaction.inventorySprite);
-                GAME.lives++;
-                TITLE.lives();
-                break;
-            case 'status':
-                if (DEBUG.VERBOSE) console.log("STATUS", interaction);
-                HERO.incStatus(interaction.which, interaction.level);
-                display(interaction.inventorySprite);
-                AUDIO.PowerUp.play();
-                break;
-            case 'chest':
-                AUDIO.OpenChest.play();
-                EXPLOSION3D.add(new WoodExplosion(Vector3.from_array(interaction.pos)));
-                return this.processInteraction(evalObjectString(CONTAINER_CONTENT_TYPES, interaction.instanceIdentification));
-            case "rebuild":
-                MAP_TOOLS.rebuild_3D_world(GAME.level);
-                AUDIO.Thud.play();
-                break;
-            case "interaction_item":
-                if (DEBUG.VERBOSE) console.warn("interaction_item", interaction);
-                const item = new NamedInventoryItem(interaction.name, interaction.inventorySprite);
-                HERO.inventory.item.push(item);
-                display(interaction.inventorySprite);
-                break;
-            case "entity_interaction":
-                if (DEBUG.VERBOSE) console.log("entity_interaction", interaction);
-                break;
-            case "munition":
-                HERO.pickOrb(interaction.dropped);
-                display(interaction.inventorySprite);
-                break;
-            case "concludeGame":
-                GAME.completed = true;
-                HERO.player.setPos(Vector3.from_grid3D(new FP_Grid3D(9.5, 2.1, 1.0 + HERO.height)));
-                HERO.player.setDir(Vector3.from_2D_dir(UP));
-                break;
-            default:
-                console.error("interaction category error", interaction);
-        }
-        TITLE.keys();
-
-        function display(inventorySprite) {
-            ENGINE.clearLayer("info");
-            ENGINE.draw("info", 7, 7, SPRITE[inventorySprite]);
-            GenericTimers.infoTimer();
-        }
-    },
     drawPlayer() {
         ENGINE.clearLayer(ENGINE.VECTOR2D.layerString);
         ENGINE.VECTOR2D.draw(HERO.player);
@@ -885,138 +697,11 @@ const GAME = {
         GAME.fps.update(fps);
         CTX.fillText(GAME.fps.getFps(), 5, 10);
     },
-    forceOpenDoor(waypoint) {
-        for (const gate of INTERACTIVE_BUMP3D.POOL) {
-            if (gate.destination.origin === waypoint) {
-                if (gate.locked || gate.color === "Closed") {
-                    gate.openGate();
-                    gate.storageLog();
-                }
-                return;
-            }
-        }
-    },
-    reloadIAM(level) {
-        GAME.STORE.loadIAM(MAP[level].map);
-        GAME.STORE.linkMap(MAP[level].map);
-        GAME.setWorld(level, true);
-    },
-    useStaircase(destination) {
-        const IAMtoClean = [EXPLOSION3D];                //clean IAM
-        for (const iam of IAMtoClean) {
-            iam.clean();
-        }
 
-        for (const missile of MISSILE3D.POOL) {
-            if (missile) {
-                if (missile.friendly) missile.drop();
-                MISSILE3D.remove(missile.id);
-            }
-        }
 
-        GAME.STORE.storeIAM(MAP[GAME.level].map);
-        GAME.level = destination.level;
 
-        const level = GAME.level;
-        if (!MAP[GAME.level].map) {
-            GAME.STORE.clearPools();
-            GAME.newDungeon(level);
-            GAME.buildWorld(level);
-            GAME.STORE.linkMap(MAP[level].map);
-            GAME.setWorld(level);
-        } else GAME.reloadIAM(level);
+ 
 
-        MAP_TOOLS.applyStorageActions(level);
-        GAME.forceOpenDoor(destination.waypoint);
-        HERO.player.setMap(MAP[level].map);
-
-        INTERACTIVE_BUMP3D.setup("3D");
-
-        const start_dir = MAP[level].map[this.destination.waypoint].vector;
-        let start_grid = Grid.toClass(MAP[level].map[this.destination.waypoint].grid).add(start_dir);
-        let Z = MAP[level].map[this.destination.waypoint].grid.z;
-        start_grid = Vector3.from_Grid(Grid.toCenter(start_grid), HERO.height + Z);
-        HERO.player.setPos(start_grid);
-        HERO.player.setDir(Vector3.from_2D_dir(start_dir));
-        GAME.setCameraView();
-        MINIMAP.init(MAP[level].map, INI.MINIMAP_W, INI.MINIMAP_H, HERO.player);
-
-        /** SAVE GAME each time */
-        GAME.save(destination);
-
-        //observe
-        if (MAP_TEXT[GAME.level]) {
-            HERO.speak(MAP_TEXT[GAME.level]);
-            MAP_TEXT[GAME.level] = null;
-        }
-
-        if (DEBUG._2D_display) {
-            ENGINE.resizeBOX("LEVEL", MAP[level].pw, MAP[level].ph);
-            ENGINE.BLOCKGRID.configure("pacgrid", "#FFF", "#000");
-            ENGINE.BLOCKGRID.draw(MAP[GAME.level].map);
-            GRID.grid();
-            GRID.paintCoord3D("coord", MAP[level].map, HERO.player.depth);
-        }
-    },
-    saveRestriction() {
-        if (HERO.orbsLost > 0 || !GAME.canBeSaved) return true;
-        return false;
-    },
-    save(destination) {
-        const flag = SG_DICT[MAP[GAME.level].sg];
-
-        switch (flag) {
-            case "Block":
-                GAME.canBeSaved = false;
-                break;
-            case "Restore":
-                GAME.canBeSaved = true;
-                break;
-        }
-
-        MAP[GAME.level].sg = 0;
-        if (GAME.saveRestriction()) {
-            TITLE.saved(false);
-            return;
-        }
-
-        console.time("save");
-        GAME.loadWayPoint = destination.waypoint;
-        SAVE_GAME.save();
-        SAVE_MAP_IAM.save_map(MAP);
-        SAVE_MAP_IAM.save_GA(MAP);
-        TURN.display("GAME SAVED", "#FFF");
-        TITLE.saved(true);
-        console.timeEnd("save");
-    },
-    load() {
-        console.time("load");
-        HERO.inventory.scroll.clear();
-        HERO.inventory.item.clear();
-        SAVE_GAME.load();
-        SAVE_MAP_IAM.load_GA();
-        MAP_TOOLS.resetStorages();
-        console.timeEnd("load");
-    },
-    checkpoint() {
-        GAME.fromCheckpoint = true;
-        GAME.start();
-    },
-    canSpawn() {
-        if (MAP[GAME.level].map.stopSpawning) return false;
-        if (!LAIR.getSize()) return false;
-        if (ENTITY3D.getSize() >= MAP[GAME.level].map.maxSpawned) return false;
-        return true;
-    },
-    spawn(lair) {
-        const type = MONSTER_TYPE[MAP[GAME.level].map.monsterList.chooseRandom()];
-        if (!type) return;                                                              //if monsterList is not yet definded - development issue
-        const grid = Grid3D.toCenter2D(lair.grid.add(lair.direction));
-        const monster = new $3D_Entity(grid, type, lair.direction);
-        monster.dropped = true;
-        ENTITY3D.add(monster);
-        EXPLOSION3D.add(new SpawnCloud(monster.moveState.referencePos));
-    },
     lifeLostRun(lapsedTime) {
         if (ENGINE.GAME.stopAnimation) return;
         if (ENGINE.GAME.keymap[ENGINE.KEY.map.enter]) {
@@ -1237,34 +922,8 @@ const TITLE = {
     },
     firstFrame() {
         TITLE.titlePlot();
-        TITLE.compass();
-        TITLE.sidebackground_static();
-        TITLE.health();
-        TITLE.lives();
-        TITLE.keys();
-        TITLE.scrolls();
-        //TITLE.magic();
-        TITLE.skills();
-        TITLE.gold();
-    },
-    compass() {
-        let x = ((ENGINE.titleWIDTH - ENGINE.sideWIDTH) + ENGINE.sideWIDTH / 2) | 0;
-        let y = (ENGINE.titleHEIGHT / 2) | 0;
-        ENGINE.spriteDraw("compassRose", x, y, SPRITE.CompassRose);
-        TITLE.stack.compassX = x;
-        TITLE.stack.compassY = y;
-        this.compassNeedle();
-    },
-    compassNeedle() {
-        ENGINE.clearLayer("compassNeedle");
-        const CTX = LAYER.compassNeedle;
-        CTX.strokeStyle = "#F00";
-        let [x, y] = [TITLE.stack.compassX, TITLE.stack.compassY];
-        CTX.beginPath();
-        CTX.moveTo(x, y);
-        let end = new Point(x, y).translate(Vector3.to_FP_Vector(HERO.player.dir), (SPRITE.CompassRose.width / 2 * 0.8) | 0);
-        CTX.lineTo(end.x, end.y);
-        CTX.stroke();
+        //TITLE.sidebackground_static();
+        //TITLE.lives();
     },
     sidebackground_static() {
         //lines
@@ -1320,82 +979,6 @@ const TITLE = {
         ENGINE.draw("sideback", x, y, SPRITE.LineBottom);
         ENGINE.draw("Lsideback", x, y, SPRITE.LineBottom);
     },
-    skills() {
-        ENGINE.clearLayer("skills");
-        const CTX = LAYER.skills;
-        const x = (ENGINE.sideWIDTH / 4 | 0);
-        const dx = 12;
-
-        const fs = 16; //20
-        CTX.font = `200 ${fs}px CPU`
-        //CTX.fillStyle = "#DDD";
-        CTX.textAlign = "center";
-        CTX.shadowColor = "#666";
-        CTX.shadowOffsetX = 0;
-        CTX.shadowOffsetY = 0;
-        CTX.shadowBlur = 0;
-
-        HERO.magic > HERO.reference_magic ? CTX.fillStyle = "#0E0" : CTX.fillStyle = "#DDD";
-        CTX.fillText(`${HERO.magic.toString().padStart(2, "0")}`, x + dx, TITLE.stack.magic);
-        HERO.attack > HERO.reference_attack ? CTX.fillStyle = "#0E0" : CTX.fillStyle = "#DDD";
-        CTX.fillText(`${HERO.attack.toString().padStart(2, "0")}`, x + dx, TITLE.stack.skills);
-        HERO.defense > HERO.reference_defense ? CTX.fillStyle = "#0E0" : CTX.fillStyle = "#DDD";
-        CTX.fillText(`${HERO.defense.toString().padStart(2, "0")}`, 3 * x, TITLE.stack.skills);
-        HERO.manaDiscount < 1.0 ? CTX.fillStyle = "#0E0" : CTX.fillStyle = "#DDD";
-        CTX.fillText(`${HERO.mana} / ${HERO.maxMana}`, 3 * x, TITLE.stack.magic);
-    },
-    time() {
-        const fs = 14;
-        let y = (SPRITE.LineTop.height + fs * 1.2) | 0;
-        let cX = ((ENGINE.sideWIDTH) / 2) | 0;
-
-        const CTX = LAYER.time;
-        ENGINE.clearLayer("time");
-        CTX.font = fs + "px Consolas";
-        CTX.fillStyle = "#0D0";
-        CTX.textAlign = "center";
-        CTX.shadowColor = "#666";
-        CTX.shadowOffsetX = 1;
-        CTX.shadowOffsetY = 1;
-        CTX.shadowBlur = 1;
-        CTX.fillText(`${MAP[GAME.level].name}`, cX, y);
-        let time = `Time: ${GAME.time.timeString()}`;
-        y += (fs * 1.7) | 0;
-        CTX.fillText(time, cX, y);
-        y += (fs * 1.0) | 0;
-    },
-    health() {
-        ENGINE.clearLayer("health");
-        const cX = ((INI.SCREEN_BORDER) / 2) | 0;
-        const cY = (ENGINE.gameHEIGHT / 2) | 0;
-        const CTX = LAYER.health;
-
-        ENGINE.spriteDraw("health", cX, 56, SPRITE.Heart);
-
-        if (HERO.health === HERO.maxHealth) {
-            ENGINE.spriteDraw("health", cX, cY, SPRITE.Avatar);
-        } else {
-            HERO.health = Math.min(Math.max(0, HERO.health), HERO.maxHealth);
-            const imageData = new ImageData(new Uint8ClampedArray(IMAGE_DATA.Avatar.data), IMAGE_DATA.Avatar.width, IMAGE_DATA.Avatar.height);
-            const totalPixels = IMAGE_DATA.INDICES.Avatar.length;
-            const transparentPixels = Math.floor(totalPixels * (HERO.maxHealth - HERO.health) / HERO.maxHealth);
-            const indices = Array.from(IMAGE_DATA.INDICES.Avatar).shuffle();
-            for (let i = 0; i < transparentPixels; i++) {
-                imageData.data[indices[i]] = INI.AVATAR_TRANSPARENCY;
-            }
-            CTX.putImageData(imageData, cX - SPRITE.Avatar.width / 2, cY - SPRITE.Avatar.height / 2);
-        }
-
-        const fs = 40;
-        CTX.font = `300 ${fs}px CPU`
-        CTX.fillStyle = "#DDD";
-        CTX.textAlign = "center";
-        CTX.shadowColor = "#666";
-        CTX.shadowOffsetX = 1;
-        CTX.shadowOffsetY = 1;
-        CTX.shadowBlur = 1;
-        CTX.fillText(`${HERO.health} / ${HERO.maxHealth}`, cX, TITLE.stack.HEALTH_TEXT);
-    },
     lives() {
         ENGINE.clearLayer("lives");
         const cX = 3 * INI.SCREEN_BORDER / 2 - 40;
@@ -1405,89 +988,9 @@ const TITLE = {
             ENGINE.spriteDraw("lives", x, y, SPRITE.Lives);
         }
     },
-    keys() {
-        ENGINE.clearLayer("keys");
-        let refY = TITLE.stack.Y2 + TITLE.stack.DYR;
-        let list = [...HERO.inventory.key, ...HERO.inventory.status, ...HERO.inventory.item];
-        let NUM = list.length;
-        NUM = Math.min(4, NUM);
-        let spread = ENGINE.spreadAroundCenter(NUM, ENGINE.sideWIDTH / 2, TITLE.stack.keyDelta);
-        for (const [i, item] of list.entries()) {
-            if (i >= INI.INVENTORY_HARD_LIMIT) break;
-            let x = spread[i % NUM];
-            let dy = Math.floor(i / NUM);
-            let y = refY + (dy * TITLE.stack.deltaItem);
-            ENGINE.spriteDraw("keys", x, y, SPRITE[item.spriteClass]);
-        }
-    },
-    scrolls() {
-        const INV = HERO.inventory.scroll;
-        ENGINE.clearLayer("scrolls");
-        const CTX = LAYER.scrolls;
-
-        TITLE.stack.scrollIndex = Math.min(TITLE.stack.scrollIndex, INV.size() - 1);
-        let scrollSpread = ENGINE.spreadAroundCenter(TITLE.stack.scrollInRow, ((ENGINE.sideWIDTH / 2) | 0) - 16, TITLE.stack.scrollDelta);
-
-        let LN = INV.size();
-        let startIndex = Math.min((TITLE.stack.scrollIndex - TITLE.stack.scrollInRow / 2) | 0, LN - TITLE.stack.scrollInRow);
-        startIndex = Math.max(0, startIndex);
-        let max = startIndex + Math.min(TITLE.stack.scrollInRow, LN);
-        let y = TITLE.stack.OY;
-        for (let q = startIndex; q < max; q++) {
-            let scroll = INV.list[q];
-            let x = scrollSpread.shift();
-
-            if (q === TITLE.stack.scrollIndex) {
-                CTX.globalAlpha = 1;
-            } else {
-                CTX.globalAlpha = 0.75;
-            }
-
-            ENGINE.draw("scrolls", x, y, scroll.object.sprite);
-
-            CTX.font = "10px Consolas";
-            CTX.fillStyle = "#FFF";
-            CTX.fillText(scroll.count.toString().padStart(2, "0"), x + 40, y + 48);
-
-            if (q === TITLE.stack.scrollIndex) {
-                CTX.strokeStyle = "#FFF";
-                CTX.globalAlpha = 0.5;
-                CTX.lineWidth = "1";
-                CTX.beginPath();
-                CTX.rect(x - 5, y - 10, 48 + 10, 48 + 20);
-                CTX.closePath();
-                CTX.stroke();
-            }
-        }
-    },
     music() {
         AUDIO.Title.play();
     },
-    gold() {
-        ENGINE.clearLayer("gold");
-        const CTX = LAYER.gold;
-        CTX.textAlign = "left"
-        CTX.fillStyle = "#BF9B30";
-        let fs = 26;
-        let y = TITLE.stack.goldY + fs / 2;
-
-        CTX.font = `${fs}px Pentagram`;
-        const DX = Math.ceil(CTX.measureText(`GOLD: `).width);
-        fs = 30;
-        CTX.font = `${fs}px CPU`;
-        const DX2 = Math.ceil(CTX.measureText(GAME.gold.toString().padStart(6, "0")).width);
-        const x = (ENGINE.gameWIDTH + INI.SCREEN_BORDER) - DX - DX2;
-        TITLE.stack.goldX = x;
-
-        fs = 26;
-        CTX.font = `${fs}px Pentagram`;
-        CTX.fillText(`GOLD: `, TITLE.stack.goldX, y);
-
-        fs = 30;
-        CTX.font = `${fs}px CPU`;
-        CTX.fillText(GAME.gold.toString().padStart(6, "0"), TITLE.stack.goldX + DX, y);
-    },
-
     setEndingCreditsScroll() {
         console.group("endingCredits");
         const text = this.generateEndingCredits();
@@ -1546,7 +1049,6 @@ const TITLE = {
         Thanks for sticking to the end.`;
         return text;
     },
-
 };
 
 // -- main --

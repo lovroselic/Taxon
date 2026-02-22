@@ -68,7 +68,7 @@ const INI = {
 };
 
 const PRG = {
-  VERSION: "0.17.2",
+  VERSION: "0.17.3",
   NAME: "MazEditor",
   YEAR: "2022, 2023, 2024, 2025",
   CSS: "color: #239AFF;",
@@ -109,6 +109,7 @@ const PRG = {
     $("#buttons").on("click", "#new", GAME.init);
     $("#buttons").on("click", "#arena", GAME.arena);
     $("#buttons").on("click", "#maze", GAME.maze);
+    $("#buttons").on("click", "#axonize", GAME.axonize);
     $("#buttons").on("click", "#export", GAME.export);
     $("#buttons").on("click", "#import", GAME.import);
     $("#buttons").on("click", "#copy", GAME.copyToClipboard);
@@ -196,6 +197,17 @@ const GAME = {
     WebGL.init_required_IAM($MAP.map, HERO);
     this.buildWorld(level);
     this.setWorld(level);
+  },
+  axonize() {
+    console.warn("axxonizing", "floors", $MAP.depth, "$MAP.map.width", $MAP.map.width, "$MAP.map.height", $MAP.map.height);
+    let GA = $MAP.map.GA;
+
+    GA.sliceFill($MAP.map.width, $MAP.map.width * ($MAP.map.height - 1), MAPDICT.EMPTY);                    //depth 0
+    for (let F = 1; F < $MAP.map.height; F++) {
+      GA.sliceFill($MAP.map.width * ($MAP.map.height * F + 1), $MAP.map.width * ($MAP.map.height - 1), MAPDICT.HOLE);
+    }
+    $MAP.map.textureMap = $MAP.map.GA.toTextureMap();
+    GAME.render();
   },
   arena() {
     let GA = $MAP.map.GA;
@@ -414,8 +426,8 @@ const GAME = {
       case "start":
         switch (currentValue) {
           case MAPDICT.EMPTY:
+          case MAPDICT.HOLE:
             dir = GAME.getSelectedDir();
-            console.log(".dir", dir);
             if (dir.same(NOWAY)) {
               $("#error_message").html("Start needs direction");
               return;
@@ -1094,6 +1106,7 @@ const GAME = {
     $("#buttons").append("<input type='button' id='new' value='New'>");
     $("#buttons").append("<input type='button' id='arena' value='Arena'>");
     $("#buttons").append("<input type='button' id='maze' value='Maze'>");
+    $("#buttons").append("<input type='button' id='axonize' value='Axonize'>");
     $("#buttons").append("<input type='button' id='export' value='Export'>");
     $("#buttons").append("<input type='button' id='import' value='Import'>");
     $("#buttons").append("<input type='button' id='copy' value='Copy to Clipboard'>");

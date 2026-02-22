@@ -14,19 +14,17 @@
 console.log("%cMonsters for HTH loaded.", "color: #888");
 
 
-const HERO_TYPE = {};
-const MONSTER_TYPE = {};
-
-//container content
-//const CONTAINER_CONTENT_TYPES = { GOLD_ITEM_TYPE, SKILL_ITEM_TYPE, INTERACTION_ITEM };
-//const CONTAINER_CONTENT_LIST = stringifyObjectList(CONTAINER_CONTENT_TYPES);
-//const TRIGGER_ACTIONS = ["HOLE->toEmpty", "WALL->toEmpty", "EMPTY->toWall"];
-
-/*const TRAP_ACTIONS = {
-    Missile: [],
-    Spawn: listObjectKeys(MONSTER_TYPE)
+const HERO_TYPE = {
+    Taxxon: {
+        name: "Taxxon",
+        model: "SpaceShip",
+        scale: 1.0 / 2 ** 4,
+        rotateToNorth: Math.PI,
+        material: MATERIAL.standard,
+        moveSpeed: 2.0
+    }
 };
-const TRAP_ACTION_LIST = listObjectKeys(TRAP_ACTIONS);*/
+const MONSTER_TYPE = {};
 
 const FIRE_TYPES = {
     Fire: {

@@ -38,7 +38,7 @@
  */
 
 const WebGL = {
-    VERSION: "2.00",
+    VERSION: "2.01",
     CSS: "color: gold",
     CTX: null,
     VERBOSE: false,             //default: false
@@ -1643,6 +1643,7 @@ const WORLD = {
     build(map) {
         const GA = map.GA;
         const TE = map.TextureExclusion;
+        //console.warn("TE", TE, typeof TE);
         WORLD.GA = GA;
         console.time("WorldBuilding");
         this.init();
@@ -1653,7 +1654,9 @@ const WORLD = {
 
         for (let [index, value] of GA.map.entries()) {
             let grid = GA.indexToGrid(index);
-            const prune = TE[index] || null;
+            //const prune = TE[index] || null;
+            let prune = null;
+            if (typeof TE !== "undefined") prune = TE[index];
             if (!grid.z) grid.z = 0;                                                                                            //2D Grid legacy support
             let initial = value;
             value &= (2 ** GA.gridSizeBit - 1 - (MAPDICT.FOG + MAPDICT.RESERVED + MAPDICT.ROOM));

@@ -54,7 +54,9 @@ LoadShaders = [
 
 //LoadObjects = [];
 
-//LoadModels = [];
+LoadModels = [
+    "Taxxon.gltf",
+];
 
 LoadSprites = [
     //reserved
