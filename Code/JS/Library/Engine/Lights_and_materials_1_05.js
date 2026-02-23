@@ -79,6 +79,10 @@ const LIGHT_COLORS = {
     sunlightDusk: new Float32Array([0.70, 0.60, 0.50]),         // Subtle, warm dusk-like sunlight
     sunlightGoldenHour: new Float32Array([0.90, 0.68, 0.45]),   // Warm, glowing, rich sunset illumination
     sunlightGoldenHourSoft: new Float32Array([0.78, 0.56, 0.38]), // Gentle, softer golden-orange, subtle late sunset ambiance
+
+    //
+    //sun: new Float32Array([9.5, 9.2, 8.0]), 
+    sun: new Float32Array([47.5, 46.0, 35.0]), 
 };
 
 /** Materials */

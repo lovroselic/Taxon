@@ -324,6 +324,7 @@ const WebGL = {
     init_required_IAM(map, hero) {
         DECAL3D.init(map);
         LIGHTS3D.init(map);
+        SUN3D.init(map);
         GATE3D.init(map);
         VANISHING3D.init(map);
         ITEM3D.init(map);
@@ -860,6 +861,9 @@ const WebGL = {
             lightColors.push(...light.lightColor);
         }
 
+        //suns
+        this.computeSuns(lights, lightColors, lightDirections);
+
         // Dynamic lights
         const dynLights = [];
         const dynLightColors = [];
@@ -899,6 +903,13 @@ const WebGL = {
             lightColors: new Float32Array(lightColors),
             lightDirections: new Float32Array(lightDirections),
         };
+    },
+    computeSuns(lights, lightColors, lightDirections) {
+        for (let sun of SUN3D.POOL) {
+            lights.push(...sun.pos.array);
+            lightDirections.push(...sun.dir.array);
+            lightColors.push(...sun.lightColor);
+        }
     },
     renderScene(map) {
         const gl = this.CTX;
@@ -3640,6 +3651,14 @@ class PotionTypeDefinition extends ItemTypeDefinition {
         super(name, "potion", "FLASK", 1.1 / 2 ** 5, true, texture, material);
         this.inventorySprite = inventorySprite;
         this.color = color;
+    }
+}
+
+class LightSource {
+    constructor(pos, dir, lightColor) {
+        this.pos = pos;                 //Vector3
+        this.dir = dir;                 //Vector3
+        this.lightColor = lightColor;   //Vector3
     }
 }
 

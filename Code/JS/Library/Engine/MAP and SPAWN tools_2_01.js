@@ -414,6 +414,9 @@ const SPAWN_TOOLS = {
             FIRE3D.add(new FireEmmiter(position, type));
 
         }
+    },
+    spawnSunFromCamera(position, lightColor) {
+        SUN3D.add(new LightSource(position, DIR_DOWN, lightColor));
     }
 };
 

@@ -21,7 +21,7 @@ retests:
 const DEBUG = {
     SETTING: true,
     AUTO_TEST: false,
-    FPS: false,
+    FPS: true,
     VERBOSE: true,
     _2D_display: true,
     INVINCIBLE: false,
@@ -204,7 +204,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.1.2",
+    VERSION: "0.1.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -404,14 +404,15 @@ const GAME = {
         ENGINE.GAME.pauseBlock();
         ENGINE.GAME.paused = true;
 
-        let GameRD = new RenderData("Headstone", 60, "#fF2010", "text", "#444444", 2, 2, 2);
+        let GameRD = new RenderData("CPU", 60, "#fF2010", "text", "#444444", 2, 2, 2);
         ENGINE.TEXT.setRD(GameRD);
         ENGINE.watchVisibility(ENGINE.GAME.lostFocus);
         ENGINE.GAME.setGameLoop(GAME.run);
         ENGINE.GAME.start(16);
 
         AI.immobileWander = true;
-        WebGL.setAmbientStrength(2.5);
+        //WebGL.setAmbientStrength(1.0);
+        WebGL.setAmbientStrength(0.3);
 
         GAME.completed = false;
         GAME.lives = 1;
@@ -472,15 +473,15 @@ const GAME = {
         this.newDungeon(level);
         WebGL.MOUSE.initialize("ROOM");
         WebGL.setContext('webgl');
-        this.buildWorld(level);
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-
         start_grid = new Vector3(start_grid.x + 0.5, start_grid.z + HERO.height, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
 
+        this.buildWorld(level);
         GAME.setCameraView();
+        SPAWN_TOOLS.spawnSunFromCamera(new Vector3(MAP[level].map.width * 0.5, MAP[level].map.depth * 2.1, MAP[level].map.height * 0.5), LIGHT_COLORS.sun);
         AI.initialize(HERO.player, "3D3");
         GAME.setWorld(level);
         ENTITY3D.resetTime();
@@ -506,6 +507,8 @@ const GAME = {
     buildWorld(level) {
         if (DEBUG.VERBOSE) console.info(" ******** building world, room/dungeon/level:", level, "ressurection", HERO.ressurection, "restart", GAME.restarted);
         WebGL.init_required_IAM(MAP[level].map, HERO);
+        SPAWN_TOOLS.spawn(level);
+
         MAP[level].world = WORLD.build(MAP[level].map);
     },
     newDungeon(level) {
@@ -520,7 +523,6 @@ const GAME = {
     setup() {
         console.log("GAME SETUP started");
         $("#conv").remove();
-
         $("#changeCamera").on("click", GAME.setCamera);
     },
     setCamera() {
