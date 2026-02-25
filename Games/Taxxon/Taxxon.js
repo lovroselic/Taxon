@@ -204,10 +204,13 @@ const INI = {
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 2.0,
     PAD_BETWEEN_LEVELS: 5,
+    LAST_LEVEL: 3,
+    SIDE_SPEED: 5.0,
+    SHIT_ROT_ANGLE: Math.radians(30),
 };
 
 const PRG = {
-    VERSION: "0.1.4",
+    VERSION: "0.2.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -324,11 +327,14 @@ const HERO = {
     reset() {
         this.dead = false;
         this.canShoot = true;
+        this.setMode("idle");
     },
     setMode(mode) {
         this.mode = mode;
     },
     concludeAction() {
+        this.setMode("idle");
+        this.player.resetDefaultRotation();
     },
     shoot() {
         if (HERO.dead) return;
@@ -390,12 +396,34 @@ const HERO = {
         //bump obstacle
         //bump actor
         //exit level
-        if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) {
-            throw "next level";
-        }
-        //console.info("pos", HERO.player.pos);
-    }
+        if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) GAME.nextLevel();
 
+        //console.info("pos", HERO.player.pos);
+    },
+    changePosition(posDir, rotationAxis, mode, lapsedTime) {
+        if (HERO.mode === "idle" || HERO.mode === mode) {
+            let length = (lapsedTime / 1000) * INI.SIDE_SPEED;
+            let nextPos3 = HERO.player.pos.translate(posDir, length);
+            let Grid3D = Vector3.to_FP_Grid3D(nextPos3);
+            if (this.outOfBounds(Grid3D)) return;                           // we will not apply move
+
+            HERO.player.setPos(nextPos3);
+            HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
+
+            HERO.setMode(mode);
+            //console.info("nextPos3", nextPos3, "Grid3D", Grid3D);
+            //console.warn("changePosition", posDir, rotationAxis, "mode", mode, "HERO mode", HERO.mode);
+        }
+        return;
+    },
+    outOfBounds(Grid3D) {
+        const R = HERO.player.r;
+        if (Grid3D.y - R < 1) return true;
+        if (Grid3D.y + R >= MAP[GAME.level].map.height) return true;
+        if (Grid3D.z - R < 1) return true;
+        if (Grid3D.z + R >= MAP[GAME.level].map.depth) return true;
+        return false;
+    },
 };
 
 /**
@@ -442,7 +470,14 @@ const GAME = {
         GAME.time = new Timer("Main");
         GAME.levelStart();
     },
-    deathPlaceDecals: [],
+    //deathPlaceDecals: [],
+    nextLevel() {
+        GAME.level++;
+        if (GAME.level > INI.LAST_LEVEL) {
+            throw "last level reached";
+        }
+        GAME.levelStart();
+    },
     levelStart() {
         console.log("starting level", GAME.level);
         WebGL.playerList.clear();                           //requred for restart after resurrection
@@ -493,9 +528,10 @@ const GAME = {
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-        start_grid = new Vector3(start_grid.x + 0.5, start_grid.z + HERO.height, start_grid.y + 0.5);
+        start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + HERO.height, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
+        //HERO.player.setSpeed(5.0);
 
         this.buildWorld(level);
         GAME.setCameraView();
@@ -526,7 +562,6 @@ const GAME = {
         if (DEBUG.VERBOSE) console.info(" ******** building world, room/dungeon/level:", level, "ressurection", HERO.ressurection, "restart", GAME.restarted);
         WebGL.init_required_IAM(MAP[level].map, HERO);
         SPAWN_TOOLS.spawn(level);
-
         MAP[level].world = WORLD.build(MAP[level].map);
     },
     newDungeon(level) {
@@ -646,7 +681,6 @@ const GAME = {
             GRID.paintCoord3D("coord", MAP[GAME.level].map, HERO.player.depth);
         }
     },
-
     drawPlayer() {
         ENGINE.clearLayer(ENGINE.VECTOR2D.layerString);
         ENGINE.VECTOR2D.draw(HERO.player);
@@ -654,7 +688,7 @@ const GAME = {
     respond(lapsedTime) {
         if (HERO.dead) return;
 
-        HERO.player.respond(lapsedTime);
+        //HERO.player.respond(lapsedTime);
         //WebGL.GAME.respond(lapsedTime);
         ENGINE.GAME.respond(lapsedTime);
 
@@ -698,10 +732,18 @@ const GAME = {
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
 
         }
-        if (map[ENGINE.KEY.map.up]) { }
-        if (map[ENGINE.KEY.map.down]) { }
-        if (map[ENGINE.KEY.map.left]) { }
-        if (map[ENGINE.KEY.map.right]) { }
+        if (map[ENGINE.KEY.map.down]) {
+            HERO.changePosition(new Vector3(0, 1, 0), [-1, 0, 0], "up", lapsedTime);
+        }
+        if (map[ENGINE.KEY.map.up]) {
+            HERO.changePosition(new Vector3(0, -1, 0), [1, 0, 0], "down", lapsedTime);
+        }
+        if (map[ENGINE.KEY.map.left]) {
+            HERO.changePosition(new Vector3(0, 0, -1), [0, 0, -1], "left", lapsedTime);
+        }
+        if (map[ENGINE.KEY.map.right]) {
+            HERO.changePosition(new Vector3(0, 0, 1), [0, 0, 1], "right", lapsedTime);
+        }
 
 
         //setup

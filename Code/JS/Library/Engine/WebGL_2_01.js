@@ -957,10 +957,7 @@ const WebGL = {
 
         if (WebGL.HERO_AS_INNER) {
             gl.uniform3fv(this.program.uniformLocations.cameraPos, this.hero.player.pos.array);
-            //let upsy = this.hero.player.pos.translate(new Vector3(RNDF(0.1), RNDF(0.1), RNDF(0.1)), RNDF(0.1));
-            //gl.uniform3fv(this.program.uniformLocations.cameraPos, upsy.array);
-            //gl.uniform3fv(this.program.uniformLocations.cameraPos, [10, 10, 10]);
-            //gl.uniform3fv(this.program.uniformLocations.cameraPos, this.camera.pos.array);
+
         } else {
             gl.uniform3fv(this.program.uniformLocations.cameraPos, this.camera.pos.array);
         }
@@ -1869,6 +1866,7 @@ class $3D_player {
             this.minY = this.model.meshes[0].primitives[0].positions.min[1] * this.scale[1];
             this.matrixUpdate();
             WebGL.playerList.push(this);
+            this.defaultRotationMatrix = glMatrix.mat4.clone(this.rotation);
         };
         this.setMode("idle");
         this.actionModes = ["attacking"];
@@ -1877,6 +1875,9 @@ class $3D_player {
         this.velocity_Z = 0.0;
         this.concludeJump();
         this.lookingAround = false;
+    }
+    resetDefaultRotation() {
+        this.rotation = glMatrix.mat4.clone(this.defaultRotationMatrix);
     }
     creep(lapsedTime, dir = DIR_FORWARD) {
         let length = (lapsedTime / 1000) * this.moveSpeed;
@@ -2184,7 +2185,12 @@ class $3D_player {
         modelPosition.set_y(this.minY + this.getFloorPosition());
         glMatrix.mat4.fromTranslation(this.translation, modelPosition.array);
     }
+    changeRotation(angle, rotationAxis){
+        //direct access to ratotion mat
+        glMatrix.mat4.rotate(this.rotation,this.rotation, angle, rotationAxis);
+    }
     setRotation() {
+        // setting rotation matrix from this.dir
         this.rotation = glMatrix.mat4.create();
         const angle = -FP_Vector.toClass(UP).radAngleBetweenVectors(Vector3.to_FP_Vector(this.dir));
         glMatrix.mat4.rotate(this.rotation, this.rotation, this.rotateToNorth + angle, [0, 1, 0]);
@@ -2228,6 +2234,7 @@ class $3D_player {
         this.fov = Math.radians(fov);
     }
     rotate(rotDirection, lapsedTime) {
+        // calculating new dir
         let angle = Math.round(lapsedTime / ENGINE.INI.ANIMATION_INTERVAL) * rotDirection * ((2 * Math.PI) / this.rotationResolution);
         this.setDir(Vector3.from_2D_dir(this.dir.rotate2D(angle), this.dir.y));
         if (WebGL.CONFIG.dual && WebGL.CONFIG.firstperson) this.setRotation();   //
