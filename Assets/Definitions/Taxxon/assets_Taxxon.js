@@ -32,6 +32,9 @@ LoadTextures = [
     { srcName: "Wall/BlackWall45.webp", name: "BlackWall45" },
     { srcName: "Wall/GreyFloor27.webp", name: "GreyFloor27" },
 
+    //objects
+    { srcName: "ObjectTextures/BlueMetal.webp", name: "BlueMetal" },
+    { srcName: "ObjectTextures/Red.webp", name: "Red" },
 
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
@@ -47,7 +50,7 @@ LoadAudio = [
 ];
 
 LoadShaders = [
-    'vShader_1_1.glsl', 'fShader_1_3.glsl', 'pick_vShader_1_0.glsl', 'pick_fShader_1_0.glsl',
+    'vShader_1_2.glsl', 'fShader_1_3.glsl', 'pick_vShader_1_0.glsl', 'pick_fShader_1_0.glsl',
     'particle_render_fShader_1_1.glsl', 'particle_render_vShader_1_0.glsl', 'particle_transform_fShader_1_0.glsl', 'particle_transform_vShader_1_1.glsl',
     'model_vShader_1_2.glsl', 'fire_transform_vShader_1_0.glsl', 'fire_render_fShader_1_0.glsl'
 ];
@@ -55,7 +58,7 @@ LoadShaders = [
 //LoadObjects = [];
 
 LoadModels = [
-    "Taxxon.gltf",
+    "Taxxon.gltf", 
 ];
 
 LoadSprites = [
@@ -75,6 +78,8 @@ LoadSprites = [
     { srcName: "UI/LineBottom.webp", name: "LineBottom" },
     { srcName: "UI/LineTop.webp", name: "LineTop" },
 
+    //lights
+    { srcName: "Lights/DuaLLantern_029.webp", name: "DuaLLantern_029" },
 ];
 
 console.log("%cAssets for CastleHaunt2 ready.", "color: orange");

@@ -18,7 +18,7 @@
  */
 
 const LS_matrix = {
-    VERSION: "1.3",
+    VERSION: "1.4",
     CSS: "color: red",
 };
 
@@ -199,6 +199,6 @@ class Vector3 {
 const DIR_DOWN = Vector3.from_array(glMatrix.vec3.fromValues(0, -1, 0));
 const DIR_UP = Vector3.from_array(glMatrix.vec3.fromValues(0, 1, 0));
 const DIR_NOWAY = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, 0));
-
+const DIR_FORWARD = Vector3.from_array(glMatrix.vec3.fromValues(1, 0, 0));
 //END
 console.log(`%cLS_matrix ${LS_matrix.VERSION} loaded.`, LS_matrix.CSS);

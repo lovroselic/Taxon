@@ -10,23 +10,23 @@ const LIGHT_COLORS = {
     standard: new Float32Array([0.90, 0.90, 0.81]),
     standard2: new Float32Array([0.88, 0.86, 0.78]),
     standardDimmed: new Float32Array([0.8, 0.8, 0.7]),
-    standardSoft: new Float32Array([0.80, 0.78, 0.70]),         // Slightly softer, subtle warm tint
-    standardMuted: new Float32Array([0.72, 0.70, 0.63]),        // More muted and calm
-    standardDim: new Float32Array([0.64, 0.62, 0.56]),          // Dimmer, gentle ambiance
-    standardFaint: new Float32Array([0.56, 0.54, 0.49]),        // Very faint, subtle background tone
-    standardVeryFaint: new Float32Array([0.48, 0.46, 0.42]),    // softer, calmer, gently dimmed
-    standardUltraFaint: new Float32Array([0.40, 0.38, 0.35]),   // extremely subdued, subtle background
-    standardRedish: new Float32Array([0.95, 0.88, 0.80]),
-    standardYellow: new Float32Array([0.88, 0.83, 0.65]),       // Slightly yellow-tinted, bright and warm
-    standardYellowDim: new Float32Array([0.78, 0.72, 0.55]),    // Moderately dimmed yellowish tint
-    standardYellowSoft: new Float32Array([0.68, 0.62, 0.47]),   // Gentle soft yellow glow
-    standardYellowFaint: new Float32Array([0.58, 0.53, 0.40]),  // Subtle, faint yellowish ambiance
-    dim: new Float32Array([0.45, 0.45, 0.40]),
-    dimRed: new Float32Array([0.50, 0.225, 0.035]),
-    fire: new Float32Array([0.94, 0.50, 0.07]),
-    fireNew: new Float32Array([0.90, 0.45, 0.10]),
-    fireSoft: new Float32Array([0.80, 0.40, 0.12]),             // gentler flame, suitable for candles or torches
-    fireDim: new Float32Array([0.68, 0.34, 0.10]),              // muted, dim flame for subtle ambiance
+    standardSoft: new Float32Array([0.80, 0.78, 0.70]),             // Slightly softer, subtle warm tint
+    standardMuted: new Float32Array([0.72, 0.70, 0.63]),            // More muted and calm
+    standardDim: new Float32Array([0.64, 0.62, 0.56]),              // Dimmer, gentle ambiance
+    standardFaint: new Float32Array([0.56, 0.54, 0.49]),            // Very faint, subtle background tone
+    standardVeryFaint: new Float32Array([0.48, 0.46, 0.42]),        // softer, calmer, gently dimmed
+    standardUltraFaint: new Float32Array([0.40, 0.38, 0.35]),       // extremely subdued, subtle background
+    standardRedish: new Float32Array([0.95, 0.88, 0.80]),   
+    standardYellow: new Float32Array([0.88, 0.83, 0.65]),           // Slightly yellow-tinted, bright and warm
+    standardYellowDim: new Float32Array([0.78, 0.72, 0.55]),        // Moderately dimmed yellowish tint
+    standardYellowSoft: new Float32Array([0.68, 0.62, 0.47]),       // Gentle soft yellow glow
+    standardYellowFaint: new Float32Array([0.58, 0.53, 0.40]),      // Subtle, faint yellowish ambiance
+    dim: new Float32Array([0.45, 0.45, 0.40]),  
+    dimRed: new Float32Array([0.50, 0.225, 0.035]), 
+    fire: new Float32Array([0.94, 0.50, 0.07]), 
+    fireNew: new Float32Array([0.90, 0.45, 0.10]),  
+    fireSoft: new Float32Array([0.80, 0.40, 0.12]),                 // gentler flame, suitable for candles or torches
+    fireDim: new Float32Array([0.68, 0.34, 0.10]),                  // muted, dim flame for subtle ambiance
     fireplace: new Float32Array([0.80, 0.40, 0.12]),
     fireplaceDim: new Float32Array([0.68, 0.34, 0.10]),
     fireSubtle: new Float32Array([0.235, 0.125, 0.018]),
@@ -57,32 +57,31 @@ const LIGHT_COLORS = {
     candle: new Float32Array([1.0, 0.823529, 0.1098]),
     dimCandle: new Float32Array([0.8, 0.7, 0.10]),
     weakCandle: new Float32Array([0.5, 0.41, 0.05]),
-    softCandle: new Float32Array([0.85, 0.75, 0.25]),           // Gentle candle glow, soft yellow
-    warmCandle: new Float32Array([0.70, 0.60, 0.15]),           // Warmer, slightly dimmer candlelight
-    faintCandle: new Float32Array([0.55, 0.48, 0.10]),          // Very subdued, faint candle effect
+    softCandle: new Float32Array([0.85, 0.75, 0.25]),               // Gentle candle glow, soft yellow
+    warmCandle: new Float32Array([0.70, 0.60, 0.15]),               // Warmer, slightly dimmer candlelight
+    faintCandle: new Float32Array([0.55, 0.48, 0.10]),              // Very subdued, faint candle effect
     harshSun: new Float32Array([1.0, 1.0, 1.0]),
     normalSun: new Float32Array([0.9, 0.85, 0.8]),
     cyan: new Float32Array([0.0, 1.0, 1.0]),
     orange: new Float32Array([1.0, 0.65, 0.0]),
     pink: new Float32Array([1.0, 0.0, 0.5]),
-    orangeDimmed: new Float32Array([0.8, 0.52, 0.0]),           // Slightly softer and warmer
-    softOrange: new Float32Array([0.7, 0.45, 0.05]),            // Even more gentle, muted orange
-    mutedOrange: new Float32Array([0.6, 0.4, 0.1]),             // Most subdued, earthy orange
-    steelAmbient: new Float32Array([0.30, 0.32, 0.34]),         // Soft, cool dark-gray base tone
-    steelDiffuse: new Float32Array([0.55, 0.57, 0.59]),         // Brighter, reflective gray tone
-    steelSpecular: new Float32Array([0.85, 0.87, 0.89]),        // Bright specular highlights with bluish tint
-    moonlightBright: new Float32Array([0.60, 0.65, 0.75]),      // Bright, cool moonlight, silvery-blue tint
-    moonlightSoft: new Float32Array([0.45, 0.50, 0.60]),        // Gentle, softer moon glow
-    moonlightFaint: new Float32Array([0.30, 0.35, 0.45]),       // Very subtle, dim moonlight for minimal illumination
-    sunlightBright: new Float32Array([0.95, 0.92, 0.85]),       // Bright, clear daytime sunlight
-    sunlightWarm: new Float32Array([0.85, 0.78, 0.65]),         // Softer, warmer afternoon sunlight
-    sunlightDusk: new Float32Array([0.70, 0.60, 0.50]),         // Subtle, warm dusk-like sunlight
-    sunlightGoldenHour: new Float32Array([0.90, 0.68, 0.45]),   // Warm, glowing, rich sunset illumination
+    orangeDimmed: new Float32Array([0.8, 0.52, 0.0]),               // Slightly softer and warmer
+    softOrange: new Float32Array([0.7, 0.45, 0.05]),                // Even more gentle, muted orange
+    mutedOrange: new Float32Array([0.6, 0.4, 0.1]),                 // Most subdued, earthy orange
+    steelAmbient: new Float32Array([0.30, 0.32, 0.34]),             // Soft, cool dark-gray base tone
+    steelDiffuse: new Float32Array([0.55, 0.57, 0.59]),             // Brighter, reflective gray tone
+    steelSpecular: new Float32Array([0.85, 0.87, 0.89]),            // Bright specular highlights with bluish tint
+    moonlightBright: new Float32Array([0.60, 0.65, 0.75]),          // Bright, cool moonlight, silvery-blue tint
+    moonlightSoft: new Float32Array([0.45, 0.50, 0.60]),            // Gentle, softer moon glow
+    moonlightFaint: new Float32Array([0.30, 0.35, 0.45]),           // Very subtle, dim moonlight for minimal illumination
+    sunlightBright: new Float32Array([0.95, 0.92, 0.85]),           // Bright, clear daytime sunlight
+    sunlightWarm: new Float32Array([0.85, 0.78, 0.65]),             // Softer, warmer afternoon sunlight
+    sunlightDusk: new Float32Array([0.70, 0.60, 0.50]),             // Subtle, warm dusk-like sunlight
+    sunlightGoldenHour: new Float32Array([0.90, 0.68, 0.45]),       // Warm, glowing, rich sunset illumination
     sunlightGoldenHourSoft: new Float32Array([0.78, 0.56, 0.38]), // Gentle, softer golden-orange, subtle late sunset ambiance
 
-    //
-    //sun: new Float32Array([9.5, 9.2, 8.0]), 
-    sun: new Float32Array([47.5, 46.0, 35.0]), 
+    //strong remote sources
+    sun: new Float32Array([80 * 0.85, 80 * 0.78, 80 * 0.65]),
 };
 
 /** Materials */

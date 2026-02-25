@@ -201,10 +201,13 @@ const DEBUG = {
 const INI = {
     HERO_SHOOT_TIMEOUT: 10,
     SCREEN_BORDER: 256,
+    SUN_HEIGHT_FACTOR: 7.5, //7.5
+    CREEP_SPEED: 2.0,
+    PAD_BETWEEN_LEVELS: 5,
 };
 
 const PRG = {
-    VERSION: "0.1.3",
+    VERSION: "0.1.4",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -318,12 +321,13 @@ const HERO = {
 
         this.reset();
     },
-
     reset() {
         this.dead = false;
         this.canShoot = true;
     },
-
+    setMode(mode) {
+        this.mode = mode;
+    },
     concludeAction() {
     },
     shoot() {
@@ -381,6 +385,16 @@ const HERO = {
         GAME.restarted = true;
         MAP[GAME.level].map.storage.clear();
     },
+    manage() {
+        //bump enemy
+        //bump obstacle
+        //bump actor
+        //exit level
+        if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) {
+            throw "next level";
+        }
+        //console.info("pos", HERO.player.pos);
+    }
 
 };
 
@@ -411,9 +425,12 @@ const GAME = {
         ENGINE.GAME.start(16);
 
         AI.immobileWander = true;
-        //WebGL.setAmbientStrength(1.0);
         WebGL.setAmbientStrength(0.3);
-
+        //WebGL.setAmbientStrength(0.0);
+        //WebGL.setDiffuseStrength();
+        //WebGL.setSpecularStrength();
+        WebGL.PRUNE = false;
+        WebGL.HERO_AS_INNER = true;
         GAME.completed = false;
         GAME.lives = 1;
         GAME.level = 1;
@@ -478,10 +495,11 @@ const GAME = {
         let start_grid = MAP[level].map.startPosition.grid;
         start_grid = new Vector3(start_grid.x + 0.5, start_grid.z + HERO.height, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
+        HERO.player.setSpeed(INI.CREEP_SPEED);
 
         this.buildWorld(level);
         GAME.setCameraView();
-        SPAWN_TOOLS.spawnSunFromCamera(new Vector3(MAP[level].map.width * 0.5, MAP[level].map.depth * 2.1, MAP[level].map.height * 0.5), LIGHT_COLORS.sun);
+        SPAWN_TOOLS.spawnSunFromCamera(new Vector3(MAP[level].map.width * 0.5, MAP[level].map.depth * INI.SUN_HEIGHT_FACTOR, MAP[level].map.height * 0.5), LIGHT_COLORS.sun);
         AI.initialize(HERO.player, "3D3");
         GAME.setWorld(level);
         ENTITY3D.resetTime();
@@ -592,7 +610,8 @@ const GAME = {
         if (ENGINE.GAME.stopAnimation) return;
         const date = Date.now();
         HERO.player.animateAction();
-
+        HERO.player.creep(lapsedTime);
+        HERO.manage();
         MISSILE3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
@@ -636,7 +655,7 @@ const GAME = {
         if (HERO.dead) return;
 
         HERO.player.respond(lapsedTime);
-        WebGL.GAME.respond(lapsedTime);
+        //WebGL.GAME.respond(lapsedTime);
         ENGINE.GAME.respond(lapsedTime);
 
         const map = ENGINE.GAME.keymap;
@@ -681,20 +700,29 @@ const GAME = {
         }
         if (map[ENGINE.KEY.map.up]) { }
         if (map[ENGINE.KEY.map.down]) { }
-
+        if (map[ENGINE.KEY.map.left]) { }
+        if (map[ENGINE.KEY.map.right]) { }
 
 
         //setup
         if (map[ENGINE.KEY.map.plus]) {
-            WebGL.ambient_light_strength += 0.05;
+            //WebGL.ambient_light_strength += 0.05;
+            //WebGL.diffuse_light_strength += 1.0;
+            WebGL.specular_light_strength += 0.20;
             WebGL.ambient_light_strength = Math.min(WebGL.ambient_light_strength, 5.0);
-            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength);
+            WebGL.diffuse_light_strength = Math.min(WebGL.diffuse_light_strength, 50.0);
+            WebGL.specular_light_strength = Math.min(WebGL.specular_light_strength, 15.0);
+            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength, "WebGL.diffuse_light_strength", WebGL.diffuse_light_strength, "WebGL.specular_light_strength", WebGL.specular_light_strength);
             return;
         }
         if (map[ENGINE.KEY.map.minus]) {
-            WebGL.ambient_light_strength -= 0.05;
+            //WebGL.ambient_light_strength -= 0.05;
+            //WebGL.diffuse_light_strength -= 1.0;
+            WebGL.specular_light_strength -= 0.20;
             WebGL.ambient_light_strength = Math.max(WebGL.ambient_light_strength, 0.0);
-            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength);
+            WebGL.diffuse_light_strength = Math.max(WebGL.diffuse_light_strength, 0.0);
+            WebGL.specular_light_strength = Math.max(WebGL.specular_light_strength, 0.0);
+            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength, "WebGL.diffuse_light_strength", WebGL.diffuse_light_strength, "WebGL.specular_light_strength", WebGL.specular_light_strength);
             return;
         }
 

@@ -137,7 +137,7 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 530,
+            "count" : 611,
             "max" : [
                 6.763850688934326,
                 2.480221748352051,
@@ -153,25 +153,25 @@
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 530,
+            "count" : 611,
             "type" : "VEC2"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 530,
+            "count" : 611,
             "type" : "VEC3"
         },
         {
             "bufferView" : 3,
             "componentType" : 5121,
-            "count" : 530,
+            "count" : 611,
             "type" : "VEC4"
         },
         {
             "bufferView" : 4,
             "componentType" : 5126,
-            "count" : 530,
+            "count" : 611,
             "type" : "VEC4"
         },
         {
@@ -220,64 +220,64 @@
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 6360,
+            "byteLength" : 7332,
             "byteOffset" : 0,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 4240,
-            "byteOffset" : 6360,
+            "byteLength" : 4888,
+            "byteOffset" : 7332,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 6360,
-            "byteOffset" : 10600,
+            "byteLength" : 7332,
+            "byteOffset" : 12220,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 2120,
-            "byteOffset" : 16960,
+            "byteLength" : 2444,
+            "byteOffset" : 19552,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 8480,
-            "byteOffset" : 19080,
+            "byteLength" : 9776,
+            "byteOffset" : 21996,
             "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 4476,
-            "byteOffset" : 27560,
+            "byteOffset" : 31772,
             "target" : 34963
         },
         {
             "buffer" : 0,
             "byteLength" : 64,
-            "byteOffset" : 32036
+            "byteOffset" : 36248
         },
         {
             "buffer" : 0,
             "byteLength" : 12,
-            "byteOffset" : 32100
+            "byteOffset" : 36312
         },
         {
             "buffer" : 0,
             "byteLength" : 36,
-            "byteOffset" : 32112
+            "byteOffset" : 36324
         },
         {
             "buffer" : 0,
             "byteLength" : 48,
-            "byteOffset" : 32148
+            "byteOffset" : 36360
         },
         {
             "buffer" : 0,
             "byteLength" : 36,
-            "byteOffset" : 32196
+            "byteOffset" : 36408
         }
     ],
     "samplers" : [
@@ -288,7 +288,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 32232,
+            "byteLength" : 36444,
             "uri" : "Taxxon.bin"
         }
     ]

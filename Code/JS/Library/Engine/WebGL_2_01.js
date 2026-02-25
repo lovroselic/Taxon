@@ -42,7 +42,8 @@ const WebGL = {
     CSS: "color: gold",
     CTX: null,
     VERBOSE: false,             //default: false
-    PRUNE: true,                //if true, only visible blocks and faces are considered - looks bad in 3td person, but the amount of vertices are significantlly reduced
+    PRUNE: true,                //if true, only visible blocks and faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
+    HERO_AS_INNER: false,       //if true inner light comes from hero player pos, not from camera
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -85,6 +86,8 @@ const WebGL = {
         LOOK_AROUND_QUANT: 0.025,
         MAX_LOOK_AROUND_Y: 0.20,
         AMBIENT_LIGHT_STRENGTH: 0.30,
+        DIFFUSE_LIGHT_STRENGTH: 25.0,
+        SPECULAR_LIGHT_STRENGTH: 5.0,
     },
     CONFIG: {
         firstperson: true,
@@ -186,8 +189,16 @@ const WebGL = {
         fire: ["Fire_color_map", "Fire_noise"]
     },
     ambient_light_strength: 0.30,
+    diffuse_light_strength: 25.0,
+    specular_light_strength: 5.0,
     setAmbientStrength(ambient = WebGL.INI.AMBIENT_LIGHT_STRENGTH) {
         this.ambient_light_strength = ambient;
+    },
+    setDiffuseStrength(diffuse = WebGL.INI.DIFFUSE_LIGHT_STRENGTH) {
+        this.diffuse_light_strength = diffuse;
+    },
+    setSpecularStrength(specular = WebGL.INI.SPECULAR_LIGHT_STRENGTH) {
+        this.specular_light_strength = specular;
     },
     cleanupResources() {
         const gl = this.CTX;
@@ -809,6 +820,8 @@ const WebGL = {
                 uOcclusionMap: gl.getUniformLocation(shaderProgram, "uOcclusionMap"),
                 uGridSize: gl.getUniformLocation(shaderProgram, "uGridSize"),
                 innerAmbientStrength: gl.getUniformLocation(shaderProgram, "innerAmbientStrength"),
+                innerDiffuseStrength: gl.getUniformLocation(shaderProgram, "innerDiffuseStrength"),
+                innerSpecularStrength: gl.getUniformLocation(shaderProgram, "innerSpecularStrength"),
             },
         };
 
@@ -941,7 +954,17 @@ const WebGL = {
         // Set the uniform matrices
         gl.uniformMatrix4fv(this.program.uniformLocations.projectionMatrix, false, this.projectionMatrix);
         gl.uniformMatrix4fv(this.program.uniformLocations.modelViewMatrix, false, this.viewMatrix);
-        gl.uniform3fv(this.program.uniformLocations.cameraPos, this.camera.pos.array);
+
+        if (WebGL.HERO_AS_INNER) {
+            gl.uniform3fv(this.program.uniformLocations.cameraPos, this.hero.player.pos.array);
+            //let upsy = this.hero.player.pos.translate(new Vector3(RNDF(0.1), RNDF(0.1), RNDF(0.1)), RNDF(0.1));
+            //gl.uniform3fv(this.program.uniformLocations.cameraPos, upsy.array);
+            //gl.uniform3fv(this.program.uniformLocations.cameraPos, [10, 10, 10]);
+            //gl.uniform3fv(this.program.uniformLocations.cameraPos, this.camera.pos.array);
+        } else {
+            gl.uniform3fv(this.program.uniformLocations.cameraPos, this.camera.pos.array);
+        }
+
         gl.uniformMatrix4fv(this.program.uniformLocations.uScale, false, scaleMatrix);
         gl.uniformMatrix4fv(this.program.uniformLocations.uTranslate, false, translationMatrix);
         gl.uniformMatrix4fv(this.program.uniformLocations.uRotY, false, rotateY);
@@ -969,6 +992,8 @@ const WebGL = {
 
         //defaults that can be changed
         gl.uniform1f(this.program.uniformLocations.innerAmbientStrength, this.ambient_light_strength);
+        gl.uniform1f(this.program.uniformLocations.innerDiffuseStrength, this.diffuse_light_strength);
+        gl.uniform1f(this.program.uniformLocations.innerSpecularStrength, this.specular_light_strength);
 
         /** MODEL */
         //set global uniforms for model program - could be extended to loop over more programs if required
@@ -1662,7 +1687,6 @@ const WORLD = {
     build(map) {
         const GA = map.GA;
         const TE = map.TextureExclusion;
-        //console.warn("TE", TE, typeof TE);
         WORLD.GA = GA;
         console.time("WorldBuilding");
         this.init();
@@ -1673,7 +1697,6 @@ const WORLD = {
 
         for (let [index, value] of GA.map.entries()) {
             let grid = GA.indexToGrid(index);
-            //const prune = TE[index] || null;
             let prune = null;
             if (typeof TE !== "undefined") prune = TE[index];
             if (!grid.z) grid.z = 0;                                                                                            //2D Grid legacy support
@@ -1854,6 +1877,11 @@ class $3D_player {
         this.velocity_Z = 0.0;
         this.concludeJump();
         this.lookingAround = false;
+    }
+    creep(lapsedTime, dir = DIR_FORWARD) {
+        let length = (lapsedTime / 1000) * this.moveSpeed;
+        let nextPos3 = this.pos.translate(dir, length);        //3D - Vector3
+        return this.setPos(nextPos3);
     }
     changeTexture(texture) {
         const gl = WebGL.CTX;

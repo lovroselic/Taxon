@@ -1,7 +1,7 @@
 #version 300 es
 ///vShader///
 /*
-* v1.1 Haunting the Hauntessa
+* v1.2 Taxxon
 */
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -24,9 +24,12 @@ out vec3 FragPos;
 out vec3 v_normal;
 
 void main(void) {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * uTranslate * uRotateY * uScale * aVertexPosition;
+    mat4 model = uTranslate * uRotateY * uScale;
+    vec4 worldPos = model * aVertexPosition;
+    gl_Position = uProjectionMatrix * uModelViewMatrix * worldPos;
     vTextureCoord = aTextureCoord;
-    FragPos = vec3(aVertexPosition);
-    vec4 transformedNormal = uRotateY * vec4(aVertexNormal, 0.0);
-    v_normal = transformedNormal.xyz;
+    FragPos = worldPos.xyz;
+
+    mat3 normalMat = transpose(inverse(mat3(model)));
+    v_normal = normalize(normalMat * aVertexNormal);
 }

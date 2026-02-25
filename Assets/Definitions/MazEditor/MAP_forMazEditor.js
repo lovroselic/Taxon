@@ -18,7 +18,7 @@ const DECAL_PAINTINGS = [].sort();
 const DECAL_CRESTS = [].sort();
 
 //lights
-const LIGHT_DECALS = [].sort();
+const LIGHT_DECALS = ["DuaLLantern_029"].sort();
 
 const TRIGGER_DECALS = [];
 const LAIR_DECALS = [].sort();
