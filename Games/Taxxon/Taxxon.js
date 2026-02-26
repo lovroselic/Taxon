@@ -210,7 +210,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.2.0",
+    VERSION: "0.2.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -271,9 +271,9 @@ const PRG = {
         $("#bottom").css("margin-top", ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT);
         $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + 2 * ENGINE.sideWIDTH + 4);
         ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "compassRose", "compassNeedle", "lives", "minimap", "gold"], null);
-        ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "health"], "side");
+        ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback",], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
-        ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "keys", "time", "scrolls", "orbs", "skills"], "fside");
+        ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score"], "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText", "save", "subtitle"], null);
 
         if (DEBUG._2D_display) {
@@ -392,9 +392,17 @@ const HERO = {
         MAP[GAME.level].map.storage.clear();
     },
     manage() {
-        //bump enemy
+        let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
+        //collision to inner walls, only in-bound
+        if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width) {
+            const wallHit = MAP[GAME.level].map.GA.isWall(Grid3D);
+            console.info("Grid3D", Grid3D, wallHit);
+        }
+
+
         //bump obstacle
         //bump actor
+        //bump enemy
         //exit level
         if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) GAME.nextLevel();
 
@@ -404,15 +412,11 @@ const HERO = {
         if (HERO.mode === "idle" || HERO.mode === mode) {
             let length = (lapsedTime / 1000) * INI.SIDE_SPEED;
             let nextPos3 = HERO.player.pos.translate(posDir, length);
-            let Grid3D = Vector3.to_FP_Grid3D(nextPos3);
-            if (this.outOfBounds(Grid3D)) return;                           // we will not apply move
-
+            let FPGrid3D = Vector3.to_FP_Grid3D(nextPos3);
+            if (this.outOfBounds(FPGrid3D)) return;                               // we will not apply the move
             HERO.player.setPos(nextPos3);
             HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
-
             HERO.setMode(mode);
-            //console.info("nextPos3", nextPos3, "Grid3D", Grid3D);
-            //console.warn("changePosition", posDir, rotationAxis, "mode", mode, "HERO mode", HERO.mode);
         }
         return;
     },
@@ -457,17 +461,25 @@ const GAME = {
         //WebGL.setAmbientStrength(0.0);
         //WebGL.setDiffuseStrength();
         //WebGL.setSpecularStrength();
+
         WebGL.PRUNE = false;
         WebGL.HERO_AS_INNER = true;
+        WebGL.INI.BACKGROUND_ALPHA = 0.0;
+
         GAME.completed = false;
-        GAME.lives = 1;
+        GAME.extraLife = SCORE.extraLife.clone();
+        GAME.lives = 3;
         GAME.level = 1;
+        GAME.score = 0;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
         GAME.fps = new FPS_short_term_measurement(300);
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
+
+        ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
+
         GAME.levelStart();
     },
     //deathPlaceDecals: [],
@@ -889,8 +901,8 @@ const TITLE = {
     },
     clearAllLayers() {
         ENGINE.layersToClear = new Set(["text",
-            "sideback", "button", "title", "FPS", "keys", "info", "subtitle", "compassRose", "compassNeedle", "health", "lives", "skills", "gold", "time", "orbs", "scrolls", "save",
-            "bottomText", "minimap"]);
+            "sideback", "button", "title", "FPS",  "info", "subtitle",  "lives", 
+            "bottomText", "score"]);
         ENGINE.clearLayerStack();
         WebGL.transparent();
     },
@@ -988,6 +1000,9 @@ const TITLE = {
     },
     firstFrame() {
         TITLE.titlePlot();
+        TITLE.lives();
+        TITLE.hiScore();
+        TITLE.score();
         //TITLE.sidebackground_static();
         //TITLE.lives();
     },
@@ -1049,9 +1064,39 @@ const TITLE = {
         ENGINE.clearLayer("lives");
         const cX = 3 * INI.SCREEN_BORDER / 2 - 40;
         const y = ENGINE.titleHEIGHT / 2;
-        const spread = ENGINE.spreadAroundCenter(GAME.lives, cX, 32);
+        const spread = ENGINE.spreadAroundCenter(GAME.lives, cX, 48);
         for (let x of spread) {
             ENGINE.spriteDraw("lives", x, y, SPRITE.Lives);
+        }
+    },
+    hiScore() {
+        const CTX = LAYER.title;
+        const fs = 20;
+        CTX.font = fs + "px CPU";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "#555555";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 1;
+        CTX.textAlign = "left";
+        const x = 1120;
+        const y = 64;
+        const index = SCORE.SCORE.name[0].indexOf("&nbsp");
+        let HS;
+        if (index > 0) {
+            HS = SCORE.SCORE.name[0].substring(0, SCORE.SCORE.name[0].indexOf("&nbsp"));
+        } else {
+            HS = SCORE.SCORE.name[0];
+        }
+        const text = "HISCORE: " + SCORE.SCORE.value[0].toString().padStart(6, "0") + " by " + HS;
+        CTX.fillText(text, x, y);
+    },
+    score() {
+        this._text("score", "SCORE", 32, "score", 6);
+        if (GAME.score >= GAME.extraLife[0]) {
+            GAME.lives++;
+            GAME.extraLife.shift();
+            TITLE.lives();
         }
     },
     music() {
@@ -1115,6 +1160,36 @@ const TITLE = {
         Thanks for sticking to the end.`;
         return text;
     },
+    _label(CTX, txt, fs, x, y) {
+        CTX.font = fs + "px CPU";
+        this._grad(CTX, txt, fs, x, y);
+        CTX.shadowColor = "#555555";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        CTX.fillText(txt, x, y);
+    },
+    _text(layer, txt, y, what, pad) {
+        ENGINE.clearLayer(layer);
+        let CTX = LAYER[layer];
+        let x = ENGINE.sideWIDTH / 2;
+        let fs = 32;
+        this._label(CTX, txt, fs, x, y);
+        CTX.fillStyle = "#FFF";
+        CTX.shadowColor = "#DDD";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 1;
+        y += fs + 4;
+        CTX.fillText(GAME[what].toString().padStart(pad, "0"), x, y);
+    },
+    _grad(CTX, txt, fs, x, y) {
+        let txtm = CTX.measureText(txt);
+        let gx = x - txtm.width / 2;
+        let gy = y - fs;
+        CTX.fillStyle = this.makeGrad(CTX, gx, gy + 2, gx, gy + fs);
+    },
 };
 
 // -- main --
@@ -1124,4 +1199,8 @@ $(() => {
     PRG.setup();
     ENGINE.LOAD.preload();
     UNIFORM.setup();
+    SCORE.init("SC", "TAXXON", 10, 2500);
+    SCORE.loadHS();
+    SCORE.hiScore();
+    SCORE.extraLife = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, Infinity];
 });

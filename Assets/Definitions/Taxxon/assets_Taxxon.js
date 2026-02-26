@@ -38,6 +38,7 @@ LoadTextures = [
 
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
+    { srcName: "Title/DarkNight.webp", name: "DarkNight" },
 
 ];
 
@@ -77,6 +78,7 @@ LoadSprites = [
     { srcName: "UI/wavyR.webp", name: "wavyR" },
     { srcName: "UI/LineBottom.webp", name: "LineBottom" },
     { srcName: "UI/LineTop.webp", name: "LineTop" },
+    { srcName: "UI/RedSpaceShip.png", name: "Lives" },
 
     //lights
     { srcName: "Lights/DuaLLantern_029.webp", name: "DuaLLantern_029" },

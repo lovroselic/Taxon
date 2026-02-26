@@ -88,6 +88,7 @@ const WebGL = {
         AMBIENT_LIGHT_STRENGTH: 0.30,
         DIFFUSE_LIGHT_STRENGTH: 25.0,
         SPECULAR_LIGHT_STRENGTH: 5.0,
+        BACKGROUND_ALPHA: 1.0,
     },
     CONFIG: {
         firstperson: true,
@@ -926,7 +927,8 @@ const WebGL = {
     },
     renderScene(map) {
         const gl = this.CTX;
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        //gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clearColor(0.0, 0.0, 0.0, WebGL.INI.BACKGROUND_ALPHA);
         gl.clearDepth(1.0);
         gl.disable(gl.BLEND);
         gl.enable(gl.DEPTH_TEST);
@@ -2186,7 +2188,7 @@ class $3D_player {
         glMatrix.mat4.fromTranslation(this.translation, modelPosition.array);
     }
     changeRotation(angle, rotationAxis){
-        //direct access to ratotion mat
+        //direct access to rotation mat
         glMatrix.mat4.rotate(this.rotation,this.rotation, angle, rotationAxis);
     }
     setRotation() {
