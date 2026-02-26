@@ -210,7 +210,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.2.1",
+    VERSION: "0.2.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -325,9 +325,12 @@ const HERO = {
         this.reset();
     },
     reset() {
-        this.dead = false;
+        this.revive();
         this.canShoot = true;
         this.setMode("idle");
+    },
+    revive() {
+        this.dead = false;
     },
     setMode(mode) {
         this.mode = mode;
@@ -354,6 +357,13 @@ const HERO = {
             if (!DEBUG.INVINCIBLE) HERO.die();
         }
     },
+    explode() {
+        if (HERO.dead) return;
+        EXPLOSION3D.add(new BigFireExplosion(this.player.pos));
+        AUDIO.Explosion.volume = RAY.volume(0);
+        AUDIO.Explosion.play();
+        this.die();
+    },
     die() {
         if (HERO.dead) return;
         console.warn("hero dies");
@@ -362,19 +372,10 @@ const HERO = {
     },
     death() {
         console.error("HERO DEATH");
-
         GAME.lives--;
         TITLE.lives();
-
-        const heroRefGrid = Vector3.to_Grid3D(HERO.player.pos.translate(UP3, HERO.player.heigth));
-        const gridValue = REVERSED_MAPDICT[HERO.player.map.GA.getValue(heroRefGrid)];
-        const heightOffset = parseInt(gridValue[4], 10) / 10 || 0;
-        const depth = Math.max(0, HERO.player.depth);
-        HERO.player.pos.set_y(0.1 + depth + heightOffset);
-        WebGL.GAME.setFirstPerson();
-        WebGL.GAME.positionUpdate();
         if (GAME.lives <= 0) return HERO.finalDeath();
-
+        ENGINE.TEXT.centeredText("Press ENTER to use new ship", ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 2);
         ENGINE.GAME.ANIMATION.resetTimer();
         ENGINE.GAME.ANIMATION.next(GAME.lifeLostRun);
     },
@@ -395,8 +396,13 @@ const HERO = {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
         //collision to inner walls, only in-bound
         if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width) {
-            const wallHit = MAP[GAME.level].map.GA.isWall(Grid3D);
-            console.info("Grid3D", Grid3D, wallHit);
+
+            const filledGridIndices = HERO.player.inWhichGridIndices();
+            const hit = HERO.player.GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
+            if (hit) {
+                return this.explode();
+            }
+
         }
 
 
@@ -796,7 +802,6 @@ const GAME = {
             ENGINE.GAME.ANIMATION.waitThen(GAME.resurect);
         }
         const date = Date.now();
-        //WebGL.GAME.setFirstPerson();
         FIRE3D.manage(date);
         EXPLOSION3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
@@ -821,8 +826,8 @@ const GAME = {
         if (DEBUG.VERBOSE) console.info("RESURECT");
         ENGINE.clearLayer("text");
         HERO.revive();
-        ENTITY3D.POOL = ENTITY3D.POOL.filter(enemy => enemy && enemy.boss === true); //removes all but bosses, explicit check!
-        MISSILE3D.POOL.clear();
+        //ENTITY3D.POOL = ENTITY3D.POOL.filter(enemy => enemy && enemy.boss === true); //removes all but bosses, explicit check!
+        //MISSILE3D.POOL.clear();
         GAME.levelStart();
     },
     gameOverRun(lapsedTime) {
@@ -901,7 +906,7 @@ const TITLE = {
     },
     clearAllLayers() {
         ENGINE.layersToClear = new Set(["text",
-            "sideback", "button", "title", "FPS",  "info", "subtitle",  "lives", 
+            "sideback", "button", "title", "FPS", "info", "subtitle", "lives",
             "bottomText", "score"]);
         ENGINE.clearLayerStack();
         WebGL.transparent();

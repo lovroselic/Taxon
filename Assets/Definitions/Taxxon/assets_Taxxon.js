@@ -40,6 +40,9 @@ LoadTextures = [
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
     { srcName: "Title/DarkNight.webp", name: "DarkNight" },
 
+    //explosions
+    { srcName: "ObjectTextures/Explosion2.webp", name: "Explosion2" },
+
 ];
 
 LoadAudio = [

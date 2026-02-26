@@ -1882,6 +1882,7 @@ class $3D_player {
         this.rotation = glMatrix.mat4.clone(this.defaultRotationMatrix);
     }
     creep(lapsedTime, dir = DIR_FORWARD) {
+        if (this.parent.dead) return;
         let length = (lapsedTime / 1000) * this.moveSpeed;
         let nextPos3 = this.pos.translate(dir, length);        //3D - Vector3
         return this.setPos(nextPos3);
@@ -2096,9 +2097,27 @@ class $3D_player {
         this.actor = new $3D_ACTOR(this, this.model.animations, this.model.skins[0], this.jointMatrix);
         const dZ = (this.boundingBox.max.z - this.boundingBox.min.z) / 2;
         const dX = (this.boundingBox.max.x - this.boundingBox.min.x) / 2;
+        const dY = (this.boundingBox.max.y - this.boundingBox.min.y) / 2;
         const avgDim = (dZ + dX) / 2;
         const maxDim = Math.max(dZ, dX);
         this.r = Math.max((avgDim + maxDim) / 2, WebGL.INI.MIN_R);
+        this.bb_deltas = { x: dX, y: dY, z: dZ };
+    }
+    inWhichGridIndices() {
+        const indices = new Set();
+        const pos = this.pos;
+        const off = new Vector3(this.bb_deltas.x, this.bb_deltas.z, this.bb_deltas.y);
+        const BL = Vector3.to_Grid3D(pos.sub(off));
+        const TR = Vector3.to_Grid3D(pos.add(off));
+        for (let x = BL.x; x <= TR.x; x++) {
+            for (let y = BL.y; y <= TR.y; y++) {
+                for (let z = BL.z; z <= TR.z; z++) {
+                    indices.add(this.GA.gridToIndex(new Grid3D(x, y, z)));
+                }
+            }
+        }
+
+        return [...indices];
     }
     animateAction() {
         if (this.actionModes.includes(this.mode)) {
@@ -2187,9 +2206,9 @@ class $3D_player {
         modelPosition.set_y(this.minY + this.getFloorPosition());
         glMatrix.mat4.fromTranslation(this.translation, modelPosition.array);
     }
-    changeRotation(angle, rotationAxis){
+    changeRotation(angle, rotationAxis) {
         //direct access to rotation mat
-        glMatrix.mat4.rotate(this.rotation,this.rotation, angle, rotationAxis);
+        glMatrix.mat4.rotate(this.rotation, this.rotation, angle, rotationAxis);
     }
     setRotation() {
         // setting rotation matrix from this.dir

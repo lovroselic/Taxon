@@ -17,7 +17,7 @@ known bugs:
 */
 
 const GRID = {
-    VERSION: "4.00",
+    VERSION: "4.01",
     CSS: "color: #0AA",
     SETTING: {
         ALLOW_CROSS: false,
@@ -897,6 +897,12 @@ class GA_Dimension_Agnostic_Methods {
     }
     icheck(index, bin) {
         return this.map[index] & bin;
+    }
+    checkIndicesAny(indices, bin) {
+        for (const i of indices) {
+            if (this.icheck(i, bin)) return true;
+        }
+        return false;
     }
     check(grid, bin) {
         if (this.isOutOfBounds(grid)) return false;
