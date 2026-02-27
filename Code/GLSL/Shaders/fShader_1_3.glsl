@@ -96,7 +96,7 @@ bool isOccluded(vec3 position3D);
 vec3 worldToNormalizedTexCoord3D(vec3 position3D);
 bool isOmniDirectional(vec3 dir);
 
-//debuggers
+//debuggers - don't remove !
 vec3 debugDisplay(bool occluded);
 vec3 illuminationDisplay(float illumination);
 vec3 occlusionDisplay(bool occluded);
@@ -130,14 +130,14 @@ void main(void) {
     if (texelColor.a < IGNORE_ALPHA)
         discard;
 
-    //fragColor = vec4(texelColor.rgb * light, texelColor.a);
+    // fragColor = vec4(texelColor.rgb * light, texelColor.a);
     fragColor = vec4(texelColor.rgb * max(light, GLOBAL_AMBIENT), texelColor.a);
 
-    // Debug option
+    // Debug option - don't delete!!!
     // fragColor = vec4(normalize(v_normal) * 0.5 + 0.5, 1.0);
-    //fragColor = vec4(texture(uSampler, vTextureCoord).rgb, 1.0);
-    //fragColor = vec4(light, 1.0);
-    //fragColor = vec4(uMaterial.diffuseColor, 1.0);
+    // fragColor = vec4(texture(uSampler, vTextureCoord).rgb, 1.0);
+    // fragColor = vec4(light, 1.0);
+    // fragColor = vec4(uMaterial.diffuseColor, 1.0);
 }
 
 vec3 CalcLight(

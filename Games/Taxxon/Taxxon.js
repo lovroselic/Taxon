@@ -210,7 +210,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.2.2",
+    VERSION: "0.2.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -394,11 +394,13 @@ const HERO = {
     },
     manage() {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
+        //console.error("*** collision check", HERO.player.pos, Grid3D);
         //collision to inner walls, only in-bound
-        if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width) {
+        if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width - 1) {
 
             const filledGridIndices = HERO.player.inWhichGridIndices();
             const hit = HERO.player.GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
+            //console.log(...filledGridIndices, hit);
             if (hit) {
                 return this.explode();
             }
@@ -419,6 +421,7 @@ const HERO = {
             let length = (lapsedTime / 1000) * INI.SIDE_SPEED;
             let nextPos3 = HERO.player.pos.translate(posDir, length);
             let FPGrid3D = Vector3.to_FP_Grid3D(nextPos3);
+            //console.warn("changePosition FPGrid3D", FPGrid3D);
             if (this.outOfBounds(FPGrid3D)) return;                               // we will not apply the move
             HERO.player.setPos(nextPos3);
             HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
@@ -426,12 +429,12 @@ const HERO = {
         }
         return;
     },
-    outOfBounds(Grid3D) {
+    outOfBounds(FPGrid3D) {
         const R = HERO.player.r;
-        if (Grid3D.y - R < 1) return true;
-        if (Grid3D.y + R >= MAP[GAME.level].map.height) return true;
-        if (Grid3D.z - R < 1) return true;
-        if (Grid3D.z + R >= MAP[GAME.level].map.depth) return true;
+        if (FPGrid3D.y - R < 1) return true;
+        if (FPGrid3D.y + R >= MAP[GAME.level].map.height) return true;
+        if (FPGrid3D.z - R < 0.5) return true;
+        if (FPGrid3D.z + R >= MAP[GAME.level].map.depth) return true;
         return false;
     },
 };
@@ -465,12 +468,13 @@ const GAME = {
         AI.immobileWander = true;
         WebGL.setAmbientStrength(0.3);
         //WebGL.setAmbientStrength(0.0);
-        //WebGL.setDiffuseStrength();
-        //WebGL.setSpecularStrength();
+        //WebGL.setDiffuseStrength(0.0);
+        //WebGL.setSpecularStrength(0.0);
 
         WebGL.PRUNE = false;
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
+        WebGL.USE_SHADOW = true;
 
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();

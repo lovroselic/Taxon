@@ -44,6 +44,7 @@ const WebGL = {
     VERBOSE: false,             //default: false
     PRUNE: true,                //if true, only visible blocks and faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
     HERO_AS_INNER: false,       //if true inner light comes from hero player pos, not from camera
+    USE_SHADOW: false,          // if true draws shaow on the floor from the fake sun
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -183,6 +184,11 @@ const WebGL = {
             transformFeedback: null,
             program: null,
         }
+    },
+    shadow_program: {
+        vSource: "shadow_vShader",
+        fSource: "shadow_fShader",
+        program: null,
     },
     update_shaders_forLightSources: ['fShader'],
     hero: null,
@@ -331,6 +337,7 @@ const WebGL = {
         this.initPickProgram(gl);
         this.initParticlePrograms(gl);
         this.initModelPrograms(gl);
+        this.initShadowPrograms(gl);
         this.programs_compiled = true;
     },
     init_required_IAM(map, hero) {
@@ -676,6 +683,37 @@ const WebGL = {
             SHADER[sh] = SHADER[sh].replace(src, dest);
         }
     },
+    initShadowPrograms(gl) {
+        const type = ["shadow"];
+        for (let T of type) {
+            let prog = `${T}_program`;
+            const vSource = SHADER[this[prog].vSource];
+            const fSource = SHADER[this[prog].fSource];
+            const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vSource);
+            const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fSource);
+            const shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                console.error(`Unable to initialize the shader program: ${gl.getProgramInfoLog(shaderProgram)}`);
+                return null;
+            }
+            this[prog].program = shaderProgram;
+            this[prog].uniforms = {
+                projection_matrix: gl.getUniformLocation(this[prog].program, "uProjectionMatrix"),
+                modelViewMatrix: gl.getUniformLocation(this[prog].program, "uModelViewMatrix"),
+                cameraPos: gl.getUniformLocation(this[prog].program, "uCameraPos"),
+                uShadowPlaneY: gl.getUniformLocation(this[prog].program, "uShadowPlaneY"),
+                uShipWorldPos: gl.getUniformLocation(this[prog].program, "uShipWorldPos"),
+            };
+
+            if (this.VERBOSE) {
+                console.info(`\nOther ${T} program:`);
+                this.checkUniformVectorUsage(gl, shaderProgram, vSource, fSource);
+            }
+        }
+    },
     initModelPrograms(gl) {
         const type = ["model"];
         for (let T of type) {
@@ -927,7 +965,6 @@ const WebGL = {
     },
     renderScene(map) {
         const gl = this.CTX;
-        //gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clearColor(0.0, 0.0, 0.0, WebGL.INI.BACKGROUND_ALPHA);
         gl.clearDepth(1.0);
         gl.disable(gl.BLEND);
@@ -1030,6 +1067,15 @@ const WebGL = {
         gl.uniformMatrix4fv(this.pickProgram.uniformLocations.uTranslate, false, translationMatrix);
         gl.uniformMatrix4fv(this.pickProgram.uniformLocations.uRotY, false, rotateY);
 
+        /** SHADOW */
+        //shadowProgram uniforms and defaults
+        gl.useProgram(this.shadow_program.program);
+        gl.uniformMatrix4fv(this.shadow_program.uniforms.projection_matrix, false, this.projectionMatrix);
+        gl.uniformMatrix4fv(this.shadow_program.uniforms.modelViewMatrix, false, this.viewMatrix);
+        gl.uniform3fv(this.shadow_program.uniforms.cameraPos, this.camera.pos.array);
+        gl.uniform3fv(this.shadow_program.uniforms.uShipWorldPos, this.hero.player.pos.array);
+        gl.uniform1f(this.shadow_program.uniforms.uShadowPlaneY, this.hero.player.getWorldYBelow());
+        //console.info("this.hero.player.getWorldYBelow()", this.hero.player.getWorldYBelow(), this.hero.player.pos.y);
         this.renderDungeon(map);
     },
     enableAttributes(gl) {
@@ -1196,7 +1242,9 @@ const WebGL = {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         if (!this.CONFIG.firstperson || this.CONFIG.dual) {
             for (const player of this.playerList) {
-                player.draw(gl);
+                if (!player.parent.dead) {
+                    player.draw(gl);
+                }
             }
         }
 
@@ -1878,6 +1926,17 @@ class $3D_player {
         this.concludeJump();
         this.lookingAround = false;
     }
+    getWorldYBelow() {
+        let Grid3D = Vector3.to_Grid3D(this.pos);
+        //console.info("Grid3D", Grid3D);
+        if (Grid3D.x >= this.GA.width || Grid3D.x < 0 || Grid3D.z <= 1) return 0;
+        while (this.GA.notWall(Grid3D) && Grid3D.z > 0) Grid3D.z--;
+        /* while (this.GA.notWall(Grid3D) && Grid3D.z > 0) {
+             Grid3D.z--;
+             console.warn("----Grid3D", Grid3D);
+         }*/
+        return Grid3D.z + 1;
+    }
     resetDefaultRotation() {
         this.rotation = glMatrix.mat4.clone(this.defaultRotationMatrix);
     }
@@ -2035,7 +2094,6 @@ class $3D_player {
     resetToGround(nextPos3, offset = 0) {
         nextPos3.set_y(this.minY + this.heigth + this.depth + offset);                           //reset to ground, offset required for staircase
         this.setPos(nextPos3);
-        //console.warn("resetToGround", nextPos3);
     }
     floorReference() {
         return this.minY + this.heigth + this.depth;
@@ -2472,28 +2530,19 @@ class $3D_player {
         WebGL.setCamera(this.camera);
     }
     draw(gl) {
-        //console.warn("mode:", this.mode, "animation index", this.actor.animationIndex);
-        const program = WebGL.model_program.program;
-        //uniforms
-        //material
+        let program = WebGL.model_program.program;
+        //material - uniforms
         gl.uniform3fv(WebGL.model_program.uniforms.uMaterialAmbientColor, this.material.ambientColor);
         gl.uniform3fv(WebGL.model_program.uniforms.uMaterialDiffuseColor, this.material.diffuseColor);
         gl.uniform3fv(WebGL.model_program.uniforms.uMaterialSpecularColor, this.material.specularColor);
         gl.uniform1f(WebGL.model_program.uniforms.uMaterialShininess, this.material.shininess);
 
-        //scale
+
         const mScaleMatrix = glMatrix.mat4.create();
         glMatrix.mat4.fromScaling(mScaleMatrix, this.scale);
-        const uScaleMatrix = gl.getUniformLocation(program, 'uScale');
-        gl.uniformMatrix4fv(uScaleMatrix, false, mScaleMatrix);
-
-        //translate
-        const uTranslateMatrix = gl.getUniformLocation(program, 'uTranslate');
-        gl.uniformMatrix4fv(uTranslateMatrix, false, this.translation);
-
-        //rotate
-        const uRotatematrix = gl.getUniformLocation(program, 'uRotateY');
-        gl.uniformMatrix4fv(uRotatematrix, false, this.rotation);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uScale'), false, mScaleMatrix);                     //scale
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uTranslate'), false, this.translation);             //translate
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uRotateY'), false, this.rotation);                  //rotate
 
         //u_jointMat
         const uJointMat = gl.getUniformLocation(program, "u_jointMat");
@@ -2509,8 +2558,57 @@ class $3D_player {
                 throw Error(`3D played mode error: ${this.mode}`);
         }
 
+
+        this.drawMesh(gl, program);
+
+        if (WebGL.USE_SHADOW) {
+            program = WebGL.shadow_program.program;
+            gl.useProgram(program);
+
+            // --- Shadow pass state ---
+            gl.enable(gl.BLEND);
+            // Multiply: dst = dst * src   (src is our "shadow factor" 0.6..1.0)
+            gl.blendEquation(gl.FUNC_ADD);
+            gl.blendFunc(gl.DST_COLOR, gl.ZERO);
+            gl.depthMask(false);          // don't write depth
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LEQUAL);
+            gl.disable(gl.CULL_FACE);
+
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uScale'), false, mScaleMatrix);                     // scale
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uTranslate'), false, this.translation);             // translate
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'uRotateY'), false, this.rotation);                  // rotate
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_jointMat"), false, this.restPose);                // u_jointMat - rest pose fine for now
+
+            this.drawMesh(gl, program, true);
+
+            // --- Restore ---
+            gl.disable(gl.BLEND);
+            gl.depthMask(true);
+            if (!WebGL.PRUNE) {
+                gl.enable(gl.CULL_FACE);
+                gl.cullFace(gl.BACK);
+            }
+        }
+    }
+
+    drawMesh(gl, program, shadowrun = false) {
         for (let mesh of this.model.meshes) {
             for (let [index, primitive] of mesh.primitives.entries()) {
+
+                if (!shadowrun) {
+                    //texture
+                    gl.bindBuffer(gl.ARRAY_BUFFER, primitive.textcoord.buffer);
+                    const textureCoord = gl.getAttribLocation(program, "aTextureCoord");
+                    gl.vertexAttribPointer(textureCoord, 2, gl[primitive.textcoord.type], false, 0, 0);
+                    gl.enableVertexAttribArray(textureCoord);
+
+                    //normals
+                    gl.bindBuffer(gl.ARRAY_BUFFER, primitive.normals.buffer);
+                    const vertexNormal = gl.getAttribLocation(program, "aVertexNormal");
+                    gl.vertexAttribPointer(vertexNormal, 3, gl[primitive.normals.type], false, 0, 0);
+                    gl.enableVertexAttribArray(vertexNormal);
+                }
 
                 //positions
                 gl.bindBuffer(gl.ARRAY_BUFFER, primitive.positions.buffer);
@@ -2518,17 +2616,6 @@ class $3D_player {
                 gl.vertexAttribPointer(vertexPosition, 3, gl[primitive.positions.type], false, 0, 0);
                 gl.enableVertexAttribArray(vertexPosition);
 
-                //texture
-                gl.bindBuffer(gl.ARRAY_BUFFER, primitive.textcoord.buffer);
-                const textureCoord = gl.getAttribLocation(program, "aTextureCoord");
-                gl.vertexAttribPointer(textureCoord, 2, gl[primitive.textcoord.type], false, 0, 0);
-                gl.enableVertexAttribArray(textureCoord);
-
-                //normals
-                gl.bindBuffer(gl.ARRAY_BUFFER, primitive.normals.buffer);
-                const vertexNormal = gl.getAttribLocation(program, "aVertexNormal");
-                gl.vertexAttribPointer(vertexNormal, 3, gl[primitive.normals.type], false, 0, 0);
-                gl.enableVertexAttribArray(vertexNormal);
 
                 //aJoint
                 gl.bindBuffer(gl.ARRAY_BUFFER, primitive.joints.buffer);
@@ -3941,7 +4028,6 @@ class ParticleEmmiter {
         gl.enable(gl.BLEND);
 
         if (this.program_type === "fire") {
-            //gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE);                                     // hotter, emissive flames
         } else {
             //gl.disablw(gl.BLEND);
