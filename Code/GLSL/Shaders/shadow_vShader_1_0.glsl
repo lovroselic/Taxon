@@ -28,8 +28,8 @@ uniform vec3  uShipWorldPos;            // ship WORLD position (same space as pl
 out float vHeight;
 
 //bloody hardcoded constants
-const float uShadowBias = 0.01;        // tiny lift to avoid z-fighting (0.002)
-const float uShadowShrinkPerY = 0.2;    // shrink with height factor (0.6)
+const float uShadowBias = 0.01;        // tiny lift to avoid z-fighting (0.01)
+const float uShadowShrinkPerY = 0.2;    // shrink with height factor (0.2)
 
 void main(void) {
     // Skinning

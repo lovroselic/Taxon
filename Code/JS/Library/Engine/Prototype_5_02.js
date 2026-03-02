@@ -6,7 +6,7 @@
 console.clear();
 
 const LIB = {
-    VERSION: "5.01",
+    VERSION: "5.02",
     CSS: "color: #EFE",
     log: function () {
         console.log(`%cPrototype LIB ${LIB.VERSION} loaded`, LIB.CSS);
@@ -21,7 +21,9 @@ changelog:
 5.00: new fresh version, 3D grids vectors
 5.01: typed array, extend
     : Math.trunc instead of parseInt
-
+5.02: roundRect  fiasco corrected, renamed roundRect to roundRectLegacy
+    : ctx.drawLine
+    : ctx.linePath
 */
 
 (function () {
@@ -338,7 +340,7 @@ CanvasRenderingContext2D.prototype.pixelAt = function (x, y, size = 1) {
 CanvasRenderingContext2D.prototype.pixelAtPoint = function (point, size = 1) {
     this.fillRect(point.x, point.y, size, size);
 };
-CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius, fill = false, stroke = true) {
+CanvasRenderingContext2D.prototype.roundRectLegacy = function (x, y, width, height, radius, fill = false, stroke = true) {
     let cornerRadius = {
         upperLeft: 0,
         upperRight: 0,
@@ -366,6 +368,19 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, ra
     if (fill) {
         this.fill();
     }
+};
+
+CanvasRenderingContext2D.prototype.drawLine = function (fromX, fromY, toX, toY) {
+    this.beginPath();
+    this.moveTo(fromX, fromY);
+    this.lineTo(toX, toY);
+    this.stroke();
+};
+
+CanvasRenderingContext2D.prototype.linePath = function (fromX, fromY, toX, toY) {
+    this.moveTo(fromX, fromY);
+    this.lineTo(toX, toY);
+    return this;
 };
 
 /* collection of prototypes LS */

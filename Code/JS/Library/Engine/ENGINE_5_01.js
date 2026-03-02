@@ -679,7 +679,7 @@ const ENGINE = {
         CTX.shadowOffsetY = 0;
         CTX.shadowBlur = 0;
         CTX.globalAlpha = 0.8;
-        CTX.roundRect(x, y, width, height, { upperLeft: 15, upperRight: 15, lowerLeft: 15, lowerRight: 15 }, true, true);
+        CTX.roundRectLegacy(x, y, width, height, { upperLeft: 15, upperRight: 15, lowerLeft: 15, lowerRight: 15 }, true, true);
         CTX.restore();
         return new Point(x, y);
     },
@@ -2398,7 +2398,7 @@ const ENGINE = {
                 let px = x * ENGINE.INI.GRIDPIX + ENGINE.INI.GRIDPIX / 4;
                 let py = y * ENGINE.INI.GRIDPIX + ENGINE.INI.GRIDPIX / 4;
                 const round = ENGINE.PACGRID.round;
-                CTX.roundRect(px, py, ENGINE.INI.GRIDPIX / 2, ENGINE.INI.GRIDPIX / 2, { upperLeft: round, upperRight: round, lowerLeft: round, lowerRight: round }, false, true);
+                CTX.roundRectLegacy(px, py, ENGINE.INI.GRIDPIX / 2, ENGINE.INI.GRIDPIX / 2, { upperLeft: round, upperRight: round, lowerLeft: round, lowerRight: round }, false, true);
             }
             function line(x1, y1, x2, y2) {
                 CTX.beginPath();
@@ -4475,7 +4475,7 @@ class SlideShow {
         ENGINE.clearLayer(this.layers.title);
         const CTX = LAYER[this.layers.title];
         CTX.fillStyle = "#000";
-        CTX.roundRect(0, 0, ENGINE.titleWIDTH, ENGINE.titleHEIGHT, { upperLeft: 20, upperRight: 20, lowerLeft: 0, lowerRight: 0 }, true, true);
+        CTX.roundRectLegacy(0, 0, ENGINE.titleWIDTH, ENGINE.titleHEIGHT, { upperLeft: 20, upperRight: 20, lowerLeft: 0, lowerRight: 0 }, true, true);
         let x = ENGINE.titleWIDTH / 2;
         let y = fs;
         CTX.fillStyle = "gold";

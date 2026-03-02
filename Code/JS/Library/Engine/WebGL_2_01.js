@@ -1069,13 +1069,15 @@ const WebGL = {
 
         /** SHADOW */
         //shadowProgram uniforms and defaults
-        gl.useProgram(this.shadow_program.program);
-        gl.uniformMatrix4fv(this.shadow_program.uniforms.projection_matrix, false, this.projectionMatrix);
-        gl.uniformMatrix4fv(this.shadow_program.uniforms.modelViewMatrix, false, this.viewMatrix);
-        gl.uniform3fv(this.shadow_program.uniforms.cameraPos, this.camera.pos.array);
-        gl.uniform3fv(this.shadow_program.uniforms.uShipWorldPos, this.hero.player.pos.array);
-        gl.uniform1f(this.shadow_program.uniforms.uShadowPlaneY, this.hero.player.getWorldYBelow());
-        //console.info("this.hero.player.getWorldYBelow()", this.hero.player.getWorldYBelow(), this.hero.player.pos.y);
+        if (WebGL.USE_SHADOW) {
+            gl.useProgram(this.shadow_program.program);
+            gl.uniformMatrix4fv(this.shadow_program.uniforms.projection_matrix, false, this.projectionMatrix);
+            gl.uniformMatrix4fv(this.shadow_program.uniforms.modelViewMatrix, false, this.viewMatrix);
+            gl.uniform3fv(this.shadow_program.uniforms.cameraPos, this.camera.pos.array);
+            gl.uniform3fv(this.shadow_program.uniforms.uShipWorldPos, this.hero.player.pos.array);
+            gl.uniform1f(this.shadow_program.uniforms.uShadowPlaneY, this.hero.player.getWorldYBelow());
+        }
+
         this.renderDungeon(map);
     },
     enableAttributes(gl) {
@@ -1927,15 +1929,11 @@ class $3D_player {
         this.lookingAround = false;
     }
     getWorldYBelow() {
-        let Grid3D = Vector3.to_Grid3D(this.pos);
-        //console.info("Grid3D", Grid3D);
-        if (Grid3D.x >= this.GA.width || Grid3D.x < 0 || Grid3D.z <= 1) return 0;
-        while (this.GA.notWall(Grid3D) && Grid3D.z > 0) Grid3D.z--;
-        /* while (this.GA.notWall(Grid3D) && Grid3D.z > 0) {
-             Grid3D.z--;
-             console.warn("----Grid3D", Grid3D);
-         }*/
+        let Grid3D = Vector3.to_Grid3D(this.pos.sub(new Vector3(0, this.bb_deltas.y, 0)));
+        if (Grid3D.x >= this.GA.width || Grid3D.x < 0) return 0;
+        while (this.GA.notWall(Grid3D) && Grid3D.z >= 0) Grid3D.z--;
         return Grid3D.z + 1;
+
     }
     resetDefaultRotation() {
         this.rotation = glMatrix.mat4.clone(this.defaultRotationMatrix);
@@ -2164,7 +2162,8 @@ class $3D_player {
     inWhichGridIndices() {
         const indices = new Set();
         const pos = this.pos;
-        const off = new Vector3(this.bb_deltas.x, this.bb_deltas.z, this.bb_deltas.y);
+        let off = new Vector3(this.bb_deltas.x, 2.1 * this.bb_deltas.z, this.bb_deltas.y);
+        //off = off.mul(2.1);
         const BL = Vector3.to_Grid3D(pos.sub(off));
         const TR = Vector3.to_Grid3D(pos.add(off));
         for (let x = BL.x; x <= TR.x; x++) {
@@ -2591,7 +2590,6 @@ class $3D_player {
             }
         }
     }
-
     drawMesh(gl, program, shadowrun = false) {
         for (let mesh of this.model.meshes) {
             for (let [index, primitive] of mesh.primitives.entries()) {

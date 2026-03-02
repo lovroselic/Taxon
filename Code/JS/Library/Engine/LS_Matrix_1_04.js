@@ -124,6 +124,12 @@ class Vector3 {
         let z = this.z - vector.z;
         return new Vector3(x, y, z);
     }
+    mul(factor) {
+        let x = this.x *= factor;
+        let y = this.y *= factor;
+        let z = this.z *= factor;
+        return new Vector3(x, y, z);
+    }
     direction(vector) {
         let x = vector.x - this.x;
         let y = vector.y - this.y;

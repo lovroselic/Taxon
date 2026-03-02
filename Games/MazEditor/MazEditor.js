@@ -148,6 +148,13 @@ const GAME = {
     GAME.init();
     GAME.started = true;
     GAME.level = "Demo";
+
+    WebGL.PRUNE = false;
+    WebGL.HERO_AS_INNER = true;
+    WebGL.INI.BACKGROUND_ALPHA = 0.0;
+    WebGL.USE_SHADOW = false;
+
+
     GAME.levelStart();
   },
   levelStart() {
@@ -188,6 +195,7 @@ const GAME = {
     const start_dir = MAP[level].map.startPosition.vector;
     let start_grid = MAP[level].map.startPosition.grid;
     start_grid = Vector3.from_Grid(Grid.toCenter(start_grid), 0.6);
+    HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
     WebGL.CONFIG.set("first_person", false);
 
     if (WebGL.CONFIG.firstperson) {

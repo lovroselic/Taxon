@@ -210,7 +210,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.2.3",
+    VERSION: "0.3.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -271,7 +271,7 @@ const PRG = {
         $("#bottom").css("margin-top", ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT);
         $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + 2 * ENGINE.sideWIDTH + 4);
         ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "compassRose", "compassNeedle", "lives", "minimap", "gold"], null);
-        ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback",], "side");
+        ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "alt", "altover"], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
         ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score"], "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText", "save", "subtitle"], null);
@@ -421,6 +421,7 @@ const HERO = {
             let length = (lapsedTime / 1000) * INI.SIDE_SPEED;
             let nextPos3 = HERO.player.pos.translate(posDir, length);
             let FPGrid3D = Vector3.to_FP_Grid3D(nextPos3);
+
             //console.warn("changePosition FPGrid3D", FPGrid3D);
             if (this.outOfBounds(FPGrid3D)) return;                               // we will not apply the move
             HERO.player.setPos(nextPos3);
@@ -434,7 +435,7 @@ const HERO = {
         if (FPGrid3D.y - R < 1) return true;
         if (FPGrid3D.y + R >= MAP[GAME.level].map.height) return true;
         if (FPGrid3D.z - R < 0.5) return true;
-        if (FPGrid3D.z + R >= MAP[GAME.level].map.depth) return true;
+        if (FPGrid3D.z + R + 0.5 >= MAP[GAME.level].map.depth) return true;
         return false;
     },
 };
@@ -466,7 +467,7 @@ const GAME = {
         ENGINE.GAME.start(16);
 
         AI.immobileWander = true;
-        WebGL.setAmbientStrength(0.3);
+        WebGL.setAmbientStrength(0.2);
         //WebGL.setAmbientStrength(0.0);
         //WebGL.setDiffuseStrength(0.0);
         //WebGL.setSpecularStrength(0.0);
@@ -518,7 +519,8 @@ const GAME = {
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(-0.05, -0.5, -1.0), 3.0);
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(-0.05, -0.5, -1.0), 3.0);
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(0, -0.75, -1.0), 3.0);
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -756,9 +758,11 @@ const GAME = {
         }
         if (map[ENGINE.KEY.map.down]) {
             HERO.changePosition(new Vector3(0, 1, 0), [-1, 0, 0], "up", lapsedTime);
+            TITLE.altimeterHeight();
         }
         if (map[ENGINE.KEY.map.up]) {
             HERO.changePosition(new Vector3(0, -1, 0), [1, 0, 0], "down", lapsedTime);
+            TITLE.altimeterHeight();
         }
         if (map[ENGINE.KEY.map.left]) {
             HERO.changePosition(new Vector3(0, 0, -1), [0, 0, -1], "left", lapsedTime);
@@ -877,21 +881,11 @@ const GAME = {
 
 const TITLE = {
     stack: {
-        Y2: 66,
-        delta2: 256 + 36,
-        delta3: 120,
-        delta4: 100,
-        DYR: 66,
-        deltaItem: 48,
-        keyDelta: 56,
-        scrollIndex: 0,
-        scrollInRow: 3,
-        scrollDelta: 72,
-        SY: 540, //540
-        OY: 415,
-        HEALTH_TEXT: 720,
-        goldX: 950,
-        goldY: 40,
+        x: null,
+        y: null,
+        W: null,
+        H: null,
+
     },
     startTitle() {
         if (DEBUG.VERBOSE) console.log("TITLE started");
@@ -911,7 +905,7 @@ const TITLE = {
     clearAllLayers() {
         ENGINE.layersToClear = new Set(["text",
             "sideback", "button", "title", "FPS", "info", "subtitle", "lives",
-            "bottomText", "score"]);
+            "bottomText", "score", "altover", "alt"]);
         ENGINE.clearLayerStack();
         WebGL.transparent();
     },
@@ -924,12 +918,12 @@ const TITLE = {
     topBackground() {
         const CTX = LAYER.title;
         CTX.fillStyle = "#000";
-        CTX.roundRect(0, 0, ENGINE.titleWIDTH, ENGINE.titleHEIGHT, { upperLeft: 20, upperRight: 20, lowerLeft: 0, lowerRight: 0 }, true, true);
+        CTX.roundRectLegacy(0, 0, ENGINE.titleWIDTH, ENGINE.titleHEIGHT, { upperLeft: 20, upperRight: 20, lowerLeft: 0, lowerRight: 0 }, true, true);
     },
     bottomBackground() {
         const CTX = LAYER.bottom;
         CTX.fillStyle = "#000";
-        CTX.roundRect(0, 0, ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, { upperLeft: 0, upperRight: 0, lowerLeft: 20, lowerRight: 20 }, true, true);
+        CTX.roundRectLegacy(0, 0, ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, { upperLeft: 0, upperRight: 0, lowerLeft: 20, lowerRight: 20 }, true, true);
     },
     sideBackground() {
         ENGINE.fillLayer("sideback", "#000");
@@ -1012,62 +1006,47 @@ const TITLE = {
         TITLE.lives();
         TITLE.hiScore();
         TITLE.score();
-        //TITLE.sidebackground_static();
-        //TITLE.lives();
+        TITLE.altimeterOverlay();
+        TITLE.altimeterHeight();
     },
-    sidebackground_static() {
-        //lines
-        let x = ((ENGINE.sideWIDTH - SPRITE.LineTop.width) / 2) | 0;
-        let y = 0;
-        const dY = (SPRITE.wavyR.height / 2) | 0;
-        let cX = ((ENGINE.sideWIDTH) / 2) | 0;
-        ENGINE.draw("sideback", x, y, SPRITE.LineTop);
-        ENGINE.draw("Lsideback", x, y, SPRITE.LineTop);
+    altimeterOverlay() {
+        const CTX = LAYER.altover;
+        const COLOR = "rgba(58, 198, 81, 1)";
+        const H = (ENGINE.gameHEIGHT * 0.8) >>> 0;
+        let y = (ENGINE.gameHEIGHT - H) >>> 1;
+        const W = (INI.SCREEN_BORDER * 0.35) >>> 0;
+        const x = (INI.SCREEN_BORDER - W) >>> 1;
 
-        //2
-        y = TITLE.stack.Y2;
-        y += (SPRITE.Bag.height / 4) | 0;
-        const lX = ((ENGINE.sideWIDTH - SPRITE.LineTop.width) / 2) | 0;
-        let rX = ENGINE.sideWIDTH - lX - SPRITE.wavyR.width;
-        ENGINE.draw("sideback", lX, y, SPRITE.wavyL);
-        ENGINE.draw("sideback", rX, y, SPRITE.wavyR);
-        ENGINE.spriteDraw("sideback", cX, y + dY, SPRITE.Bag);
+        TITLE.stack.x = x;
+        TITLE.stack.y = y;
+        TITLE.stack.W = W;
+        TITLE.stack.H = H;
 
-        //3
-        y += TITLE.stack.delta2;
-        ENGINE.draw("sideback", lX, y, SPRITE.wavyL);
-        ENGINE.draw("sideback", rX, y, SPRITE.wavyR);
+        CTX.strokeStyle = COLOR;
+        CTX.lineWidth = 4;
+        CTX.beginPath();
+        CTX.roundRect(x, y, W, H, 10);
+        CTX.stroke();
 
-        // 
-        ENGINE.spriteDraw("sideback", cX, y + dY, SPRITE.OrnateMagicFlask);
+        const splitLines = MAP[GAME.level].map.depth - 2;
+        const splitSize = (H / (splitLines + 1)) >>> 0;
 
-        //4
-        y += TITLE.stack.delta3;
-        ENGINE.draw("sideback", lX, y, SPRITE.wavyL);
-        ENGINE.draw("sideback", rX, y, SPRITE.wavyR);
-        ENGINE.spriteDraw("sideback", cX, y + dY, SPRITE.FireBall);
-        y += SPRITE.LineTop.height + 8;
-        ENGINE.draw("sideback", x, y, SPRITE.SkillFireball);
-        rX = (3 * cX / 2 - SPRITE.ManaSkill.width / 2) | 0;
-        ENGINE.draw("sideback", rX + 1, y - 5, SPRITE.ManaSkill);
+        for (let line = 0; line < splitLines; line++) {
+            y += splitSize;
+            CTX.drawLine(x + 1, y, x + W - 1, y);
+        }
+    },
+    altimeterHeight() {
+        const CTX = LAYER.alt;
+        const COLOR = "rgba(68, 169, 85, 1)";
+        ENGINE.clearLayer("alt");
+        const maxAlt = MAP[GAME.level].map.depth - 1 - 0.2;
+        const currAlt = HERO.player.pos.y - 0.5;
+        const fillH = (currAlt / maxAlt * TITLE.stack.H) >>> 0;
+        const y = TITLE.stack.H - fillH + TITLE.stack.y;
 
-        TITLE.stack.magic = y + 112;
-
-        //5
-        y += TITLE.stack.delta4;
-
-        //
-        y += SPRITE.LineTop.height + 8;
-        ENGINE.draw("sideback", x, y, SPRITE.SkillKick);
-        rX = (3 * cX / 2 - SPRITE.SkillShield.width / 2) | 0;
-        ENGINE.draw("sideback", rX - 7, y, SPRITE.SkillShield);
-
-        TITLE.stack.skills = y + 120;
-
-        //final line
-        y = (ENGINE.gameHEIGHT - SPRITE.LineBottom.height) | 0;
-        ENGINE.draw("sideback", x, y, SPRITE.LineBottom);
-        ENGINE.draw("Lsideback", x, y, SPRITE.LineBottom);
+        CTX.fillStyle = COLOR;
+        CTX.fillRect(TITLE.stack.x + 2, y, TITLE.stack.W - 4, fillH - 2);
     },
     lives() {
         ENGINE.clearLayer("lives");
