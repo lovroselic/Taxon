@@ -50,6 +50,7 @@ LoadAudio = [
 
     //action sounds
     { srcName: "Explosion1.mp3", name: "Explosion" },
+    { srcName: "Alarm.mp3", name: "Alarm" },
 
 ];
 
@@ -83,6 +84,7 @@ LoadSprites = [
     { srcName: "UI/LineBottom.webp", name: "LineBottom" },
     { srcName: "UI/LineTop.webp", name: "LineTop" },
     { srcName: "UI/RedSpaceShip.png", name: "Lives" },
+    { srcName: "UI/OilDrum.png", name: "OilDrum" },
 
     //lights
     { srcName: "Lights/FuturisticLight_001.webp", name: "FuturisticLight_001" },

@@ -1941,10 +1941,10 @@ class $3D_player {
         this.rotation = glMatrix.mat4.clone(this.defaultRotationMatrix);
     }
     creep(lapsedTime, dir = DIR_FORWARD) {
-        if (this.parent.dead) return;
         let length = (lapsedTime / 1000) * this.moveSpeed;
         let nextPos3 = this.pos.translate(dir, length);        //3D - Vector3
-        return this.setPos(nextPos3);
+        this.setPos(nextPos3);
+        return length;
     }
     changeTexture(texture) {
         const gl = WebGL.CTX;

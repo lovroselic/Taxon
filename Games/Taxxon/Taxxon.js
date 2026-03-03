@@ -206,11 +206,14 @@ const INI = {
     PAD_BETWEEN_LEVELS: 5,
     LAST_LEVEL: 3,
     SIDE_SPEED: 5.0,
+    FALL_SPEED: 5.0,
     SHIT_ROT_ANGLE: Math.radians(30),
+    FUEL_BIN: 15,
+    FUEL_CONSUMPTION: 25, //units per grid
 };
 
 const PRG = {
-    VERSION: "0.3.2",
+    VERSION: "0.3.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -274,7 +277,7 @@ const PRG = {
         ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "alt", "altover"], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
         ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score"], "fside");
-        ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText", "save", "subtitle"], null);
+        ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText", "fuel", "fuelPlot", "subtitle"], null);
 
         if (DEBUG._2D_display) {
             ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["pacgrid", "grid", "coord", "player"], null);
@@ -327,6 +330,7 @@ const HERO = {
     reset() {
         this.revive();
         this.canShoot = true;
+        this.falling = false;
         this.setMode("idle");
     },
     revive() {
@@ -395,7 +399,7 @@ const HERO = {
     manage() {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
         //console.error("*** collision check", HERO.player.pos, Grid3D);
-        //collision to inner walls, only in-bound
+        // collision to inner walls, only in-bound
         if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width - 1) {
 
             const filledGridIndices = HERO.player.inWhichGridIndices();
@@ -407,6 +411,8 @@ const HERO = {
 
         }
 
+        // falling to ground
+        if (this.falling && Grid3D.z < 0.5) return this.explode();
 
         //bump obstacle
         //bump actor
@@ -415,6 +421,27 @@ const HERO = {
         if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) GAME.nextLevel();
 
         //console.info("pos", HERO.player.pos);
+    },
+    fallingDown(lapsedTime) {
+        HERO.setMode("falling");
+        let length = (lapsedTime / 1000) * INI.FALL_SPEED;
+        const nextPos3 = HERO.player.pos.translate(new Vector3(1, -1, 0), length); //down and forward
+        HERO.player.setPos(nextPos3);
+        HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, [1, 0, 0]);
+    },
+    creep(lapsedTime) {
+        if (HERO.dead) return;
+        if (HERO.falling) return this.fallingDown(lapsedTime);
+        const length = this.player.creep(lapsedTime);
+        const consumption = length * INI.FUEL_CONSUMPTION;
+        GAME.fuel -= consumption;
+        GAME.fuel = Math.max(0, GAME.fuel);
+        if (GAME.fuel === 0) {
+            HERO.falling = true;
+            AUDIO.Alarm.play();
+        }
+        TITLE.fuelPlot();
+        //console.warn(length, consumption, GAME.fuel, this.falling);
     },
     changePosition(posDir, rotationAxis, mode, lapsedTime) {
         if (HERO.mode === "idle" || HERO.mode === mode) {
@@ -482,6 +509,9 @@ const GAME = {
         GAME.lives = 3;
         GAME.level = 1;
         GAME.score = 0;
+        GAME.maxFuel = 750;
+        //GAME.fuel = GAME.maxFuel;
+        GAME.fuel = 300;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -669,7 +699,7 @@ const GAME = {
         if (ENGINE.GAME.stopAnimation) return;
         const date = Date.now();
         HERO.player.animateAction();
-        HERO.player.creep(lapsedTime);
+        HERO.creep(lapsedTime);
         HERO.manage();
         MISSILE3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
@@ -711,6 +741,7 @@ const GAME = {
     },
     respond(lapsedTime) {
         if (HERO.dead) return;
+        if (HERO.falling) return;
 
         //HERO.player.respond(lapsedTime);
         //WebGL.GAME.respond(lapsedTime);
@@ -885,6 +916,7 @@ const TITLE = {
         y: null,
         W: null,
         H: null,
+        fuelX: null,
 
     },
     startTitle() {
@@ -905,7 +937,7 @@ const TITLE = {
     clearAllLayers() {
         ENGINE.layersToClear = new Set(["text",
             "sideback", "button", "title", "FPS", "info", "subtitle", "lives",
-            "bottomText", "score", "altover", "alt"]);
+            "bottomText", "score", "altover", "alt", "fuel", "fuelPlot"]);
         ENGINE.clearLayerStack();
         WebGL.transparent();
     },
@@ -1008,6 +1040,45 @@ const TITLE = {
         TITLE.score();
         TITLE.altimeterOverlay();
         TITLE.altimeterHeight();
+        TITLE.fuel();
+        TITLE.fuelPlot();
+    },
+    fuelPlot() {
+        const CTX = LAYER.fuelPlot;
+        ENGINE.clearLayer("fuelPlot");
+
+        const y = ENGINE.bottomHEIGHT / 2;
+        const leftX = TITLE.stack.fuelX;
+        const rightX = ENGINE.bottomWIDTH - ENGINE.sideWIDTH;
+        const deltaX = (rightX - leftX) >>> 1;
+        const cX = leftX + deltaX;
+        const N = Math.ceil(GAME.fuel / GAME.maxFuel * INI.FUEL_BIN);
+
+        const spread = ENGINE.spreadAroundCenter(N, cX, 48);
+        for (let x of spread) {
+            ENGINE.spriteDraw("fuelPlot", x, y, SPRITE.OilDrum);
+        }
+    },
+    fuel() {
+        const CTX = LAYER.fuel;
+        ENGINE.clearLayer("fuel");
+        const text = "FUEL :";
+        const fs = 60;
+        CTX.font = fs + "px CPU";
+        let txtW = CTX.measureText(text);
+        let x = INI.SCREEN_BORDER;
+        let y = fs;
+        let gx = x - txtW.width / 2;
+        let gy = y - fs;
+        let grad = this.makeGrad(CTX, gx, gy + 10, gx, gy + fs);
+        CTX.fillStyle = grad;
+        GAME.grad = grad;
+        CTX.shadowColor = "#666666";
+        CTX.shadowOffsetX = 2;
+        CTX.shadowOffsetY = 2;
+        CTX.shadowBlur = 3;
+        CTX.fillText(text, x, y);
+        TITLE.stack.fuelX = Math.ceil(x + txtW.width) + 16;
     },
     altimeterOverlay() {
         const CTX = LAYER.altover;
