@@ -24,7 +24,7 @@ const MAP = {
         floor: "GreyFloor27",
         ceil: "GreyFloor27",
         start: '[1350,5]',
-        lights: '[[2349,7,"DuaLLantern_029","standard"]]',
+        lights: '[[2349,7,"FuturisticLight_001","standard"]]',
     }
     ,
     2: {

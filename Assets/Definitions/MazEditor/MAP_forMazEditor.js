@@ -18,7 +18,10 @@ const DECAL_PAINTINGS = [].sort();
 const DECAL_CRESTS = [].sort();
 
 //lights
-const LIGHT_DECALS = ["DuaLLantern_029"].sort();
+const LIGHT_DECALS = [
+    "FuturisticLight_001", "FuturisticLight_002", "FuturisticLight_003", "FuturisticLight_004", "FuturisticLight_005", "FuturisticLight_006", "FuturisticLight_007", "FuturisticLight_008", "FuturisticLight_009", "FuturisticLight_010", "FuturisticLight_011", "FuturisticLight_012",
+    "FuturisticLight_013", "FuturisticLight_014", "FuturisticLight_015", "FuturisticLight_016"
+].sort();
 
 const TRIGGER_DECALS = [];
 const LAIR_DECALS = [].sort();

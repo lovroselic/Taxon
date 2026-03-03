@@ -63,7 +63,7 @@ LoadShaders = [
 //LoadObjects = [];
 
 LoadModels = [
-    "Taxxon.gltf", 
+    "Taxxon.gltf",
 ];
 
 LoadSprites = [
@@ -85,7 +85,22 @@ LoadSprites = [
     { srcName: "UI/RedSpaceShip.png", name: "Lives" },
 
     //lights
-    { srcName: "Lights/DuaLLantern_029.webp", name: "DuaLLantern_029" },
+    { srcName: "Lights/FuturisticLight_001.webp", name: "FuturisticLight_001" },
+    { srcName: "Lights/FuturisticLight_002.webp", name: "FuturisticLight_002" },
+    { srcName: "Lights/FuturisticLight_003.webp", name: "FuturisticLight_003" },
+    { srcName: "Lights/FuturisticLight_004.webp", name: "FuturisticLight_004" },
+    { srcName: "Lights/FuturisticLight_005.webp", name: "FuturisticLight_005" },
+    { srcName: "Lights/FuturisticLight_006.webp", name: "FuturisticLight_006" },
+    { srcName: "Lights/FuturisticLight_007.webp", name: "FuturisticLight_007" },
+    { srcName: "Lights/FuturisticLight_008.webp", name: "FuturisticLight_008" },
+    { srcName: "Lights/FuturisticLight_009.webp", name: "FuturisticLight_009" },
+    { srcName: "Lights/FuturisticLight_010.webp", name: "FuturisticLight_010" },
+    { srcName: "Lights/FuturisticLight_011.webp", name: "FuturisticLight_011" },
+    { srcName: "Lights/FuturisticLight_012.webp", name: "FuturisticLight_012" },
+    { srcName: "Lights/FuturisticLight_013.webp", name: "FuturisticLight_013" },
+    { srcName: "Lights/FuturisticLight_014.webp", name: "FuturisticLight_014" },
+    { srcName: "Lights/FuturisticLight_015.webp", name: "FuturisticLight_015" },
+    { srcName: "Lights/FuturisticLight_016.webp", name: "FuturisticLight_016" },
 ];
 
 console.log("%cAssets for CastleHaunt2 ready.", "color: orange");
