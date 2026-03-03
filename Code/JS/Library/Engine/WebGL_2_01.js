@@ -41,9 +41,10 @@ const WebGL = {
     VERSION: "2.01",
     CSS: "color: gold",
     CTX: null,
-    VERBOSE: false,             //default: false
-    PRUNE: true,                //if true, only visible blocks and faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
-    HERO_AS_INNER: false,       //if true inner light comes from hero player pos, not from camera
+    VERBOSE: false,             // default: false
+    PRUNE: true,                // if true, only visible faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
+    PRUNE_BLOCKS: true,         // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
+    HERO_AS_INNER: false,       // if true inner light comes from hero player pos, not from camera
     USE_SHADOW: false,          // if true draws shaow on the floor from the fake sun
     INI: {
         PIC_WIDTH: 0.5,
@@ -1680,12 +1681,13 @@ const WORLD = {
             const checkGrid = grid.add(dir);
             const above = initialGrid.add(dir);
 
-            if (GA.isDoor(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                                                  //doors
-            else if (Y == -1 && dir.z === 0 && GA.isHole(above)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                       //visible sub floor supports
-            else if (!(GA.isOutOfBounds(checkGrid) || GA.isWall(checkGrid))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);           //visible quads
+            if (GA.isDoor(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                                                          //doors
+            else if (Y == -1 && dir.z === 0 && GA.isHole(above)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports
+            else if (!GA.isOutOfBounds(grid) && GA.isOutOfBounds(checkGrid) && dir.z === 1) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    //visible quads - top 
+            else if (!(GA.isOutOfBounds(checkGrid) || GA.isWall(checkGrid))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                   //visible quads
         }
 
-        grid.z = rememberZ;                                                                                             //revert to initil z value
+        grid.z = rememberZ;                                                                                             //revert to initial z value
     },
     addBlockWall(Y, grid, type) {
         return this.addElement(ELEMENT.BLOCKWALL, Y, grid, type);
@@ -1762,7 +1764,7 @@ const WORLD = {
                 case MAPDICT.WALL:
                 case MAPDICT.WALL + MAPDICT.STAIR:
                 case MAPDICT.WALL + MAPDICT.SHRINE:
-                    if (WebGL.PRUNE || GA.blockVisible(grid)) this.addCube(grid.z, grid, "wall", prune);                        //plain old wall - show only visible block
+                    if (!WebGL.PRUNE_BLOCKS || GA.blockVisible(grid)) this.addCube(grid.z, grid, "wall", prune);                 //plain old wall - show only visible block
                     if (WebGL.CONFIG.holesSupported && grid.z === 0) this.addCube(- 1, grid, "wall");                           //support for holes so that they have 3d look if in the floor
                     break;
                 case MAPDICT.HOLE:

@@ -210,7 +210,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.3.0",
+    VERSION: "0.3.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -270,7 +270,7 @@ const PRG = {
 
         $("#bottom").css("margin-top", ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT);
         $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + 2 * ENGINE.sideWIDTH + 4);
-        ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "compassRose", "compassNeedle", "lives", "minimap", "gold"], null);
+        ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "lives"], null);
         ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "alt", "altover"], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
         ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score"], "fside");
@@ -435,7 +435,8 @@ const HERO = {
         if (FPGrid3D.y - R < 1) return true;
         if (FPGrid3D.y + R >= MAP[GAME.level].map.height) return true;
         if (FPGrid3D.z - R < 0.5) return true;
-        if (FPGrid3D.z + R + 0.5 >= MAP[GAME.level].map.depth) return true;
+        //if (FPGrid3D.z + R + 0.5 >= MAP[GAME.level].map.depth) return true;
+        if (FPGrid3D.z + R + 0.3 >= MAP[GAME.level].map.depth) return true;
         return false;
     },
 };
@@ -467,12 +468,11 @@ const GAME = {
         ENGINE.GAME.start(16);
 
         AI.immobileWander = true;
-        WebGL.setAmbientStrength(0.2);
-        //WebGL.setAmbientStrength(0.0);
-        //WebGL.setDiffuseStrength(0.0);
+        WebGL.setAmbientStrength(0.1);
+        WebGL.setDiffuseStrength(10.0);
         //WebGL.setSpecularStrength(0.0);
 
-        WebGL.PRUNE = false;
+        //WebGL.PRUNE_BLOCKS = false;
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
@@ -775,8 +775,8 @@ const GAME = {
         //setup
         if (map[ENGINE.KEY.map.plus]) {
             //WebGL.ambient_light_strength += 0.05;
-            //WebGL.diffuse_light_strength += 1.0;
-            WebGL.specular_light_strength += 0.20;
+            WebGL.diffuse_light_strength += 1.0;
+            //WebGL.specular_light_strength += 0.20;
             WebGL.ambient_light_strength = Math.min(WebGL.ambient_light_strength, 5.0);
             WebGL.diffuse_light_strength = Math.min(WebGL.diffuse_light_strength, 50.0);
             WebGL.specular_light_strength = Math.min(WebGL.specular_light_strength, 15.0);
@@ -785,8 +785,8 @@ const GAME = {
         }
         if (map[ENGINE.KEY.map.minus]) {
             //WebGL.ambient_light_strength -= 0.05;
-            //WebGL.diffuse_light_strength -= 1.0;
-            WebGL.specular_light_strength -= 0.20;
+            WebGL.diffuse_light_strength -= 1.0;
+            //WebGL.specular_light_strength -= 0.20;
             WebGL.ambient_light_strength = Math.max(WebGL.ambient_light_strength, 0.0);
             WebGL.diffuse_light_strength = Math.max(WebGL.diffuse_light_strength, 0.0);
             WebGL.specular_light_strength = Math.max(WebGL.specular_light_strength, 0.0);
@@ -1028,7 +1028,7 @@ const TITLE = {
         CTX.roundRect(x, y, W, H, 10);
         CTX.stroke();
 
-        const splitLines = MAP[GAME.level].map.depth - 2;
+        const splitLines = MAP[GAME.level].map.depth - 1;
         const splitSize = (H / (splitLines + 1)) >>> 0;
 
         for (let line = 0; line < splitLines; line++) {
@@ -1037,11 +1037,13 @@ const TITLE = {
         }
     },
     altimeterHeight() {
+        const R = HERO.player.r;
         const CTX = LAYER.alt;
         const COLOR = "rgba(68, 169, 85, 1)";
         ENGINE.clearLayer("alt");
-        const maxAlt = MAP[GAME.level].map.depth - 1 - 0.2;
-        const currAlt = HERO.player.pos.y - 0.5;
+        const maxAlt = MAP[GAME.level].map.depth - 1 - R + 0.25;
+        const currAlt = HERO.player.pos.y - 0.5 - R;
+        //console.log(HERO.player.pos.y, "currAlt", currAlt, "maxAlt", maxAlt);
         const fillH = (currAlt / maxAlt * TITLE.stack.H) >>> 0;
         const y = TITLE.stack.H - fillH + TITLE.stack.y;
 
