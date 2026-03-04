@@ -25,6 +25,7 @@ const MAP = {
         ceil: "GreyFloor27",
         start: '[1350,5]',
         lights: '[[2349,7,"FuturisticLight_001","standard"]]',
+        objects: '[[156,"Oil"],[306,"Oil"],[66,"Oil"]]',
     }
     ,
     2: {

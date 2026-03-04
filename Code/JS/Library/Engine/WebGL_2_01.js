@@ -350,6 +350,7 @@ const WebGL = {
         ITEM3D.init(map);
         DYNAMIC_ITEM3D.init(map, hero);
         MISSILE3D.init(map, hero);
+        BULLET3D.init(map, hero);
         FIRE3D.init(map, hero);
         INTERACTIVE_DECAL3D.init(map);
         INTERACTIVE_BUMP3D.init(map);
@@ -1205,6 +1206,13 @@ const WebGL = {
         for (const missile of MISSILE3D.POOL) {
             if (missile) {
                 missile.drawObject(gl);
+            }
+        }
+
+        //bullet
+        for (const bullet of BULLET3D.POOL) {
+            if (bullet) {
+                bullet.drawObject(gl);
             }
         }
 
@@ -2937,6 +2945,12 @@ class Drawable_object {
     setValue(value) {
         this.value = value;
     }
+    remove(IAM) {
+        IAM.remove(this.id);
+    }
+    clean() {
+        this.IAM.remove(this.id);
+    }
 }
 
 class $POV extends Drawable_object {
@@ -3266,32 +3280,26 @@ class AirItem3D extends Drawable_object {
     }
 }
 
-class Missile extends Drawable_object {
-    constructor(position, direction, type, magic, explosionType = null, friendly = false) {
+class GeneralMissile extends Drawable_object {
+    constructor(position, direction, type) {
         super();
+
         this.active = true;
-        this.name = "Missile";
         this.pos = position;
-        this.setDepth();
         this.dir = direction;
-        this.magic = magic;
-        this.distance = null;
-        this.bounce3D = false;
-        this.friendly = friendly;
-        this.explosionType = explosionType;
+
         ImportTypeToConstructor(this, type);
         this.texture = WebGL.createTexture(TEXTURE[this.texture]);
         this.element = ELEMENT[this.element];
         this.initBuffers();
-
         this.lightColor = colorStringToVector(this.lightColor);
 
         if (typeof (this.scale) === "number") {
             this.scale = new Float32Array([this.scale, this.scale, this.scale]);
         }
+
         this.r = Math.max(...this.scale) * 2;
         this.indices = this.element.indices.length;
-        this.power = this.calcPower(magic);
         this.pos = this.pos.translate(this.dir, 1.2 * this.r);
 
         const mScaleMatrix = glMatrix.mat4.create();
@@ -3299,6 +3307,33 @@ class Missile extends Drawable_object {
         this.mScaleMatrix = mScaleMatrix;
         this.mRotationMatrix = glMatrix.mat4.create();
         this.pos_to_translation();
+    }
+}
+
+class Bullet extends GeneralMissile {
+    constructor(position, direction, type) {
+        super(position, direction, type);
+        this.name = "Bullet";
+    }
+    draw() {
+        ENGINE.VECTOR2D.drawPerspective(this, "#FF0");
+    }
+    move(lapsedTime, GA) {
+
+    }
+}
+class Missile extends GeneralMissile {
+    constructor(position, direction, type, magic, explosionType = null, friendly = false) {
+        super(position, direction, type);
+        this.name = "Missile";
+
+        this.setDepth();
+        this.magic = magic;
+        this.distance = null;
+        this.bounce3D = false;
+        this.friendly = friendly;
+        this.explosionType = explosionType;
+        this.power = this.calcPower(magic);
     }
     static calcMana(magic) {
         return Math.floor(1.1 * (magic ** 1.1));
@@ -3349,9 +3384,6 @@ class Missile extends Drawable_object {
     hitWall(IAM) {
         this.explode(IAM);
     }
-    remove(IAM) {
-        IAM.remove(this.id);
-    }
     explode(IAM) {
         if (IAM.exists(this.id)) {
             IAM.remove(this.id);
@@ -3360,9 +3392,7 @@ class Missile extends Drawable_object {
             AUDIO.Explosion.play();
         }
     }
-    clean() {
-        this.IAM.remove(this.id);
-    }
+
 }
 
 class BouncingMissile extends Missile {

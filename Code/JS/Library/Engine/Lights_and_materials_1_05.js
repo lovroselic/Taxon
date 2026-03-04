@@ -7,6 +7,7 @@
 
 /** Lights */
 const LIGHT_COLORS = {
+    none: new Float32Array([0.0, 0.0, 0.0]),
     standard: new Float32Array([0.90, 0.90, 0.81]),
     standard2: new Float32Array([0.88, 0.86, 0.78]),
     standardDimmed: new Float32Array([0.8, 0.8, 0.7]),

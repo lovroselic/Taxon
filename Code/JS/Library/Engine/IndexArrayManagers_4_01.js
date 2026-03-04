@@ -959,6 +959,19 @@ class Missile3D extends IAM {
     }
 }
 
+class Bullet3D extends IAM {
+    constructor(enemyIA, entity_IAM) {
+        super();
+        this.IA = "bulletIA";
+        this.enemyIA = enemyIA;
+        this.entity_IAM = entity_IAM;
+        this.reIndexRequired = true;
+    }
+    manage(lapsedTime) { }
+    missile_entity_collision(obj, GA) { }
+
+}
+
 class ParticleEmmission3D extends IAM {
     constructor() {
         super();
@@ -1311,6 +1324,7 @@ const INTERACTIVE_BUMP3D = new Decal3D(256, "interactive_bump3d");
 //const BUMP3D = new Decal_IA_3D();                                           //obsolete, waiting for deprecation; use INTERACTIVE_BUMP3D
 const ENTITY3D = new Animated_3d_entity();
 const MISSILE3D = new Missile3D("enemyIA", ENTITY3D);
+const BULLET3D = new Bullet3D("enemyIA", ENTITY3D);
 const DYNAMIC_ITEM3D = new Decal3D(256, "dynamic_item3d");
 const LAIR = new Lair3D();
 const ITEM_DROPPER3D = new ItemDropper3D();

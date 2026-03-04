@@ -199,7 +199,7 @@ const DEBUG = {
 };
 
 const INI = {
-    HERO_SHOOT_TIMEOUT: 10,
+    HERO_SHOOT_TIMEOUT: 100,
     SCREEN_BORDER: 256,
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 2.0,
@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.3.3",
+    VERSION: "0.4.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -335,6 +335,7 @@ const HERO = {
     },
     revive() {
         this.dead = false;
+        GAME.fuel = GAME.maxFuel;
     },
     setMode(mode) {
         this.mode = mode;
@@ -345,7 +346,12 @@ const HERO = {
     },
     shoot() {
         if (HERO.dead) return;
+        if (HERO.falling) return;
         if (!HERO.canShoot) return;
+
+        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, 0, 0)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
+        //console.info("SHOOT", bullet.pos, this.player.pos);
+        BULLET3D.add(bullet);
 
         setTimeout(() => (HERO.canShoot = true), INI.HERO_SHOOT_TIMEOUT);
         return;
@@ -510,8 +516,8 @@ const GAME = {
         GAME.level = 1;
         GAME.score = 0;
         GAME.maxFuel = 750;
-        //GAME.fuel = GAME.maxFuel;
-        GAME.fuel = 300;
+        GAME.fuel = GAME.maxFuel;
+        //GAME.fuel = 300;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -701,7 +707,8 @@ const GAME = {
         HERO.player.animateAction();
         HERO.creep(lapsedTime);
         HERO.manage();
-        MISSILE3D.manage(lapsedTime);
+        //MISSILE3D.manage(lapsedTime);
+        BULLET3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
@@ -728,7 +735,7 @@ const GAME = {
         if (DEBUG._2D_display) {
             const map = MAP[GAME.level].map;
             ENGINE.BLOCKGRID3D.draw(map, HERO.player.depth);
-            MISSILE3D.draw();
+            BULLET3D.draw();
             ENTITY3D.drawVector2D();
             DYNAMIC_ITEM3D.drawVector2D();
             //WebGL.visualizeTexture3DSlice(map.occlusionMap, map.width, map.height, map.depth, 0, LAYER.debug); //debug
@@ -866,7 +873,7 @@ const GAME = {
         ENGINE.clearLayer("text");
         HERO.revive();
         //ENTITY3D.POOL = ENTITY3D.POOL.filter(enemy => enemy && enemy.boss === true); //removes all but bosses, explicit check!
-        //MISSILE3D.POOL.clear();
+        BULLET3D.POOL.clear();
         GAME.levelStart();
     },
     gameOverRun(lapsedTime) {

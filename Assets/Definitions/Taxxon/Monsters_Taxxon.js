@@ -13,6 +13,33 @@
 "use strict";
 console.log("%cMonsters for HTH loaded.", "color: #888");
 
+const COMMON_ITEM_TYPE = {
+    Bullet: {
+        name: "Bullet",
+        category: 'missile',
+        element: "Bullet",
+        scale: 1.9 / 2 ** 7,
+        texture: "Explosion2",
+        moveSpeed: 8.0,
+        material: MATERIAL.standard,
+        lightColor: "#000000"
+    },
+};
+
+const INTERACTION_OBJECT = {
+    Oil: {
+        name: "Oil",
+        score: 10,
+        category: "fuel",
+        amount: 1,          // barrel
+        element: "OIL",
+        scale: 1.0 / 2 ** 1,
+        glueToFloor: true,
+        texture: "OilDrum",
+        material: MATERIAL.standard,
+
+    },
+};
 
 const HERO_TYPE = {
     Taxxon: {
@@ -24,6 +51,7 @@ const HERO_TYPE = {
         moveSpeed: 2.0
     }
 };
+
 const MONSTER_TYPE = {};
 
 const FIRE_TYPES = {

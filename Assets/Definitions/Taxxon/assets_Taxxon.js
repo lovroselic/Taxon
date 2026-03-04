@@ -35,6 +35,7 @@ LoadTextures = [
     //objects
     { srcName: "ObjectTextures/BlueMetal.webp", name: "BlueMetal" },
     { srcName: "ObjectTextures/Red.webp", name: "Red" },
+    { srcName: "ObjectTextures/oildrum_basecolor.jpg", name: "OilDrum" },
 
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
@@ -61,7 +62,9 @@ LoadShaders = [
     'shadow_vShader_1_0.glsl', 'shadow_fShader_1_0.glsl'
 ];
 
-//LoadObjects = [];
+LoadObjects = [
+    "Oil.obj", "Bullet.obj",
+];
 
 LoadModels = [
     "Taxxon.gltf",
