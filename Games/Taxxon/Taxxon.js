@@ -199,7 +199,7 @@ const DEBUG = {
 };
 
 const INI = {
-    HERO_SHOOT_TIMEOUT: 100,
+    HERO_SHOOT_TIMEOUT: 250,
     SCREEN_BORDER: 256,
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 2.0,
@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.4.0",
+    VERSION: "0.4.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -324,7 +324,6 @@ const HERO = {
     construct() {
         this.player = null;
         this.height = 0.0;
-
         this.reset();
     },
     reset() {
@@ -332,10 +331,14 @@ const HERO = {
         this.canShoot = true;
         this.falling = false;
         this.setMode("idle");
+        this.maxFuel = 750;
+        this.fuel = HERO.maxFuel;
     },
     revive() {
         this.dead = false;
-        GAME.fuel = GAME.maxFuel;
+        this.fuel = this.maxFuel;
+        this.canShoot = true;
+        this.setMode("idle");
     },
     setMode(mode) {
         this.mode = mode;
@@ -349,9 +352,11 @@ const HERO = {
         if (HERO.falling) return;
         if (!HERO.canShoot) return;
 
-        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, 0, 0)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
-        //console.info("SHOOT", bullet.pos, this.player.pos);
+        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, - 0.62, 0.015)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
+        //console.info("bullet", bullet, bullet.pos, "hero", this.player.pos);
         BULLET3D.add(bullet);
+        this.useFuel(1);
+        HERO.canShoot = false;
 
         setTimeout(() => (HERO.canShoot = true), INI.HERO_SHOOT_TIMEOUT);
         return;
@@ -435,19 +440,26 @@ const HERO = {
         HERO.player.setPos(nextPos3);
         HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, [1, 0, 0]);
     },
+    addFuel(fuel) {
+        HERO.fuel += fuel * INI.FUEL_BIN;
+        HERO.fuel = Math.min(HERO.maxFuel, HERO.fuel);
+        TITLE.fuelPlot();
+    },
+    useFuel(consumption) {
+        HERO.fuel -= consumption;
+        HERO.fuel = Math.max(0, HERO.fuel);
+        if (HERO.fuel === 0) {
+            HERO.falling = true;
+            AUDIO.Alarm.play();
+        }
+        TITLE.fuelPlot();
+    },
     creep(lapsedTime) {
         if (HERO.dead) return;
         if (HERO.falling) return this.fallingDown(lapsedTime);
         const length = this.player.creep(lapsedTime);
         const consumption = length * INI.FUEL_CONSUMPTION;
-        GAME.fuel -= consumption;
-        GAME.fuel = Math.max(0, GAME.fuel);
-        if (GAME.fuel === 0) {
-            HERO.falling = true;
-            AUDIO.Alarm.play();
-        }
-        TITLE.fuelPlot();
-        //console.warn(length, consumption, GAME.fuel, this.falling);
+        this.useFuel(consumption);
     },
     changePosition(posDir, rotationAxis, mode, lapsedTime) {
         if (HERO.mode === "idle" || HERO.mode === mode) {
@@ -502,22 +514,20 @@ const GAME = {
 
         AI.immobileWander = true;
         WebGL.setAmbientStrength(0.1);
-        WebGL.setDiffuseStrength(10.0);
+        WebGL.setDiffuseStrength(1.0);
         //WebGL.setSpecularStrength(0.0);
 
         //WebGL.PRUNE_BLOCKS = false;
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
+        WebGL.USE_INTERACTION = false;
 
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         GAME.level = 1;
         GAME.score = 0;
-        GAME.maxFuel = 750;
-        GAME.fuel = GAME.maxFuel;
-        //GAME.fuel = 300;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -555,8 +565,10 @@ const GAME = {
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(-0.05, -0.5, -1.0), 3.0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0.0, 1, 1), 3.5, new Vector3(0, -0.75, -1.0), 3.0);
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80); //zaxxon perspective
+
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75); //side - for debug
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80); //top back
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -620,7 +632,7 @@ const GAME = {
     },
     buildWorld(level) {
         if (DEBUG.VERBOSE) console.info(" ******** building world, room/dungeon/level:", level, "ressurection", HERO.ressurection, "restart", GAME.restarted);
-        WebGL.init_required_IAM(MAP[level].map, HERO);
+        WebGL.init_required_IAM(MAP[level].map, HERO, GAME);
         SPAWN_TOOLS.spawn(level);
         MAP[level].world = WORLD.build(MAP[level].map);
     },
@@ -915,6 +927,10 @@ const GAME = {
     wonFrameDraw() {
         GAME.endingCreditText.draw();
     },
+    addScore(score) {
+        GAME.score += score;
+        TITLE.score();
+    }
 };
 
 const TITLE = {
@@ -1059,7 +1075,7 @@ const TITLE = {
         const rightX = ENGINE.bottomWIDTH - ENGINE.sideWIDTH;
         const deltaX = (rightX - leftX) >>> 1;
         const cX = leftX + deltaX;
-        const N = Math.ceil(GAME.fuel / GAME.maxFuel * INI.FUEL_BIN);
+        const N = Math.ceil(HERO.fuel / HERO.maxFuel * INI.FUEL_BIN);
 
         const spread = ENGINE.spreadAroundCenter(N, cX, 48);
         for (let x of spread) {

@@ -43,6 +43,17 @@ LoadTextures = [
 
     //explosions
     { srcName: "ObjectTextures/Explosion2.webp", name: "Explosion2" },
+    //{ srcName: "ObjectTextures/GreenMetal.webp", name: "GreenMetal" },
+    //{ srcName: "ObjectTextures/ScrapedMetal.webp", name: "ScrapedMetal" },
+    { srcName: "ObjectTextures/Explosion3.webp", name: "Explosion" },
+    { srcName: "ObjectTextures/Tile.webp", name: "Tile" },
+    //{ srcName: "ObjectTextures/WoodTexture.webp", name: "WoodTexture" },
+    //{ srcName: "ObjectTextures/RedLiquid.webp", name: "RedLiquid" },
+    //{ srcName: "ObjectTextures/FireTexture.webp", name: "FireTexture" },
+    //{ srcName: "ObjectTextures/FireTexture2.webp", name: "FireTexture2" },
+    //{ srcName: "ObjectTextures/FireTexture2_Blue.webp", name: "FireTexture2_Blue" },
+    //{ srcName: "ObjectTextures/FireTexture2_Green.webp", name: "FireTexture2_Green" },
+    //{ srcName: "ObjectTextures/RedFireTexture.webp", name: "RedFireTexture" },
 
 ];
 
@@ -52,6 +63,7 @@ LoadAudio = [
     //action sounds
     { srcName: "Explosion1.mp3", name: "Explosion" },
     { srcName: "Alarm.mp3", name: "Alarm" },
+    { srcName: "BulletThud.mp3", name: "BulletThud" },
 
 ];
 

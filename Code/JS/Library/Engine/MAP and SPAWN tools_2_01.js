@@ -175,6 +175,7 @@ const SPAWN_TOOLS = {
         });
 
         MAP_TOOLS.setOcclusionMap(level);
+        ITEM3D.setup("3D", 4, 1); //
         console.info(`Level ${level} spawned.`);
     },
     decals(map, GA) {
@@ -226,7 +227,6 @@ const SPAWN_TOOLS = {
             const face = DirectionToFace(dir);
             const picture = `DungeonDoor_${color}`;
             const destination = new Destination(G[3], G[3].split(".")[0], G[2]);
-            //console.log("pointer", pointer, "Destination", destination);
             let opEn = false;
             if (["Open", "Up", "Down"].includes(color)) opEn = true;
             let locked = true;

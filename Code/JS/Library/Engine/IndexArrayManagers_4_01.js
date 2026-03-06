@@ -76,7 +76,10 @@ class IAM {
                 grid = Vector3.to_Grid3D(obj.moveState.pos);
             } else if (obj.pos) {
                 grid = Vector3.to_Grid3D(obj.pos);
+            } else if (obj.grid.constructor.name === "FP_Grid3D") {
+                grid = Grid3D.toClass(obj.grid);
             } else grid = obj.grid;
+
 
             if (!IA.has(grid, obj.id)) {
                 IA.next(grid, obj.id);
@@ -125,8 +128,10 @@ class IAM {
                 this.poolToIA(map[this.IA]);
                 break;
             case "3D":
+                //console.error("this.IA", this.IA, this, this.constructor.name);
                 map[this.IA] = new IndexArray3D(map.width, map.height, map.depth, byte, banks);
                 this.poolToIA3D(map[this.IA]);
+                //console.warn("sanity", Array.from(map[this.IA].map).sum());
                 break;
             default:
                 throw new Error(`wrong type: ${type} for Index Array`);
@@ -427,7 +432,6 @@ class Spawner extends Floor_Object {
      */
     setIA() {
         let map = this.map;
-        //map[this.IA] = new IndexArray(map.width, map.height, this.byte, this.banks);
         map[this.IA] = new IndexArray3D(map.width, map.height, map.depth, this.byte, this.banks);
         this.poolToIA3D();
         this.poolToIA(map[this.IA]);
@@ -960,14 +964,63 @@ class Missile3D extends IAM {
 }
 
 class Bullet3D extends IAM {
-    constructor(enemyIA, entity_IAM) {
+    constructor(enemyIA, entity_IAM, itemIA, item_IAM) {
         super();
         this.IA = "bulletIA";
         this.enemyIA = enemyIA;
         this.entity_IAM = entity_IAM;
+        this.itemIA = itemIA;
+        this.item_IAM = item_IAM;
         this.reIndexRequired = true;
     }
-    manage(lapsedTime) { }
+    manage(lapsedTime) {
+        this.reIndex();
+        this.map[this.IA] = new IndexArray3D(this.map.width, this.map.height, this.map.depth, 4, 4);
+        this.poolToIA3D(this.map[this.IA]);
+        const GA = this.map.GA;
+
+        for (let obj of this.POOL) {
+            if (obj) {
+                obj.move(lapsedTime, GA);
+
+                const pos = Vector3.to_Grid3D(obj.pos);
+
+                if (pos.x > GA.width) {                         // out of bounds in the forward direction
+                    obj.clean();
+                    continue;
+                }
+
+                if (GA.check(pos, MAPDICT.WALL)) {              // collision to wall
+                    obj.die();
+                    continue;
+                }
+
+                this.missile_object_collision(obj, pos, GA);
+                //console.log(pos, GA);                                                               
+
+            }
+        }
+
+
+    }
+    missile_object_collision(obj, grid, GA) {
+        const IA = this.map[this.itemIA];
+        if (!IA) return false;
+
+        if (!IA.empty(grid)) {
+            const itemID = IA.unroll(grid);                     // by design it can be only single item
+            const item = this.item_IAM.show(itemID);
+            if (item) {
+                const hit = GRID.collisionPosInBoundingBox(obj.pos, item.element.boundingBox, item.grid)
+                if (hit) {
+                    item.shootInteraction();
+                    obj.clean();
+                }
+            }
+        }
+
+    }
+
     missile_entity_collision(obj, GA) { }
 
 }
@@ -1316,15 +1369,14 @@ const SUN3D = new Decal3D();
 const VANISHING3D = new Decal3D(null, null, true);
 const INTERFACE3D = new Decal3D();
 const GATE3D = new Decal3D(256);
-const ITEM3D = new Decal3D(1024);
+const ITEM3D = new Decal3D(1024, "item3D");
 const EXPLOSION3D = new ParticleEmmission3D();
 const FIRE3D = new FireEmmission3D();
 const INTERACTIVE_DECAL3D = new Decal3D(1024);
 const INTERACTIVE_BUMP3D = new Decal3D(256, "interactive_bump3d");
-//const BUMP3D = new Decal_IA_3D();                                           //obsolete, waiting for deprecation; use INTERACTIVE_BUMP3D
 const ENTITY3D = new Animated_3d_entity();
 const MISSILE3D = new Missile3D("enemyIA", ENTITY3D);
-const BULLET3D = new Bullet3D("enemyIA", ENTITY3D);
+const BULLET3D = new Bullet3D("enemyIA", ENTITY3D, "item3D", ITEM3D);
 const DYNAMIC_ITEM3D = new Decal3D(256, "dynamic_item3d");
 const LAIR = new Lair3D();
 const ITEM_DROPPER3D = new ItemDropper3D();

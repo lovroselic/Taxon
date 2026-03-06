@@ -25,6 +25,18 @@ const GRID = {
         FORWARD_CIRCLE_RESOLUTION: 2,
         FORWARD_CIRCLE_CHECK_ANGLE: Math.PI / 4,
     },
+    collisionPosInBoundingBox(pos, BB, FPgrid3D) {
+        const origin = Vector3.from_grid3D(FPgrid3D);
+
+        if (
+            pos.x > origin.x + BB.min.x && pos.x < origin.x + BB.max.x &&
+            pos.z > origin.z + BB.min.z && pos.z < origin.z + BB.max.z &&
+            pos.y > origin.y + BB.min.y && pos.y < origin.y + BB.max.y
+
+        ) return true;
+
+        return false
+    },
     circleCollision(entity1, entity2) {
         let distance = entity1.moveState.pos.EuclidianDistance(entity2.moveState.pos);
         let touchDistance = entity1.r + entity2.r;
@@ -1692,7 +1704,7 @@ class IA_Dimension_Agnostic_Methods {
         this.map[this.gridToIndex(grid)] = 0;
     }
     empty(grid) {
-        if (this.isOutOfBounds(grid)) return false;
+        if (this.isOutOfBounds(grid)) return true;          //
         return this.map[this.gridToIndex(grid)] === 0;
     }
     set(grid, indexValue, bank) {

@@ -18,11 +18,12 @@ const COMMON_ITEM_TYPE = {
         name: "Bullet",
         category: 'missile',
         element: "Bullet",
-        scale: 1.9 / 2 ** 7,
+        scale: 1.7 / 2 ** 7,
         texture: "Explosion2",
         moveSpeed: 8.0,
         material: MATERIAL.standard,
-        lightColor: "#000000"
+        lightColor: "#000000",
+        explosionType: FloorDust,
     },
 };
 
@@ -31,13 +32,13 @@ const INTERACTION_OBJECT = {
         name: "Oil",
         score: 10,
         category: "fuel",
-        amount: 1,          // barrel
+        fuel: 1,          // barrel
         element: "OIL",
         scale: 1.0 / 2 ** 1,
         glueToFloor: true,
         texture: "OilDrum",
         material: MATERIAL.standard,
-
+        explosionType: ParticleExplosion,
     },
 };
 

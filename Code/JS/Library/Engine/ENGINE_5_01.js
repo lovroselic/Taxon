@@ -930,6 +930,20 @@ const ENGINE = {
         ASSET[obj.asset].linear.push(SPRITE[obj.name]);
     },
     parseObjectFile(text) {
+
+         function addVertex(vert) {
+            const ptn = vert.split('/');
+            ptn.forEach((objIndexStr, i) => {
+                if (objIndexStr === "") {
+                    console.warn(NAME, ': ignoring missing coordinate: vert', vert, ".. Posibly a missing texture coordinate");
+                    return;
+                }
+                const objIndex = parseInt(objIndexStr, 10);
+                const index = objIndex + (objIndex >= 0 ? 0 : objVertexData[i].length);
+                webglVertexData[i].push(...objVertexData[i][index]);
+            });
+        }
+
         if (!ELEMENT) console.error("no ELEMENT object available!");
         const positions = [[0, 0, 0]];
         const textureCoordinates = [[0, 0]];
@@ -991,19 +1005,8 @@ const ENGINE = {
         ELEMENT[NAME].indices = indices;
         ELEMENT[NAME].textureCoordinates = webglVertexData[1];
         ELEMENT[NAME].vertexNormals = webglVertexData[2];
-
-        function addVertex(vert) {
-            const ptn = vert.split('/');
-            ptn.forEach((objIndexStr, i) => {
-                if (objIndexStr === "") {
-                    console.warn(NAME, ': ignoring missing coordinate: vert', vert, ".. Posibly a missing texture coordinate");
-                    return;
-                }
-                const objIndex = parseInt(objIndexStr, 10);
-                const index = objIndex + (objIndex >= 0 ? 0 : objVertexData[i].length);
-                webglVertexData[i].push(...objVertexData[i][index]);
-            });
-        }
+        ELEMENT[NAME].boundingBox = ELEMENT.getBoundingBox(ELEMENT[NAME]);
+       
 
     },
     KEY: {
@@ -3140,8 +3143,10 @@ const ENGINE = {
         }
     }
 };
+
 const TEXTURE = {};
 const $3D_MODEL = {};
+
 const LAYER = {
     PRELOAD: {}
 };

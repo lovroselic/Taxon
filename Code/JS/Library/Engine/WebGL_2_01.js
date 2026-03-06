@@ -46,6 +46,7 @@ const WebGL = {
     PRUNE_BLOCKS: true,         // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
     HERO_AS_INNER: false,       // if true inner light comes from hero player pos, not from camera
     USE_SHADOW: false,          // if true draws shaow on the floor from the fake sun
+    USE_INTERACTION: true,      // if true, draws interaction buffer
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -193,6 +194,7 @@ const WebGL = {
     },
     update_shaders_forLightSources: ['fShader'],
     hero: null,
+    game: null,
     sys_textures: {
         fire: ["Fire_color_map", "Fire_noise"]
     },
@@ -341,7 +343,7 @@ const WebGL = {
         this.initShadowPrograms(gl);
         this.programs_compiled = true;
     },
-    init_required_IAM(map, hero) {
+    init_required_IAM(map, hero, game) {
         DECAL3D.init(map);
         LIGHTS3D.init(map);
         SUN3D.init(map);
@@ -360,6 +362,7 @@ const WebGL = {
         LAIR.init(map, hero);
         ITEM_DROPPER3D.init(map);
         this.hero = hero;
+        this.game = game;
     },
     setCamera(camera) {
         this.camera = camera;
@@ -1189,9 +1192,9 @@ const WebGL = {
 
         //items
         for (const item of ITEM3D.POOL) {
-            if (item.active) {
+            if (item && item.active) {
                 item.drawObject(gl);
-                item.drawInteraction(gl, this.frameBuffer);
+                if (WebGL.USE_INTERACTION) item.drawInteraction(gl, this.frameBuffer);
             }
         }
 
@@ -1674,6 +1677,9 @@ const WORLD = {
 
     },
     addCube(Y, grid, type, prune = null, scale = null) {
+        /*if (GRID.same3D(grid, new Grid3D(2, 12, 0))) {
+            console.error("debug add cube", ...arguments, "WebGL.PRUNE", WebGL.PRUNE);
+        }*/
         if (!WebGL.PRUNE) return this.addElement(ELEMENT.CUBE, Y, grid, type);                                          //draws complete cube
 
         const initialGrid = Grid3D.toClass(grid);                                                                       //cloned, for solving floor supports
@@ -1693,6 +1699,7 @@ const WORLD = {
             else if (Y == -1 && dir.z === 0 && GA.isHole(above)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports
             else if (!GA.isOutOfBounds(grid) && GA.isOutOfBounds(checkGrid) && dir.z === 1) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    //visible quads - top 
             else if (!(GA.isOutOfBounds(checkGrid) || GA.isWall(checkGrid))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                   //visible quads
+            else if (Y == -1 && dir.z === 0 && GA.isOutOfBounds(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                    // visible side supports for 3rd person isometric view, out ouf bound faces
         }
 
         grid.z = rememberZ;                                                                                             //revert to initial z value
@@ -2951,6 +2958,22 @@ class Drawable_object {
     clean() {
         this.IAM.remove(this.id);
     }
+    shootInteraction() {
+        console.warn("*** shoot interaction ***", this);
+        //throw "debug";
+        if (this.score) WebGL.game.addScore(this.score);
+        if (this.fuel) WebGL.hero.addFuel(this.fuel);
+        this.explode(this.IAM);
+    }
+    explode(IAM) {
+        if (IAM.exists(this.id)) {
+            IAM.remove(this.id);
+            EXPLOSION3D.add(new this.explosionType(Vector3.from_grid3D(this.grid)));
+            AUDIO.Explosion.volume = 0.4;
+            AUDIO.Explosion.play();
+        }
+        
+     }
 }
 
 class $POV extends Drawable_object {
@@ -3206,6 +3229,10 @@ class FloorItem3D extends Drawable_object {
         if (this.category === "gold") {
             this.value = RND(this.minVal, this.maxVal);
         }
+
+        if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
+
+        this.element.boundingBox.scale(this.scale);
     }
     setTexture() {
         this.texture = WebGL.createTexture(this.texture);
@@ -3314,12 +3341,27 @@ class Bullet extends GeneralMissile {
     constructor(position, direction, type) {
         super(position, direction, type);
         this.name = "Bullet";
+        this.element.boundingBox.scale(this.scale);
     }
     draw() {
         ENGINE.VECTOR2D.drawPerspective(this, "#FF0");
     }
     move(lapsedTime, GA) {
-
+        if (!this.IAM.exists(this.id)) return;
+        let length = (lapsedTime / 1000) * this.moveSpeed;
+        const pos = this.pos.translate(this.dir, length);
+        this.pos = pos;
+        this.pos_to_translation();
+    }
+    die() {
+        //console.log(this, "dies");
+        //throw "debug";
+        if (this.IAM.exists(this.id)) {
+            this.IAM.remove(this.id);
+            EXPLOSION3D.add(new this.explosionType(this.pos));
+            AUDIO.BulletThud.volume = 0.2;
+            AUDIO.BulletThud.play();
+        }
     }
 }
 class Missile extends GeneralMissile {
@@ -3796,6 +3838,13 @@ class BoundingBox {
         if (scale) this.max = this.max.scaleVec3(scale);
         this.min = Vector3.from_array(min);
         if (scale) this.min = this.min.scaleVec3(scale);
+        if (scale) this.scaled = true;
+    }
+    scale(scale) {
+        if (this.scaled) return;
+        this.max = this.max.scaleVec3(scale);
+        this.min = this.min.scaleVec3(scale);
+        this.scaled = true;
     }
 }
 
