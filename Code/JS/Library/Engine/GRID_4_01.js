@@ -25,17 +25,37 @@ const GRID = {
         FORWARD_CIRCLE_RESOLUTION: 2,
         FORWARD_CIRCLE_CHECK_ANGLE: Math.PI / 4,
     },
+    collisionBoundingBox(A, B) {
+        /**
+         * A - hero
+         * B - static item
+         */
+
+        console.log("\n **************************");
+        console.log("x", A.min.x <= B.max.x && A.max.x >= B.min.x, A.min.x, B.max.x, A.max.x, B.min.x);
+        console.log("y", A.min.y <= B.max.y && A.max.y >= B.min.y, A.min.y, B.max.y, A.max.y, B.min.y);
+        console.log("z", A.min.z <= B.max.z && A.max.z >= B.min.z, A.min.z, B.max.z, A.max.z, B.min.z);
+        console.log("HERO.player.pos", HERO.player.pos);
+        console.warn("HERO pos y", HERO.player.pos.y, "HERO.player.pos.y - HERO.player.r", HERO.player.pos.y - HERO.player.r);
+        console.log("\n --------------------------");
+
+        return (
+            A.min.x <= B.max.x && A.max.x >= B.min.x &&
+            A.min.y <= B.max.y && A.max.y >= B.min.y &&
+            A.min.z <= B.max.z && A.max.z >= B.min.z
+        );
+
+    },
     collisionPosInBoundingBox(pos, BB, FPgrid3D) {
         const origin = Vector3.from_grid3D(FPgrid3D);
 
-        if (
-            pos.x > origin.x + BB.min.x && pos.x < origin.x + BB.max.x &&
-            pos.z > origin.z + BB.min.z && pos.z < origin.z + BB.max.z &&
-            pos.y > origin.y + BB.min.y && pos.y < origin.y + BB.max.y
+        return (
+            pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x &&
+            pos.z >= origin.z + BB.min.z && pos.z <= origin.z + BB.max.z &&
+            pos.y >= origin.y + BB.min.y && pos.y <= origin.y + BB.max.y
 
-        ) return true;
+        );
 
-        return false
     },
     circleCollision(entity1, entity2) {
         let distance = entity1.moveState.pos.EuclidianDistance(entity2.moveState.pos);

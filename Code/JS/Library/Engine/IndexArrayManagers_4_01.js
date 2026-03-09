@@ -860,11 +860,11 @@ class Decal3D extends IAM {
         }
         return null;
     }
-    manage(lapsedTime, date) {
+    manage(lapsedTime) {
         this.reIndex();
         for (const item of this.POOL) {
             if (item) {
-                item.manage(lapsedTime, date);
+                item.manage(lapsedTime);
             }
         }
     }
@@ -873,6 +873,26 @@ class Decal3D extends IAM {
         console.log("Overview:", this.constructor.name);
         console.table(this.POOL, ['name', 'id', 'global_id', 'grid']);
         console.log("------------------------------------------");
+    }
+    checkCollisionToHero() {
+        //https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
+        const IA = this.map.item3D;
+        if (!IA) return false;
+        const GA = this.map.GA;
+        const heroGrid = Vector3.to_Grid3D(this.hero.player.pos);
+        //console.log("heroGrid", heroGrid);
+
+        if (!IA.empty(heroGrid)) {
+            const itemID = IA.unroll(heroGrid);                     // by design it can be only single item
+            const item = this.show(itemID);
+            if (item) {
+                //console.info("item", item, "itemID", itemID);
+                const hit = GRID.collisionBoundingBox(this.hero.player.absoluteBoundingBox, item.absoluteBoundingBox);
+                if (hit) {
+                    throw "HIT";
+                }
+            }
+        }
     }
 }
 
@@ -995,15 +1015,12 @@ class Bullet3D extends IAM {
                     continue;
                 }
 
-                this.missile_object_collision(obj, pos, GA);
-                //console.log(pos, GA);                                                               
+                this.missile_object_collision(obj, pos);
 
             }
         }
-
-
     }
-    missile_object_collision(obj, grid, GA) {
+    missile_object_collision(obj, grid) {
         const IA = this.map[this.itemIA];
         if (!IA) return false;
 
@@ -1018,7 +1035,6 @@ class Bullet3D extends IAM {
                 }
             }
         }
-
     }
 
     missile_entity_collision(obj, GA) { }

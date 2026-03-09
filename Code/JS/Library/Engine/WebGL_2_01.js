@@ -349,7 +349,7 @@ const WebGL = {
         SUN3D.init(map);
         GATE3D.init(map);
         VANISHING3D.init(map);
-        ITEM3D.init(map);
+        ITEM3D.init(map, hero);
         DYNAMIC_ITEM3D.init(map, hero);
         MISSILE3D.init(map, hero);
         BULLET3D.init(map, hero);
@@ -1912,20 +1912,21 @@ class $3D_Camera {
 }
 
 class $3D_player {
-    constructor(position, dir, map = null, type = null, size = 0.5, parent = HERO) {
+    constructor(position, dir, map = null, type = null, size = null, parent = HERO) {
         this.heigth = WebGL.INI.HERO_HEIGHT;
         this.camera = null;
         this.model = null;
         this.setDir(dir);
         this.setPos(position);
         this.setMap(map);
-        this.setR(size / 2.0);
+        if (size) this.setR(size / 2.0);
         this.setFov();
         this.rotationResolution = 64;
         this.setSpeed(4.0);
         this.parent = parent;
         this.type = type;
         this.texture = null;
+
         if (this.type) {
             for (const prop in type) {
                 this[prop] = type[prop];
@@ -1933,10 +1934,12 @@ class $3D_player {
             if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
             this.setModel();
             this.minY = this.model.meshes[0].primitives[0].positions.min[1] * this.scale[1];
+            console.warn("this.minY", this.minY);
             this.matrixUpdate();
             WebGL.playerList.push(this);
             this.defaultRotationMatrix = glMatrix.mat4.clone(this.rotation);
         };
+
         this.setMode("idle");
         this.actionModes = ["attacking"];
         this.actionCallback = null;
@@ -2304,6 +2307,8 @@ class $3D_player {
         }
         this.setMode('walking');
         this.setDepth();
+        if (this.boundingBox) this.absoluteBoundingBox = this.boundingBox.setAbsoluteBoundingBox(this.pos);
+
     }
     resetBirth() {
         this.actor.birth = Date.now();
@@ -2959,7 +2964,7 @@ class Drawable_object {
         this.IAM.remove(this.id);
     }
     shootInteraction() {
-        console.warn("*** shoot interaction ***", this);
+        //console.warn("*** shoot interaction ***", this);
         //throw "debug";
         if (this.score) WebGL.game.addScore(this.score);
         if (this.fuel) WebGL.hero.addFuel(this.fuel);
@@ -2972,8 +2977,11 @@ class Drawable_object {
             AUDIO.Explosion.volume = 0.4;
             AUDIO.Explosion.play();
         }
-        
-     }
+
+    }
+    manage(lapsedTime) {
+        this.absBB = this.absoluteBoundingBox();
+    }
 }
 
 class $POV extends Drawable_object {
@@ -3233,6 +3241,7 @@ class FloorItem3D extends Drawable_object {
         if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
 
         this.element.boundingBox.scale(this.scale);
+        this.absoluteBoundingBox = this.element.boundingBox.setAbsoluteBoundingBox(Vector3.from_grid3D(this.grid));
     }
     setTexture() {
         this.texture = WebGL.createTexture(this.texture);
@@ -3845,6 +3854,12 @@ class BoundingBox {
         this.max = this.max.scaleVec3(scale);
         this.min = this.min.scaleVec3(scale);
         this.scaled = true;
+    }
+    setAbsoluteBoundingBox(origin) {
+        //origin needs to be Vector3
+        const max = this.max.add(origin);
+        const min = this.min.add(origin);
+        return new BoundingBox(max.array, min.array, null);
     }
 }
 

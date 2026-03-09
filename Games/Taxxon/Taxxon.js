@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.4.1",
+    VERSION: "0.4.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -472,6 +472,7 @@ const HERO = {
             HERO.player.setPos(nextPos3);
             HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
             HERO.setMode(mode);
+
         }
         return;
     },
@@ -479,9 +480,8 @@ const HERO = {
         const R = HERO.player.r;
         if (FPGrid3D.y - R < 1) return true;
         if (FPGrid3D.y + R >= MAP[GAME.level].map.height) return true;
-        if (FPGrid3D.z - R < 0.5) return true;
-        //if (FPGrid3D.z + R + 0.5 >= MAP[GAME.level].map.depth) return true;
-        if (FPGrid3D.z + R + 0.3 >= MAP[GAME.level].map.depth) return true;
+        if (FPGrid3D.z - R <= 0.0) return true;
+        if (FPGrid3D.z + 2 * R >= MAP[GAME.level].map.depth) return true;
         return false;
     },
 };
@@ -522,6 +522,7 @@ const GAME = {
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
         WebGL.USE_INTERACTION = false;
+        WebGL.INI.HERO_HEIGHT = 0;
 
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
@@ -600,7 +601,8 @@ const GAME = {
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-        start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + HERO.height, start_grid.y + 0.5);
+        //start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + HERO.height, start_grid.y + 0.5);
+        start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
         //HERO.player.setSpeed(5.0);
@@ -724,6 +726,8 @@ const GAME = {
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
+        //ITEM3D.manage(lapsedTime);
+        ITEM3D.checkCollisionToHero();
 
         GAME.respond(lapsedTime);
         ENGINE.TIMERS.update();
@@ -1135,8 +1139,8 @@ const TITLE = {
         const CTX = LAYER.alt;
         const COLOR = "rgba(68, 169, 85, 1)";
         ENGINE.clearLayer("alt");
-        const maxAlt = MAP[GAME.level].map.depth - 1 - R + 0.25;
-        const currAlt = HERO.player.pos.y - 0.5 - R;
+        const maxAlt = MAP[GAME.level].map.depth - 1 + R / 2;
+        const currAlt = HERO.player.pos.y - R;
         //console.log(HERO.player.pos.y, "currAlt", currAlt, "maxAlt", maxAlt);
         const fillH = (currAlt / maxAlt * TITLE.stack.H) >>> 0;
         const y = TITLE.stack.H - fillH + TITLE.stack.y;
