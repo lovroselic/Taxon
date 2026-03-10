@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.4.2",
+    VERSION: "0.4.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -365,12 +365,8 @@ const HERO = {
         if (DEBUG.VERBOSE) console.warn("HERO hit by missile", missile,);
 
     },
-    applyDamage(damage) {
-        HERO.health = Math.max(HERO.health - damage, 0);
-        TITLE.health();
-        if (HERO.health <= 0) {
-            if (!DEBUG.INVINCIBLE) HERO.die();
-        }
+    hitObstacle(){
+        this.explode();
     },
     explode() {
         if (HERO.dead) return;

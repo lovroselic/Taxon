@@ -875,21 +875,19 @@ class Decal3D extends IAM {
         console.log("------------------------------------------");
     }
     checkCollisionToHero() {
-        //https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
         const IA = this.map.item3D;
         if (!IA) return false;
-        const GA = this.map.GA;
+
         const heroGrid = Vector3.to_Grid3D(this.hero.player.pos);
-        //console.log("heroGrid", heroGrid);
 
         if (!IA.empty(heroGrid)) {
             const itemID = IA.unroll(heroGrid);                     // by design it can be only single item
             const item = this.show(itemID);
             if (item) {
-                //console.info("item", item, "itemID", itemID);
                 const hit = GRID.collisionBoundingBox(this.hero.player.absoluteBoundingBox, item.absoluteBoundingBox);
                 if (hit) {
-                    throw "HIT";
+                    this.remove(itemID);
+                    return this.hero.hitObstacle();                 // required method on HERO, throw error by design if not implemented
                 }
             }
         }
