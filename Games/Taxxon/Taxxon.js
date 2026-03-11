@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.5.1",
+    VERSION: "0.5.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",

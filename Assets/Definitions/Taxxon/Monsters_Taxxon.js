@@ -68,6 +68,20 @@ const MONSTER_TYPE = {
         moveSpeed: 1.2,
         material: MATERIAL.standard,
     },
+    SpaceShuttle: {
+        name: "SpaceShuttle",
+        model: "SpaceShuttle",
+        scale: 1.3 / 2 ** 4,
+        rotateToNorth: Math.PI,
+        midHeight: 0.0, //
+        fly: 0.001,
+        flier: true,
+        score: 50, 
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 8, ["ascent"]],
+        moveSpeed: 0.7,
+        material: MATERIAL.standard,
+    },
 };
 
 const FIRE_TYPES = {
