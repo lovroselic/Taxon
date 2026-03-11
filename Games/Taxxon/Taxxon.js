@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.5.0",
+    VERSION: "0.5.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -352,8 +352,7 @@ const HERO = {
         if (HERO.falling) return;
         if (!HERO.canShoot) return;
 
-        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, - 0.62, 0.015)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
-        //console.info("bullet", bullet, bullet.pos, "hero", this.player.pos);
+        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, -0.05, 0.015)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
         BULLET3D.add(bullet);
         this.useFuel(1);
         HERO.canShoot = false;
@@ -365,7 +364,7 @@ const HERO = {
         if (DEBUG.VERBOSE) console.warn("HERO hit by missile", missile,);
 
     },
-    hitObstacle(){
+    hitObstacle() {
         this.explode();
     },
     explode() {
@@ -508,7 +507,9 @@ const GAME = {
         ENGINE.GAME.setGameLoop(GAME.run);
         ENGINE.GAME.start(16);
 
-        AI.immobileWander = true;
+        AI.immobileWander = false;
+        IndexArrayManagers.DEADLY_TOUCH = true;
+        IndexArrayManagers.EE_COLLISION_CHECK = false;
         WebGL.setAmbientStrength(0.1);
         WebGL.setDiffuseStrength(1.0);
         //WebGL.setSpecularStrength(0.0);
@@ -597,7 +598,6 @@ const GAME = {
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-        //start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + HERO.height, start_grid.y + 0.5);
         start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
@@ -661,7 +661,6 @@ const GAME = {
         console.warn(direction);
         console.warn(back_offset);
 
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, translation_direction, translation_offset, direction, back_offset);
 
         WebGL.hero.topCamera.translation_direction.x = translation_direction.x;
         WebGL.hero.topCamera.translation_direction.y = translation_direction.y;

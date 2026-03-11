@@ -53,7 +53,22 @@ const HERO_TYPE = {
     }
 };
 
-const MONSTER_TYPE = {};
+const MONSTER_TYPE = {
+    Rocket: {
+        name: "Rocket",
+        model: "Rocket",
+        scale: 1.5 / 2 ** 2,
+        rotateToNorth: Math.PI / 2,
+        midHeight: 0.0, //
+        fly: 0.001,
+        flier: true,
+        score: 100, 
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 8, ["ascent"]],
+        moveSpeed: 1.2,
+        material: MATERIAL.standard,
+    },
+};
 
 const FIRE_TYPES = {
     Fire: {

@@ -352,7 +352,7 @@ const WebGL = {
         ITEM3D.init(map, hero);
         DYNAMIC_ITEM3D.init(map, hero);
         MISSILE3D.init(map, hero);
-        BULLET3D.init(map, hero);
+        BULLET3D.init(map, hero, game);
         FIRE3D.init(map, hero);
         INTERACTIVE_DECAL3D.init(map);
         INTERACTIVE_BUMP3D.init(map);
@@ -4682,15 +4682,19 @@ class $3D_Entity {
     die(expType, exp = 0) {
         this.storageLog();
         exp += this.xp;
-        this.remove();
-        if (this.IAM.usingReIndex) this.IAM.setReindex();
+        this.kill();
         this.dropInventory();
-        EXPLOSION3D.add(new (eval(this.deathType))(this.moveState.pos.translate(DIR_UP, this.midHeight)));
         this.IAM.hero.incExp(exp, expType);
         AUDIO.MonsterDeath.volume = RAY.volume(this.distance);
         AUDIO.MonsterDeath.play();
         this.IAM.map.killCount++;
         this.IAM.map.totalKills++;
+    }
+    kill() {
+        /** simplified die */
+        this.remove();
+        if (this.IAM.usingReIndex) this.IAM.setReindex();
+        EXPLOSION3D.add(new (eval(this.deathType))(this.moveState.pos.translate(DIR_UP, this.midHeight)));
     }
     applyDamage(damage, exp) {
         this.health -= damage;

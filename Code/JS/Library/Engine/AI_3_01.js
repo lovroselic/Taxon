@@ -26,7 +26,7 @@ knownBugs:
 /////////////////////////////////////////
 
 const AI = {
-    VERSION: "3.00",
+    VERSION: "3.01",
     CSS: "color: silver",
     VERBOSE: false,
     INI: {
@@ -78,9 +78,13 @@ const AI = {
         }
     },
     immobile(enemy, wasWandering = false) {
-        if (this.VERBOSE) console.warn(`${enemy.name}-${enemy.id} IMMOBILE`);
+        //if (this.VERBOSE) console.warn(`${enemy.name}-${enemy.id} IMMOBILE`);
         if (!wasWandering && AI.immobileWander) return this.wanderer(enemy);  // preventing endless recursion
         return [NOWAY3];
+    },
+    ascent(enemy){
+        //if (this.VERBOSE) console.warn(`${enemy.name}-${enemy.id} Ascending`);
+        return [ABOVE3];
     },
     hunt(enemy, exactPosition) {
         if (this.VERBOSE) console.warn("...hunt", enemy.name, enemy.id, "exactPosition", exactPosition);

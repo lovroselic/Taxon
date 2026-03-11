@@ -3681,6 +3681,7 @@ class $3D_MoveState {
         this.grid.z += this.parent.heigth + $3D_MoveState.E;                                             // adjusted to height + small E   
         this.referencePos = Vector3.from_grid3D(this.grid);                                              //to display coordinates; which are used for fast collision detection between HERO and Enemies
         //console.warn("....setGrid", this.parent.name, this.parent.id, this.grid );
+        this.absoluteBoundingBox = this.boundingBox.setAbsoluteBoundingBox(this.referencePos);
     }
 }
 class _1D_MoveState {

@@ -15,6 +15,8 @@ const IndexArrayManagers = {
     VERSION: "4.01",
     VERBOSE: false,
     DEAD_LAPSED_TIME: 5,
+    DEADLY_TOUCH: false,
+    EE_COLLISION_CHECK: true,
 };
 
 class IAM {
@@ -95,10 +97,11 @@ class IAM {
         }
         if (this.reIndexSwitch) this.reIndexRequired = false;
     }
-    init(map, hero) {
+    init(map, hero, game) {
         this.POOL = [];
         this.linkMap(map);
         this.hero = hero || null;
+        this.game = game;
     }
     isGridFree(grid) {
         return this.map[this.IA].empty(grid);
@@ -1014,10 +1017,37 @@ class Bullet3D extends IAM {
                 }
 
                 this.missile_object_collision(obj, pos);
+                this.missile_entity_collision(obj, pos);
 
             }
         }
     }
+
+    missile_entity_collision(obj, grid) {
+        const IA = this.map[this.enemyIA];
+        if (!IA) return false;
+
+        //console.info("grid", grid);
+
+        if (!IA.empty(grid)) {
+            const possibleEnemies = IA.unroll(grid);
+            //console.warn("possibleEnemies", possibleEnemies);
+
+            for (let P of possibleEnemies) {
+                const enemy = this.entity_IAM.show(P);
+                if (enemy) {
+                    const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox);
+                    //console.log("*", enemy, hit);
+                    if (hit) {
+                        obj.clean();
+                        enemy.kill();
+                        this.game.addScore(enemy.score);
+                    }
+                }
+            }
+        }
+    }
+
     missile_object_collision(obj, grid) {
         const IA = this.map[this.itemIA];
         if (!IA) return false;
@@ -1034,8 +1064,6 @@ class Bullet3D extends IAM {
             }
         }
     }
-
-    missile_entity_collision(obj, GA) { }
 
 }
 
@@ -1141,6 +1169,8 @@ class Animated_3d_entity extends IAM {
         this.setup();
 
         const heroRefGrid = Vector3.to_Grid3D(this.hero.player.pos);
+        if (GA.isOutOfBounds(heroRefGrid)) return;                                                  // nothing to do if hero is OOB
+        //console.warn("heroRefGrid",heroRefGrid, GA.isOutOfBounds(heroRefGrid));
         GRID.calcDistancesBFS_A_3D(heroRefGrid, map, false, GROUND_MOVE_GRID_EXCLUSION);            //ground exlusion 3d on xy plane, this needs to be separate because of hunting on exact position!
         GRID.calcDistancesBFS_A_3D(heroRefGrid, map, true, AIR_MOVE_GRID_EXCLUSION, "airNodeMap");  //air exclusion fully 3d
 
@@ -1153,17 +1183,30 @@ class Animated_3d_entity extends IAM {
                 entity.setDistanceFromNodeMap(map.GA.airNodeMap, "airDistance");
                 if (entity.petrified) continue;
 
+                const entityGrid = Grid3D.toClass(entity.moveState.grid);
+                if (GA.isOutOfBounds(entityGrid)) {
+                    entity.remove();
+                    continue;
+                }
+
                 //enemy/enemy collision resolution
-                if (this.enemy_enemy_collision_resolution(entity, map, date)) continue;
+                if (IndexArrayManagers.EE_COLLISION_CHECK && this.enemy_enemy_collision_resolution(entity, map, date)) continue;
 
                 //enemy/player collision
                 if (!this.hero.dead || this.hero.player.isJumping) {
                     const EP_hit = this.hero.player.circleCollision(entity);
                     if (EP_hit) {
+
+                        if (IndexArrayManagers.DEADLY_TOUCH) {
+                            entity.kill();
+                            this.hero.explode();
+                        }
+
                         if (entity.canAttack) {
                             entity.performAttack(this.hero);
                             if (IndexArrayManagers.VERBOSE) console.info(`${entity.name}-${entity.id} attacking`);
                         }
+
                         entity.setView(this.hero.player.pos);
                         entity.update(date);
                         continue;
@@ -1191,9 +1234,11 @@ class Animated_3d_entity extends IAM {
                 //set behaviour and move
                 let passiveFlag = flagArray.includes(true);
                 let distance = entity.distance;
-                if (entity.caster) {
+                if (entity.caster || entity.flier) {
                     distance = entity.airDistance;
                 }
+
+                //console.log(`${entity.id}-${entity.name} distance: ${distance}`);
 
                 entity.behaviour.manage(entity, distance, passiveFlag);
                 if (!entity.hasStack()) {

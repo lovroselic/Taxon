@@ -46,7 +46,7 @@ const GRID = {
         );
 
     },
-    collisionPosInBoundingBox(pos, BB, FPgrid3D) {
+    collisionPosInBoundingBox(pos, BB, FPgrid3D = new FP_Grid3D()) {
         const origin = Vector3.from_grid3D(FPgrid3D);
 
         return (

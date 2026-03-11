@@ -467,6 +467,7 @@ const GAME = {
       case "monster":
         switch (currentValue) {
           case MAPDICT.EMPTY:
+          case MAPDICT.HOLE:
             let monsterValue = $("#monster_type")[0].value;
             $MAP.map.monsters.push(Array(gridIndex, monsterValue));
             break;
@@ -1241,7 +1242,8 @@ const GAME = {
     /** monster */
     if (typeof MONSTER_TYPE !== "undefined") {
       for (const monsterType in MONSTER_TYPE) {
-        $("#monster_type").append(`<option value="${monsterType}">${monsterType} A: ${MONSTER_TYPE[monsterType].attack} D: ${MONSTER_TYPE[monsterType].defense} H: ${MONSTER_TYPE[monsterType].health} M: ${MONSTER_TYPE[monsterType].magic} XP: ${MONSTER_TYPE[monsterType].xp}</option>`);
+        //$("#monster_type").append(`<option value="${monsterType}">${monsterType} A: ${MONSTER_TYPE[monsterType].attack} D: ${MONSTER_TYPE[monsterType].defense} H: ${MONSTER_TYPE[monsterType].health} M: ${MONSTER_TYPE[monsterType].magic} XP: ${MONSTER_TYPE[monsterType].xp}</option>`);
+        $("#monster_type").append(`<option value="${monsterType}">${monsterType}</option>`);
       }
     }
 
