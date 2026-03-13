@@ -68,7 +68,7 @@ const AI = {
         if (AI.VERBOSE) console.info(enemy.name, enemy.id, "WANDERER", enemy.moveState.pos, "gridValue", gridValue, "dirs", directions, "this.getPosition(enemy)", this.getPosition(enemy));
         if (directions.length) {
             const randomDir = directions.chooseRandom();
-            if (randomDir.constructor.name !== "Vector3D") throw "WTF!";  
+            if (randomDir.constructor.name !== "Vector3D") throw "WTF!";
             return [randomDir];
         } else {
             const fallBackDir = enemy.moveState.dir.mirror();
@@ -82,9 +82,47 @@ const AI = {
         if (!wasWandering && AI.immobileWander) return this.wanderer(enemy);  // preventing endless recursion
         return [NOWAY3];
     },
-    ascent(enemy){
+    ascent(enemy) {
         //if (this.VERBOSE) console.warn(`${enemy.name}-${enemy.id} Ascending`);
         return [ABOVE3];
+    },
+    interceptor(enemy, ARG) {
+        /**
+         * assumption: interceptor creeps in -x dir, and reduces deistance to hero, trying to reach to the same plane > line
+         */
+        let playerPosition = Grid3D.toClass(ARG.playerPosition);
+        if (this.VERBOSE) console.log("\n------------------------------");
+        if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
+        console.log("enemy", enemy.airDistance, enemy);
+        let nodeMap = enemy.parent.map.GA.airNodeMap;
+        let grid = this.getPosition(enemy);
+        if (grid.x <= playerPosition.x) return [new Vector3D(-1, 0, 0)];
+        if (this.VERBOSE) console.log(".....enemy position grid", grid);
+        let goto = nodeMap[grid.x][grid.y][grid.z]?.goto || NOWAY3;
+
+        if (GRID.same3D(goto, LEFT3)) {
+            console.warn("need different goto", goto);
+
+            /** z first */
+            let dZ =  playerPosition.z - grid.z;
+            if (dZ !== 0) {
+                goto.z = dZ / Math.abs(dZ);;
+                console.warn("goto.z", goto.z);
+            } else {
+                /** y second */
+                let dY = playerPosition.y - grid.y;
+                if (dY !== 0) {
+                    goto.y = dY / Math.abs(dY);
+                    console.warn("goto.y", goto.y);
+                };
+            }
+        }
+
+        goto.x = -1;                // creep forward always 
+        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
+
+        return [goto];
+
     },
     hunt(enemy, exactPosition) {
         if (this.VERBOSE) console.warn("...hunt", enemy.name, enemy.id, "exactPosition", exactPosition);
@@ -232,10 +270,8 @@ const AI = {
                 const GA = enemy.parent.map.GA;
                 const IA = enemy.parent.map.enemyIA;
                 const enemyPos = this.getPosition(enemy);
-                //const playerGrid = Grid.toClass(ARG.playerPosition);
                 const player3DGrid = Vector3.to_Grid3D(ARG.exactPlayerPosition);
 
-                //if ((enemy.shoot3D || GRID.sameFloor(enemyPos, player3DGrid)) && GRID.vision3D(enemyPos, playerGrid, GA) && GRID.freedom3D(enemyPos, playerGrid, IA)) enemy.canShoot = true;
                 if ((enemy.shoot3D || GRID.sameFloor(enemyPos, player3DGrid)) && GRID.vision3D(enemyPos, player3DGrid, GA) && GRID.freedom3D(enemyPos, player3DGrid, IA)) enemy.canShoot = true;
                 if (this.VERBOSE) console.info(`..${enemy.name}-${enemy.id} can shoot: ${enemy.canShoot}`);
 
@@ -261,9 +297,7 @@ const AI = {
         const map = enemy.parent.map;
         const grid = this.getPosition(enemy);
         const playerGrid = Grid3D.toClass(ARG.playerPosition);
-        //console.log("..grid", grid, "playerGrid", playerGrid);
         const directions = map.GA.getDirectionsFromNodeMap(grid, map.GA.nodeMap, enemy.fly);
-        //console.log("directions", directions);
         let possible = [];
         let max = [];
         let curMax = 0;

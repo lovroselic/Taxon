@@ -931,7 +931,7 @@ const ENGINE = {
     },
     parseObjectFile(text) {
 
-         function addVertex(vert) {
+        function addVertex(vert) {
             const ptn = vert.split('/');
             ptn.forEach((objIndexStr, i) => {
                 if (objIndexStr === "") {
@@ -1006,7 +1006,7 @@ const ENGINE = {
         ELEMENT[NAME].textureCoordinates = webglVertexData[1];
         ELEMENT[NAME].vertexNormals = webglVertexData[2];
         ELEMENT[NAME].boundingBox = ELEMENT.getBoundingBox(ELEMENT[NAME]);
-       
+
 
     },
     KEY: {
@@ -3656,6 +3656,7 @@ class $3D_MoveState {
         this.directionVector = Vector3.from_3D_dir(this.dir);
     }
     setRotation() {
+        if (this.parent.preventRotation && this.parent.firstRotateComplete) return;
         //rotation on 2d plane around Y display axis
         if (this.lookAngle) {
             this.rotation_angle = this.lookAngle;

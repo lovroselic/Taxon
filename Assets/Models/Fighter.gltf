@@ -16,10 +16,21 @@
     "nodes" : [
         {
             "name" : "Bone",
+            "rotation" : [
+                0,
+                -0.9999860525131226,
+                0,
+                0.005286506377160549
+            ],
+            "scale" : [
+                0.9999999403953552,
+                1,
+                0.9999999403953552
+            ],
             "translation" : [
-                -0.3772881329059601,
+                0.35927072167396545,
                 -2.2869213012199907e-07,
-                1.7020995616912842
+                -1.7059935331344604
             ]
         },
         {
@@ -136,41 +147,41 @@
         {
             "bufferView" : 0,
             "componentType" : 5126,
-            "count" : 54820,
+            "count" : 55062,
             "max" : [
-                121.45787048339844,
-                49.21172332763672,
-                66.869384765625
+                142.38836669921875,
+                49.05451583862305,
+                73.09739685058594
             ],
             "min" : [
-                -104.92953491210938,
-                -14.191985130310059,
-                -80.85104370117188
+                -83.99903869628906,
+                -14.349193572998047,
+                -74.62303161621094
             ],
             "type" : "VEC3"
         },
         {
             "bufferView" : 1,
             "componentType" : 5126,
-            "count" : 54820,
+            "count" : 55062,
             "type" : "VEC2"
         },
         {
             "bufferView" : 2,
             "componentType" : 5126,
-            "count" : 54820,
+            "count" : 55062,
             "type" : "VEC3"
         },
         {
             "bufferView" : 3,
             "componentType" : 5121,
-            "count" : 54820,
+            "count" : 55062,
             "type" : "VEC4"
         },
         {
             "bufferView" : 4,
             "componentType" : 5126,
-            "count" : 54820,
+            "count" : 55062,
             "type" : "VEC4"
         },
         {
@@ -219,64 +230,64 @@
     "bufferViews" : [
         {
             "buffer" : 0,
-            "byteLength" : 657840,
+            "byteLength" : 660744,
             "byteOffset" : 0,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 438560,
-            "byteOffset" : 657840,
+            "byteLength" : 440496,
+            "byteOffset" : 660744,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 657840,
-            "byteOffset" : 1096400,
+            "byteLength" : 660744,
+            "byteOffset" : 1101240,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 219280,
-            "byteOffset" : 1754240,
+            "byteLength" : 220248,
+            "byteOffset" : 1761984,
             "target" : 34962
         },
         {
             "buffer" : 0,
-            "byteLength" : 877120,
-            "byteOffset" : 1973520,
+            "byteLength" : 880992,
+            "byteOffset" : 1982232,
             "target" : 34962
         },
         {
             "buffer" : 0,
             "byteLength" : 254778,
-            "byteOffset" : 2850640,
+            "byteOffset" : 2863224,
             "target" : 34963
         },
         {
             "buffer" : 0,
             "byteLength" : 64,
-            "byteOffset" : 3105420
+            "byteOffset" : 3118004
         },
         {
             "buffer" : 0,
             "byteLength" : 8,
-            "byteOffset" : 3105484
+            "byteOffset" : 3118068
         },
         {
             "buffer" : 0,
             "byteLength" : 24,
-            "byteOffset" : 3105492
+            "byteOffset" : 3118076
         },
         {
             "buffer" : 0,
             "byteLength" : 32,
-            "byteOffset" : 3105516
+            "byteOffset" : 3118100
         },
         {
             "buffer" : 0,
             "byteLength" : 24,
-            "byteOffset" : 3105548
+            "byteOffset" : 3118132
         }
     ],
     "samplers" : [
@@ -287,7 +298,7 @@
     ],
     "buffers" : [
         {
-            "byteLength" : 3105572,
+            "byteLength" : 3118156,
             "uri" : "Fighter.bin"
         }
     ]

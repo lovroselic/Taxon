@@ -1177,6 +1177,10 @@ class Animated_3d_entity extends IAM {
         for (const entity of this.POOL) {
             if (entity) {
                 entity.reset();
+                if (GA.isOutOfBounds(Grid3D.toClass(entity.moveState.grid))) {
+                    entity.remove();
+                    continue;
+                }
 
                 //set distance
                 entity.setDistanceFromNodeMap(map.GA.nodeMap);
@@ -1195,6 +1199,7 @@ class Animated_3d_entity extends IAM {
                 //enemy/player collision
                 if (!this.hero.dead || this.hero.player.isJumping) {
                     const EP_hit = this.hero.player.circleCollision(entity);
+                    
                     if (EP_hit) {
 
                         if (IndexArrayManagers.DEADLY_TOUCH) {

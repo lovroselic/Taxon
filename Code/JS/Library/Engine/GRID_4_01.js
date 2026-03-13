@@ -508,16 +508,22 @@ const GRID = {
 
             for (let D = 0; D < DIR.length; D++) {
 
-                let x = (node.grid.x + DIR[D].x + dungeon.width) % dungeon.width;
-                let y = (node.grid.y + DIR[D].y + dungeon.height) % dungeon.height;
-                let z = (node.grid.z + DIR[D].z + dungeon.depth) % dungeon.depth;
+                let x = (node.grid.x + DIR[D].x);
+                let y = (node.grid.y + DIR[D].y);
+                let z = (node.grid.z + DIR[D].z);
+
+                if (x < 0 || y < 0 || z < 0) continue;
+                if (x >= dungeon.width) continue;
+                if (y >= dungeon.height) continue;
+                if (z >= dungeon.depth) continue;
+
                 let nextNode = dungeon.GA[nodeMap][x][y][z];
 
                 if (nextNode) {
                     if (nextNode.distance > node.distance + 1) {
                         nextNode.distance = node.distance + 1;
                         nextNode.prev = node.grid;
-                        node.exclusion ? nextNode.goto = NOWAY3 : nextNode.goto = DIR[D].mirror(); //this prevens moving in exlusion zone using goto, but still provides  distance;
+                        node.exclusion ? nextNode.goto = NOWAY3 : nextNode.goto = DIR[D].mirror(); //this prevents moving in exlusion zone using goto, but still provides  distance;
 
                         Q.queueSimple(nextNode);
                     }

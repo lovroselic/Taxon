@@ -2481,6 +2481,7 @@ class $3D_player {
             distance = entity.moveState.referencePos.EuclidianDistance(this.pos);
         }
         let touchDistance = entity.r + this.r;
+        console.error("circleCollision", distance, touchDistance);
         return distance < touchDistance;
     }
     respond(lapsedTime) {
@@ -4464,6 +4465,7 @@ class $3D_Entity {
         }
 
         this.moveState = new $3D_MoveState(this.translate, dir, this.rotateToNorth, this);
+        this.firstRotateComplete = true;
 
         const dZ = (this.boundingBox.max.z - this.boundingBox.min.z) / 2;
         const dX = (this.boundingBox.max.x - this.boundingBox.min.x) / 2;

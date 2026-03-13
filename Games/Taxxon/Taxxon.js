@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.5.2",
+    VERSION: "0.5.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -563,10 +563,10 @@ const GAME = {
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80); //zaxxon perspective
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);               //zaxxon perspective
 
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75); //side - for debug
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80); //top back
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                 //side - for debug
+        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                    //top back
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
