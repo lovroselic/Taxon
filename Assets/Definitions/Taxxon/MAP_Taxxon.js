@@ -25,7 +25,7 @@ const MAP = {
         ceil: "GreyFloor27",
         start: '[1350,5]',
         lights: '[[2349,7,"FuturisticLight_001","standard"]]',
-        monsters: '[[2489,"Fighter"]]',
+        monsters: '[[2489,"Fighter"],[1054,"Fighter"],[129,"Fighter"],[309,"Fighter"],[1007,"Fighter"],[1070,"Fighter"],[1299,"XWing"],[1451,"XWing"],[1369,"XWing"]]',
         objects: '[[156,"Oil"],[306,"Oil"],[66,"Oil"],[186,"Oil"],[216,"Oil"],[246,"Oil"]]',
     }
     ,

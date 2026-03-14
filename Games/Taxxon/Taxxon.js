@@ -213,7 +213,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.5.3",
+    VERSION: "0.5.4",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -601,7 +601,8 @@ const GAME = {
         start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
-        //HERO.player.setSpeed(5.0);
+        HERO.player.useCollision(HERO.player.boundingBoxCollision);
+
 
         this.buildWorld(level);
         GAME.setCameraView();

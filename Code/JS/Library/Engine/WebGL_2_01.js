@@ -2472,6 +2472,12 @@ class $3D_player {
 
         return null;
     }
+    useCollision(collisionFunction = this.circleCollision) {
+        this.collisionMethod = collisionFunction;
+    }
+    boundingBoxCollision(entity) {
+        return GRID.collisionBoundingBox(this.absoluteBoundingBox, entity.moveState.absoluteBoundingBox);
+    }
     circleCollision(entity, nextPos3 = null) {
         //this is now 3D check
         let distance;
@@ -2481,7 +2487,6 @@ class $3D_player {
             distance = entity.moveState.referencePos.EuclidianDistance(this.pos);
         }
         let touchDistance = entity.r + this.r;
-        console.error("circleCollision", distance, touchDistance);
         return distance < touchDistance;
     }
     respond(lapsedTime) {

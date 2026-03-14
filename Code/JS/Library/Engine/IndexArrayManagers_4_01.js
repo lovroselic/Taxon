@@ -1198,7 +1198,8 @@ class Animated_3d_entity extends IAM {
 
                 //enemy/player collision
                 if (!this.hero.dead || this.hero.player.isJumping) {
-                    const EP_hit = this.hero.player.circleCollision(entity);
+                    //const EP_hit = this.hero.player.circleCollision(entity);
+                    const EP_hit = this.hero.player.collisionMethod(entity);
                     
                     if (EP_hit) {
 
