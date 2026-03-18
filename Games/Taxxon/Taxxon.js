@@ -210,10 +210,11 @@ const INI = {
     SHIT_ROT_ANGLE: Math.radians(30),
     FUEL_BIN: 15,
     FUEL_CONSUMPTION: 25, //units per grid
+    MONSTER_SHOOT_TIMEOUT: 1999,
 };
 
 const PRG = {
-    VERSION: "0.5.4",
+    VERSION: "0.5.5",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -391,6 +392,9 @@ const HERO = {
     },
     finalDeath() {
         console.error("HERO FINAL death");
+
+        GAME.checkScore();
+        TITLE.hiScore();
         for (const L of LIGHTS3D.POOL) {
             L.lightColor = Array(0, 0, 0);
         }
@@ -400,7 +404,7 @@ const HERO = {
         ENGINE.GAME.ANIMATION.next(GAME.gameOverRun);
 
         GAME.restarted = true;
-        MAP[GAME.level].map.storage.clear();
+        //MAP[GAME.level].map.storage.clear();
     },
     manage() {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
@@ -930,7 +934,11 @@ const GAME = {
     addScore(score) {
         GAME.score += score;
         TITLE.score();
-    }
+    },
+    checkScore() {
+        SCORE.checkScore(GAME.score);
+        SCORE.hiScore();
+    },
 };
 
 const TITLE = {

@@ -31,13 +31,13 @@ const GRID = {
          * B - static item
          */
 
-        console.log("\n **************************");
+        /*console.log("\n **************************");
         console.log("x", A.min.x <= B.max.x && A.max.x >= B.min.x, A.min.x, B.max.x, A.max.x, B.min.x);
         console.log("y", A.min.y <= B.max.y && A.max.y >= B.min.y, A.min.y, B.max.y, A.max.y, B.min.y);
         console.log("z", A.min.z <= B.max.z && A.max.z >= B.min.z, A.min.z, B.max.z, A.max.z, B.min.z);
         console.log("HERO.player.pos", HERO.player.pos);
         console.warn("HERO pos y", HERO.player.pos.y, "HERO.player.pos.y - HERO.player.r", HERO.player.pos.y - HERO.player.r);
-        console.log("\n --------------------------");
+        console.log("\n --------------------------");*/
 
         return (
             A.min.x <= B.max.x && A.max.x >= B.min.x &&
@@ -48,6 +48,13 @@ const GRID = {
     },
     collisionPosInBoundingBox(pos, BB, FPgrid3D = new FP_Grid3D()) {
         const origin = Vector3.from_grid3D(FPgrid3D);
+
+        console.log("\n **************************");
+        console.log("x", pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x, pos.x, origin.x + BB.min.x, origin.x + BB.max.x);
+        console.log("y", pos.z >= origin.z + BB.min.z && pos.z <= origin.z + BB.max.z, pos.z, origin.z + BB.min.z, origin.z + BB.max.z);
+        console.log("z", pos.y >= origin.y + BB.min.y && pos.y <= origin.y + BB.max.y, pos.y, origin.y + BB.min.y, origin.y + BB.max.y);
+        console.log("\n --------------------------");
+
 
         return (
             pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x &&
@@ -1787,6 +1794,14 @@ class IA_Dimension_Agnostic_Methods {
         this.banks = banks;
         this.bankBitWidth = this.gridSizeBit / this.banks;
         this.layerSize = 2 ** this.bankBitWidth - 1;
+    }
+    emptyGrids(startIndex, len) {
+        const end = startIndex + len;
+        const map = this.map;
+        for (let i = startIndex; i < end; i++) {
+            if (map[i] !== 0) return false;
+        }
+        return true;
     }
 }
 

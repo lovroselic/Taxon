@@ -4450,6 +4450,9 @@ class $3D_Entity {
         this.type = type;
         this.which = null;
         this.directMagicDamage = false;
+        this.shooter = false;
+        this.caster = false;
+        this.preventRotation = false;
         ImportTypeToConstructor(this, type);
         if (this.texture) this.changeTexture(TEXTURE[this.texture]);                //superseed from model, if forced
 
@@ -4481,6 +4484,7 @@ class $3D_Entity {
 
         this.canAttack = true;
         this.canShoot = false;
+
         if (this.magic > 0 && this.mana > 0) this.mana = (this.mana * this.missile.calcMana(this.magic)) * 1.1; //10% surplus to support random cost
         this.petrified = false;
         if (!this.static) this.behaviour = new Behaviour(...this.behaviourArguments);
@@ -4726,6 +4730,7 @@ class $3D_Entity {
         this.mana = 0;
     }
     shoot(GA) {
+        if (!this.caster) return;
         const dir = this.missileType.bounce3D ? this.moveState.real_3D_direction_to_player : Vector3.from_2D_dir(this.moveState.lookDir);
         let position = this.moveState.pos.translate(dir, this.r);
         position.add_y(0.5);
@@ -4739,10 +4744,25 @@ class $3D_Entity {
         this.mana -= manaCost;
 
         MISSILE3D.add(missile);
+        setTimeout(this.resetCasting.bind(this), INI.MONSTER_SHOOT_TIMEOUT);
+    }
+    shootBullet(GA) {
+        if (!this.shooter) return;
+        console.error("-------------------->", this.name, this.id, "shoots");
+
+        const position = this.moveState.pos.translate(DIR_BACKWARD, this.r);
+        const bullet = new Bullet(position, DIR_BACKWARD, COMMON_ITEM_TYPE.Bullet);
+        BULLET3D.add(bullet);
+
+        this.canShoot = false;
+        this.shooter = false;
         setTimeout(this.resetShooting.bind(this), INI.MONSTER_SHOOT_TIMEOUT);
     }
-    resetShooting() {
+    resetCasting() {
         this.caster = true;
+    }
+    resetShooting() {
+        this.shooter = true;
     }
     setGuardPosition(grid) {
         this.guardPosition = grid;

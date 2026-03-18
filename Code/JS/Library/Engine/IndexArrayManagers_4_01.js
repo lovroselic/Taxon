@@ -1006,7 +1006,7 @@ class Bullet3D extends IAM {
 
                 const pos = Vector3.to_Grid3D(obj.pos);
 
-                if (pos.x > GA.width) {                         // out of bounds in the forward direction
+                if (pos.x > GA.width || pos.x < 0) {                         // out of bounds in the forward/back direction
                     obj.clean();
                     continue;
                 }
@@ -1018,9 +1018,18 @@ class Bullet3D extends IAM {
 
                 this.missile_object_collision(obj, pos);
                 this.missile_entity_collision(obj, pos);
-
+                this.missile_hero_collision(obj);
             }
         }
+    }
+
+    missile_hero_collision(obj) {
+        const hit = GRID.collisionPosInBoundingBox(obj.pos, this.hero.player.absoluteBoundingBox);
+        if (hit){
+            obj.clean();
+            return this.hero.explode();
+        }
+
     }
 
     missile_entity_collision(obj, grid) {
@@ -1037,7 +1046,6 @@ class Bullet3D extends IAM {
                 const enemy = this.entity_IAM.show(P);
                 if (enemy) {
                     const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox);
-                    //console.log("*", enemy, hit);
                     if (hit) {
                         obj.clean();
                         enemy.kill();
@@ -1200,7 +1208,7 @@ class Animated_3d_entity extends IAM {
                 if (!this.hero.dead || this.hero.player.isJumping) {
                     //const EP_hit = this.hero.player.circleCollision(entity);
                     const EP_hit = this.hero.player.collisionMethod(entity);
-                    
+
                     if (EP_hit) {
 
                         if (IndexArrayManagers.DEADLY_TOUCH) {
@@ -1222,8 +1230,9 @@ class Animated_3d_entity extends IAM {
                 //enemy shoot
                 if (!this.hero.dead) {
                     if (entity.canShoot) {
-                        entity.setView(this.hero.player.pos);
+                        if (!entity.preventRotation) entity.setView(this.hero.player.pos);
                         entity.shoot(GA);
+                        entity.shootBullet(GA);
                         if (IndexArrayManagers.VERBOSE) console.info(`${entity.name}-${entity.id} shooting`);
                     }
                 }

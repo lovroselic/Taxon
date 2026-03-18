@@ -206,6 +206,7 @@ const DIR_DOWN = Vector3.from_array(glMatrix.vec3.fromValues(0, -1, 0));
 const DIR_UP = Vector3.from_array(glMatrix.vec3.fromValues(0, 1, 0));
 const DIR_NOWAY = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, 0));
 const DIR_FORWARD = Vector3.from_array(glMatrix.vec3.fromValues(1, 0, 0));
+const DIR_BACKWARD = Vector3.from_array(glMatrix.vec3.fromValues(-1, 0, 0));
 const DIR_RIGHT = Vector3.from_array(glMatrix.vec3.fromValues(0, 0,  1));
 const DIR_LEFT  = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, -1));
 //END
