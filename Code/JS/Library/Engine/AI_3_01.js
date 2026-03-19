@@ -91,35 +91,28 @@ const AI = {
          * assumption: interceptor creeps in -x dir, and reduces deistance to hero, trying to reach to the same plane > line
          * assumption: shoot resolution, if no friendly fire
          */
-        let playerPosition = Grid3D.toClass(ARG.playerPosition);
+        let playerPosition = Grid3D.toClass(ARG.playerPosition);    // grid coordinates
         if (this.VERBOSE) console.log("\n------------------------------");
         if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
-        console.log("enemy", enemy.airDistance, enemy);
+        //console.log(enemy.name, enemy.id, "enemy distance", enemy.airDistance, enemy);
         let nodeMap = enemy.parent.map.GA.airNodeMap;
-        let grid = this.getPosition(enemy);
-        if (grid.x <= playerPosition.x) return [new Vector3D(-1, 0, 0)];        //creep forward, no shooting anymore
-        if (this.VERBOSE) console.log(".....enemy position grid", grid);
-        let goto = nodeMap[grid.x][grid.y][grid.z]?.goto || NOWAY3;
+        let grid = this.getPosition(enemy);                         //grid coordinates
+        const GA = enemy.parent.map.GA;
+        //if (this.VERBOSE) console.log(".....enemy position grid", grid, "playerPosition.x", playerPosition.x, "GA.airNodeMap", GA.airNodeMap[grid.x][grid.y][grid.z]);
+        if (grid.x <= playerPosition.x || playerPosition.x <= 0) return [new Vector3D(-1, 0, 0)];        //creep forward, no shooting anymore
 
-        if (GRID.same3D(goto, LEFT3)) {
-            //console.warn("need different goto", goto);
+        
+        const path = GRID.pathFromNodeMap3D(grid, GA.airNodeMap);
+        const dirs = GRID.directionsFromPath(path);
+        //console.info("dirs", dirs);
+        const goto = GRID.getUnifiedDirFromPathDirections(dirs);
 
-            /** z first */
-            let dZ = playerPosition.z - grid.z;
-            if (dZ !== 0) {
-                goto.z = dZ / Math.abs(dZ);;
-                //console.warn("goto.z", goto.z);
-            } else {
-                /** y second */
-                let dY = playerPosition.y - grid.y;
-                if (dY !== 0) {
-                    goto.y = dY / Math.abs(dY);
-                    //console.warn("goto.y", goto.y);
-                };
-            }
-        }
+        /** check for walls and simplify goto */
+        let nextGrid = grid.add(goto);
+        if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.y = 0;
+        nextGrid = grid.add(goto);
+        if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.z = 0;
 
-        goto.x = -1;                // creep forward always 
         if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
 
         this.shootBullet(enemy, playerPosition, grid);
@@ -142,7 +135,7 @@ const AI = {
         //console.info("..dX", dX, "sourceIndex", sourceIndex);
 
         /** only if the creep direction is clear, no friendly fire allowed */
-        if (IA.emptyGrids(sourceIndex - dX, dX)) {                          
+        if (IA.emptyGrids(sourceIndex - dX, dX)) {
             enemy.canShoot = true;
             return;
         }

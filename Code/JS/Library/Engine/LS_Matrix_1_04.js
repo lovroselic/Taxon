@@ -60,6 +60,13 @@ class Vector3 {
     static to_FP_Grid3D(v) {
         return new FP_Grid3D(v.x, v.z, v.y);                 //swaps y and Z
     }
+    same(vector3) {
+        return (
+            this.x === vector3.x &&
+            this.y === vector3.y &&
+            this.z === vector3.z
+        );
+    }
     refresh() {
         this.x = this.array[0];
         this.y = this.array[1];
@@ -207,7 +214,7 @@ const DIR_UP = Vector3.from_array(glMatrix.vec3.fromValues(0, 1, 0));
 const DIR_NOWAY = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, 0));
 const DIR_FORWARD = Vector3.from_array(glMatrix.vec3.fromValues(1, 0, 0));
 const DIR_BACKWARD = Vector3.from_array(glMatrix.vec3.fromValues(-1, 0, 0));
-const DIR_RIGHT = Vector3.from_array(glMatrix.vec3.fromValues(0, 0,  1));
-const DIR_LEFT  = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, -1));
+const DIR_RIGHT = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, 1));
+const DIR_LEFT = Vector3.from_array(glMatrix.vec3.fromValues(0, 0, -1));
 //END
 console.log(`%cLS_matrix ${LS_matrix.VERSION} loaded.`, LS_matrix.CSS);

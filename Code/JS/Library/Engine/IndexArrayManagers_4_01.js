@@ -17,6 +17,7 @@ const IndexArrayManagers = {
     DEAD_LAPSED_TIME: 5,
     DEADLY_TOUCH: false,
     EE_COLLISION_CHECK: true,
+    E_WALL_COLLISION_CHECK: false,          //check enemy wall hits 
 };
 
 class IAM {
@@ -1006,7 +1007,7 @@ class Bullet3D extends IAM {
 
                 const pos = Vector3.to_Grid3D(obj.pos);
 
-                if (pos.x > GA.width || pos.x < 0) {                         // out of bounds in the forward/back direction
+                if (pos.x > GA.width || (pos.x < 0) && obj.dir.same(DIR_BACKWARD)) {                         // out of bounds in the forward/back direction
                     obj.clean();
                     continue;
                 }
@@ -1025,7 +1026,7 @@ class Bullet3D extends IAM {
 
     missile_hero_collision(obj) {
         const hit = GRID.collisionPosInBoundingBox(obj.pos, this.hero.player.absoluteBoundingBox);
-        if (hit){
+        if (hit) {
             obj.clean();
             return this.hero.explode();
         }
@@ -1224,6 +1225,18 @@ class Animated_3d_entity extends IAM {
                         entity.setView(this.hero.player.pos);
                         entity.update(date);
                         continue;
+                    }
+                }
+
+                //enemy/wall collision
+                if (IndexArrayManagers.E_WALL_COLLISION_CHECK) {
+                    if (!entity.ignoreWalls) {
+                        const filledGridIndices = entity.inWhichGridIndices();
+                        const hit = GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
+                        if (hit) {
+                            entity.kill();
+                            continue;
+                        }
                     }
                 }
 

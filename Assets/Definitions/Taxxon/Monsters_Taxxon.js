@@ -67,6 +67,7 @@ const MONSTER_TYPE = {
         behaviourArguments: [Infinity, ["immobile"], 13, ["ascent"]],
         moveSpeed: 1.2,
         material: MATERIAL.standard,
+        ignoreWalls: true,
     },
     SpaceShuttle: {
         name: "SpaceShuttle",
@@ -81,6 +82,7 @@ const MONSTER_TYPE = {
         behaviourArguments: [Infinity, ["immobile"], 12, ["ascent"]],
         moveSpeed: 0.7,
         material: MATERIAL.standard,
+        ignoreWalls: true,
     },
     Fighter: {
         name: "Fighter",
@@ -99,6 +101,7 @@ const MONSTER_TYPE = {
         moveSpeed: 2.0,
         material: MATERIAL.standard,
         preventRotation: true,
+        ignoreWalls: false,
     },
     XWing: {
         name: "XWing",
@@ -117,6 +120,7 @@ const MONSTER_TYPE = {
         moveSpeed: 3.0,
         material: MATERIAL.standard,
         preventRotation: true,
+        ignoreWalls: false,
     },
 };
 

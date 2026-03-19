@@ -49,11 +49,11 @@ const GRID = {
     collisionPosInBoundingBox(pos, BB, FPgrid3D = new FP_Grid3D()) {
         const origin = Vector3.from_grid3D(FPgrid3D);
 
-        console.log("\n **************************");
+        /*console.log("\n **************************");
         console.log("x", pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x, pos.x, origin.x + BB.min.x, origin.x + BB.max.x);
         console.log("y", pos.z >= origin.z + BB.min.z && pos.z <= origin.z + BB.max.z, pos.z, origin.z + BB.min.z, origin.z + BB.max.z);
         console.log("z", pos.y >= origin.y + BB.min.y && pos.y <= origin.y + BB.max.y, pos.y, origin.y + BB.min.y, origin.y + BB.max.y);
-        console.log("\n --------------------------");
+        console.log("\n --------------------------");*/
 
 
         return (
@@ -569,6 +569,18 @@ const GRID = {
             }
         }
         return directions;
+    },
+    getUnifiedDirFromPathDirections(dirArray) {
+        let x = 0, y = 0, z = 0;
+
+        for (let i = 0; i < dirArray.length; i++) {
+            const dir = dirArray[i];
+            if (dir.x) x = dir.x;
+            if (dir.y) y = dir.y;
+            if (dir.z) z = dir.z;
+        }
+
+        return new Vector3D(-x, -y, -z);
     },
     getReboundDir(innerPoint, outerPoint, dir, GA, depth) {
         const inner = Grid3D.addDepth(innerPoint, depth);
@@ -1829,6 +1841,9 @@ class ArrayBasedDataStructure3D {
     isOutOfBounds(grid) {
         return grid.x < 0 || grid.x >= this.width || grid.y < 0 || grid.y >= this.height || grid.z < 0 || grid.z >= this.depth;
     }
+    inBounds(grid){
+        return !this.isOutOfBounds(grid);
+    }
     outside(grid) {
         return this.isOutOfBounds(grid);
     }
@@ -1839,8 +1854,8 @@ class ArrayBasedDataStructure3D {
         /** is out of inner bounds */
         return grid.x > this.maxX || grid.x < this.minX || grid.y > this.maxY || grid.y < this.minY || grid.z > this.maxZ || grid.z < this.minZ;
     }
-    gridToIndex(grid) {
-        this.assertBounds(grid);
+    gridToIndex(grid, assertBounds = true) {
+        if (assertBounds) this.assertBounds(grid);
         return grid.x + grid.y * this.width + grid.z * this.width * this.height;
     }
     indexTo2DGridSlice(index, z) {

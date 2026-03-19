@@ -2183,7 +2183,6 @@ class $3D_player {
         const indices = new Set();
         const pos = this.pos;
         let off = new Vector3(this.bb_deltas.x, 2.1 * this.bb_deltas.z, this.bb_deltas.y);
-        //off = off.mul(2.1);
         const BL = Vector3.to_Grid3D(pos.sub(off));
         const TR = Vector3.to_Grid3D(pos.add(off));
         for (let x = BL.x; x <= TR.x; x++) {
@@ -4780,6 +4779,24 @@ class $3D_Entity {
     }
     remove() {
         this.IAM.remove(this.id);
+    }
+    inWhichGridIndices() {
+        const indices = new Set();
+        const GA = this.parent.map.GA;
+        const BL = Vector3.to_Grid3D(this.moveState.absoluteBoundingBox.min);
+        const TR = Vector3.to_Grid3D(this.moveState.absoluteBoundingBox.max);
+
+
+        for (let x = BL.x; x <= TR.x; x++) {
+            for (let y = BL.y; y <= TR.y; y++) {
+                for (let z = BL.z; z <= TR.z; z++) {
+                    let grid = new Grid3D(x, y, z);
+                    if (GA.inBounds(grid)) indices.add(GA.gridToIndex(grid), false);
+                }
+            }
+        }
+
+        return [...indices];
     }
 }
 
