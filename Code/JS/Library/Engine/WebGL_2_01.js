@@ -109,6 +109,8 @@ const WebGL = {
                 case "third_person":
                 case "top_down":
                 case "orto_top_down":
+                case "axonometric":
+                case "sideCamera":
                     this.firstperson = false;
                     break;
                 default:
@@ -1353,7 +1355,9 @@ const WebGL = {
             <input type='button' id='p1' value='First person view [1]' disabled="disabled">
             <input type='button' id='p2' value='Third person, low angle view [2]' disabled="disabled">
             <input type='button' id='p3' value='Third person view [3]' disabled="disabled">
+            <input type='button' id='p4' value='Axonometric view [4]' disabled="disabled">
             <input type='button' id='pt5' value='Top down view [5]' disabled="disabled">
+            <input type='button' id='pt6' value='Side view [6]' disabled="disabled">
             <input type='button' id='pt7' value='Overhead view [7]' disabled="disabled">
         </div>
         `,
@@ -1369,13 +1373,15 @@ const WebGL = {
             $("#p1").on("click", WebGL.GAME.setFirstPerson);
             $("#p2").on("click", WebGL.GAME.setThirdPersonLowAngle);
             $("#p3").on("click", WebGL.GAME.setThirdPerson);
+            $("#p4").on("click", WebGL.GAME.setAxonometricView);
             $("#pt5").on("click", WebGL.GAME.setTopDownView);
+            $("#pt6").on("click", WebGL.GAME.setSideView);
             $("#pt7").on("click", WebGL.GAME.setOrtoTopDownView);
 
             this.allowViews = true;
         },
         disableViewButton(which) {
-            const button_ids = ["#p1", "#p2", "#p3", "#pt5", "#pt7"];
+            const button_ids = ["#p1", "#p2", "#p3", "#p4", "#pt5", "#pt6", "#pt7"];
             for (const btn of button_ids) {
                 if (btn !== which) {
                     $(btn).prop("disabled", false);
@@ -1386,7 +1392,8 @@ const WebGL = {
         setFirstPerson() {
             WebGL.GAME.disableViewButton("#p1");
             if (WebGL.CONFIG.cameraType === "first_person") return;
-            WebGL.CONFIG.set("first_person", true);
+            //WebGL.CONFIG.set("first_person", true);
+             WebGL.CONFIG.set("first_person", false);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.firstPersonCamera);
             WebGL.setCamera(WebGL.hero.firstPersonCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1428,6 +1435,24 @@ const WebGL = {
             WebGL.setCamera(WebGL.hero.orto_overheadCamera);
             WebGL.GAME.positionUpdate();
         },
+        setAxonometricView() {
+            WebGL.GAME.disableViewButton("#p4");
+            if (WebGL.CONFIG.cameraType === "axonometric") return;
+            WebGL.CONFIG.set("axonometric", true);
+            WebGL.hero.player.associateExternalCamera(WebGL.hero.axonometric);
+            WebGL.hero.player.moveSpeed = 2.0;
+            WebGL.setCamera(WebGL.hero.axonometric);
+            WebGL.GAME.positionUpdate();
+        },
+        setSideView() {
+            WebGL.GAME.disableViewButton("#pt6");
+            if (WebGL.CONFIG.cameraType === "sideCamera") return;
+            WebGL.CONFIG.set("sideCamera", true);
+            WebGL.hero.player.associateExternalCamera(WebGL.hero.sideCamera);
+            WebGL.hero.player.moveSpeed = 2.0;
+            WebGL.setCamera(WebGL.hero.sideCamera);
+            WebGL.GAME.positionUpdate();
+        },
         positionUpdate() {
             WebGL.hero.player.camera.update();
             WebGL.hero.player.matrixUpdate();
@@ -1449,8 +1474,16 @@ const WebGL = {
                 WebGL.GAME.setThirdPerson();
                 return;
             }
+            if (map[ENGINE.KEY.map["4"]]) {
+                WebGL.GAME.setAxonometricView();
+                return;
+            }
             if (map[ENGINE.KEY.map["5"]]) {
                 WebGL.GAME.setTopDownView();
+                return;
+            }
+            if (map[ENGINE.KEY.map["6"]]) {
+                WebGL.GAME.setSideView();
                 return;
             }
             if (map[ENGINE.KEY.map["7"]]) {
@@ -1934,7 +1967,6 @@ class $3D_player {
             if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
             this.setModel();
             this.minY = this.model.meshes[0].primitives[0].positions.min[1] * this.scale[1];
-            console.warn("this.minY", this.minY);
             this.matrixUpdate();
             WebGL.playerList.push(this);
             this.defaultRotationMatrix = glMatrix.mat4.clone(this.rotation);

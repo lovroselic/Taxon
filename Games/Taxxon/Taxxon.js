@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.1",
+    VERSION: "0.6.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -277,7 +277,7 @@ const PRG = {
         ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "lives"], null);
         ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "alt", "altover"], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
-        ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score"], "fside");
+        ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score", "stage"], "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText", "fuel", "fuelPlot", "subtitle"], null);
 
         if (DEBUG._2D_display) {
@@ -530,20 +530,22 @@ const GAME = {
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
-        GAME.level = 1;
-        GAME.score = 0;
+        //GAME.level = 1;
+        GAME.level = 2;
+        //GAME.score = 0;
+        GAME.score = 3000;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
         GAME.fps = new FPS_short_term_measurement(300);
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
+        WebGL.GAME.setViewButtons();
 
         ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
 
         GAME.levelStart();
     },
-    //deathPlaceDecals: [],
     nextLevel() {
         GAME.level++;
         if (GAME.level > INI.LAST_LEVEL) {
@@ -556,7 +558,8 @@ const GAME = {
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
         //WebGL.GAME.setFirstPerson();                        //my preference
-        WebGL.GAME.setThirdPerson();                        //taxxon
+        WebGL.GAME.setAxonometricView();                        //taxxon
+        //WebGL.GAME.setThirdPerson();   
         GAME.continueLevel(GAME.level);
     },
     continueLevel(level) {
@@ -569,10 +572,10 @@ const GAME = {
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);               //zaxxon perspective
-
-        //WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                 //side - for debug
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                    //top back
+        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);               //zaxxon perspective
+        WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                 //side - for debug
+
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -590,6 +593,14 @@ const GAME = {
             case "orto_top_down":
                 WebGL.hero.player.associateExternalCamera(WebGL.hero.orto_overheadCamera);
                 WebGL.setCamera(WebGL.hero.orto_overheadCamera);
+                break;
+            case "axonometric":
+                WebGL.hero.player.associateExternalCamera(WebGL.hero.axonometric);
+                WebGL.setCamera(WebGL.hero.axonometric);
+                break;
+            case "sideCamera":
+                WebGL.hero.player.associateExternalCamera(WebGL.hero.sideCamera);
+                WebGL.setCamera(WebGL.hero.sideCamera);
                 break;
             default:
                 throw "WebGL.CONFIG.cameraType error";
@@ -653,32 +664,8 @@ const GAME = {
     setup() {
         console.log("GAME SETUP started");
         $("#conv").remove();
-        $("#changeCamera").on("click", GAME.setCamera);
     },
-    setCamera() {
-        console.info("setting camera");
 
-        const translation_direction = new Vector3($("#translation_direction_x").val(), $("#translation_direction_y").val(), $("#translation_direction_z").val(),);
-        const translation_offset = $("#translation_offset").val();
-        const direction = new Vector3($("#direction_offset_x").val(), $("#direction_offset_y").val(), $("#direction_offset_z").val(),);
-        const back_offset = $("#back_offset").val();
-
-        console.warn(translation_direction);
-        console.warn(translation_offset);
-        console.warn(direction);
-        console.warn(back_offset);
-
-
-        WebGL.hero.topCamera.translation_direction.x = translation_direction.x;
-        WebGL.hero.topCamera.translation_direction.y = translation_direction.y;
-        WebGL.hero.topCamera.translation_direction.z = translation_direction.z;
-        WebGL.hero.topCamera.translation_offset = translation_offset;
-        WebGL.hero.topCamera.back_offset = back_offset;
-        WebGL.hero.topCamera.direction_offset.x = direction.x;
-        WebGL.hero.topCamera.direction_offset.y = direction.y;
-        WebGL.hero.topCamera.direction_offset.z = direction.z;
-        WebGL.hero.topCamera.update();
-    },
     setTitle() {
         const text = GAME.generateTitleText();
         const RD = new RenderData("CPU", 24, "#0E0", "bottomText");
@@ -769,7 +756,7 @@ const GAME = {
         if (HERO.falling) return;
 
         //HERO.player.respond(lapsedTime);
-        //WebGL.GAME.respond(lapsedTime);
+        WebGL.GAME.respond(lapsedTime);
         ENGINE.GAME.respond(lapsedTime);
 
         const map = ENGINE.GAME.keymap;
@@ -828,6 +815,7 @@ const GAME = {
         }
 
 
+        /*
         //setup
         if (map[ENGINE.KEY.map.plus]) {
             //WebGL.ambient_light_strength += 0.05;
@@ -849,6 +837,7 @@ const GAME = {
             console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength, "WebGL.diffuse_light_strength", WebGL.diffuse_light_strength, "WebGL.specular_light_strength", WebGL.specular_light_strength);
             return;
         }
+            */
 
         return;
     },
@@ -970,7 +959,8 @@ const TITLE = {
     clearAllLayers() {
         ENGINE.layersToClear = new Set(["text",
             "sideback", "button", "title", "FPS", "info", "subtitle", "lives",
-            "bottomText", "score", "altover", "alt", "fuel", "fuelPlot"]);
+            "bottomText", "score", "altover", "alt", "fuel", "fuelPlot", "stage",
+        ]);
         ENGINE.clearLayerStack();
         WebGL.transparent();
     },
@@ -1075,9 +1065,10 @@ const TITLE = {
         TITLE.altimeterHeight();
         TITLE.fuel();
         TITLE.fuelPlot();
+        TITLE.stage();
     },
     fuelPlot() {
-        const CTX = LAYER.fuelPlot;
+        //const CTX = LAYER.fuelPlot;
         ENGINE.clearLayer("fuelPlot");
 
         const y = ENGINE.bottomHEIGHT / 2;
@@ -1284,6 +1275,17 @@ const TITLE = {
         let gy = y - fs;
         CTX.fillStyle = this.makeGrad(CTX, gx, gy + 2, gx, gy + fs);
     },
+    stage() {
+        this._text("stage", "STAGE", 128, "level", 2);
+        const CTX = LAYER.stage;
+        CTX.save();
+        CTX.fillStyle = "#27e027ff"
+        CTX.shadowBlur = 1;
+        let fs = 18;
+        CTX.font = fs + "px CPU";
+        CTX.fillText(MAP[GAME.level].name, ENGINE.sideWIDTH / 2, 192);
+        CTX.restore();
+    }
 };
 
 // -- main --

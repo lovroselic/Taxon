@@ -30,17 +30,18 @@ const MAP = {
     }
     ,
     2: {
-        name: "Study level 2 ",
+        name: "Study",
         sg: 0,
         maxSpawned: -1,
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":"30","height":"13","depth":7,"map":"ÁÁ11AA100ÁAA4ÁAA78ÁÁ2AA138ÁÁ7BB189ÁÁ11AA2ÁÁ10AA4BAA7$ÁÁ5AÁÁ2142BÁÁ10BB5"}',
-        wall: "BlackWall45",
-        floor: "GreyFloor27",
+        data: '{"width":40,"height":11,"depth":3,"map":"ÁBB4AA36ÁAA5ÁÁ2AA15BB2AA3BB4AA42BB3AA90ÁÁ4AÁÁ3AA112BB5AA8ÁÁ3BB96ÁÁ10BÁÁ6BB2ÁÁ149$ÁÁ122BB6ÁÁ18BB4ÁÁ5AA6BAA3ÁAÁÁ16BÁBB5ÁÁ132BÁÁ15BÁÁ17BB6ÁÁ103BÁÁ57BÁÁ90BB5ÁÁ4BB5ÁÁ52BB4ÁÁ24BB4"}',
+        wall: "GreyFloor27",
+        floor: "BlackWall45",
         ceil: "GreyFloor27",
-        start: '[1770,5]',
+        start: '[1080,5]',
+        lights: '[[885,7,"FuturisticLight_014","none"],[891,7,"FuturisticLight_014","none"],[898,7,"FuturisticLight_014","none"],[915,7,"FuturisticLight_014","none"]]',
     }
     ,
     3: {
