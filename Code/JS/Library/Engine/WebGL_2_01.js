@@ -41,12 +41,13 @@ const WebGL = {
     VERSION: "2.01",
     CSS: "color: gold",
     CTX: null,
-    VERBOSE: false,             // default: false
-    PRUNE: true,                // if true, only visible faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
-    PRUNE_BLOCKS: true,         // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
-    HERO_AS_INNER: false,       // if true inner light comes from hero player pos, not from camera
-    USE_SHADOW: false,          // if true draws shaow on the floor from the fake sun
-    USE_INTERACTION: true,      // if true, draws interaction buffer
+    VERBOSE: false,                     // default: false
+    PRUNE: true,                        // if true, only visible faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
+    PRUNE_BLOCKS: true,                 // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
+    HERO_AS_INNER: false,               // if true inner light comes from hero player pos, not from camera
+    USE_SHADOW: false,                  // if true draws shaow on the floor from the fake sun
+    USE_INTERACTION: true,              // if true, draws interaction buffer
+    FIRST_PERSON_DUAL_DISPLAY: true,    // if true displays alos the hero model
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -1393,7 +1394,7 @@ const WebGL = {
             WebGL.GAME.disableViewButton("#p1");
             if (WebGL.CONFIG.cameraType === "first_person") return;
             //WebGL.CONFIG.set("first_person", true);
-             WebGL.CONFIG.set("first_person", false);
+             WebGL.CONFIG.set("first_person", WebGL.FIRST_PERSON_DUAL_DISPLAY);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.firstPersonCamera);
             WebGL.setCamera(WebGL.hero.firstPersonCamera);
             WebGL.hero.player.moveSpeed = 2.0;

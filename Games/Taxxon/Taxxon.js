@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.2",
+    VERSION: "0.6.3",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -513,19 +513,9 @@ const GAME = {
         ENGINE.GAME.start(16);
 
         AI.immobileWander = false;
-        IndexArrayManagers.DEADLY_TOUCH = true;
-        IndexArrayManagers.EE_COLLISION_CHECK = false;
-        IndexArrayManagers.E_WALL_COLLISION_CHECK = true;
-        WebGL.setAmbientStrength(0.1);
-        WebGL.setDiffuseStrength(1.0);
-        //WebGL.setSpecularStrength(0.0);
 
-        //WebGL.PRUNE_BLOCKS = false;
-        WebGL.HERO_AS_INNER = true;
-        WebGL.INI.BACKGROUND_ALPHA = 0.0;
-        WebGL.USE_SHADOW = true;
-        WebGL.USE_INTERACTION = false;
-        WebGL.INI.HERO_HEIGHT = 0;
+        GAME.IAM_settings();
+        GAME.WebGL_settings();
 
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
@@ -540,11 +530,30 @@ const GAME = {
         GAME.fps = new FPS_short_term_measurement(300);
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
-        WebGL.GAME.setViewButtons();
+        
 
         ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
 
         GAME.levelStart();
+    },
+    IAM_settings() {
+        IndexArrayManagers.DEADLY_TOUCH = true;
+        IndexArrayManagers.EE_COLLISION_CHECK = false;
+        IndexArrayManagers.E_WALL_COLLISION_CHECK = true;
+    },
+    WebGL_settings() {
+        WebGL.setAmbientStrength(0.1);
+        WebGL.setDiffuseStrength(1.0);
+        //WebGL.setSpecularStrength(0.0);
+
+        //WebGL.PRUNE_BLOCKS = false;
+        WebGL.HERO_AS_INNER = true;
+        WebGL.INI.BACKGROUND_ALPHA = 0.0;
+        WebGL.USE_SHADOW = true;
+        WebGL.USE_INTERACTION = false;
+        WebGL.INI.HERO_HEIGHT = 0;
+        WebGL.FIRST_PERSON_DUAL_DISPLAY = false;
+        WebGL.GAME.setViewButtons();
     },
     nextLevel() {
         GAME.level++;
