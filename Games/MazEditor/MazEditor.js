@@ -68,7 +68,7 @@ const INI = {
 };
 
 const PRG = {
-  VERSION: "0.17.3",
+  VERSION: "0.17.4",
   NAME: "MazEditor",
   YEAR: "2022, 2023, 2024, 2025",
   CSS: "color: #239AFF;",
@@ -209,10 +209,20 @@ const GAME = {
   axonize() {
     console.warn("axxonizing", "floors", $MAP.depth, "$MAP.map.width", $MAP.map.width, "$MAP.map.height", $MAP.map.height);
     let GA = $MAP.map.GA;
+    const startPad = $("#startpad").val();
+    const endPad = $("#endpad").val();
 
-    GA.sliceFill($MAP.map.width, $MAP.map.width * ($MAP.map.height - 1), MAPDICT.EMPTY);                    //depth 0
+    GA.sliceFill($MAP.map.width, $MAP.map.width * ($MAP.map.height - 1), MAPDICT.EMPTY);
     for (let F = 1; F < $MAP.map.height; F++) {
       GA.sliceFill($MAP.map.width * ($MAP.map.height * F + 1), $MAP.map.width * ($MAP.map.height - 1), MAPDICT.HOLE);
+    }
+
+    //startpad, endpad
+    for (let F = 0; F < $MAP.map.depth; F++) {
+      for (let H = 0; H < $MAP.map.height; H++) {
+        GA.sliceFill(H * $MAP.map.width + F * $MAP.map.width * $MAP.map.height, startPad, MAPDICT.HOLE);
+        GA.sliceFill((H + 1) * $MAP.map.width + F * $MAP.map.width * $MAP.map.height - endPad, endPad, MAPDICT.HOLE);
+      }
     }
     $MAP.map.textureMap = $MAP.map.GA.toTextureMap();
     GAME.render();
