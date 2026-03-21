@@ -36,12 +36,12 @@ const MAP = {
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":40,"height":11,"depth":3,"map":"ÁBB4AA36ÁAA5ÁÁ2AA15BB2AA3BB4AA42BB3AA90ÁÁ4AÁÁ3AA112BB5AA8ÁÁ3BB96ÁÁ10BÁÁ6BB2ÁÁ149$ÁÁ122BB6ÁÁ18BB4ÁÁ5AA6BAA3ÁAÁÁ16BÁBB5ÁÁ132BÁÁ15BÁÁ17BB6ÁÁ103BÁÁ57BÁÁ90BB5ÁÁ4BB5ÁÁ52BB4ÁÁ24BB4"}',
+        data: '{"width":"40","height":"11","depth":3,"map":"ÁBB2AA18BÁÁ2AA2BAA3ÁAA7BAA9BB2AA2BABB2AA28BB2AA36BAA5BAA38BAA30ÁÁ2AÁAA4ÁÁ3AA27ÁAA75ÁÁ3AA12BAA2BAA6BB2AA5ÁÁ3BB96ÁÁ2AÁÁ10BÁÁ6BÁBÁÁ15AÁÁ7AÁÁ76BÁÁ53$ÁÁ27BÁÁ5BÁÁ78BÁÁ10BB5ÁÁ15BB4ÁÁ4AA9BÁÁ3AÁÁ17BÁBB4ÁÁ7BÁÁ82BÁÁ25BÁÁ10BÁÁ30BB4ÁÁ103BÁÁ57BÁÁ90BB5ÁÁ4BB4ÁBÁÁ51BB4ÁÁ24BB4"}',
         wall: "GreyFloor27",
         floor: "BlackWall45",
         ceil: "GreyFloor27",
         start: '[1080,5]',
-        lights: '[[885,7,"FuturisticLight_014","none"],[891,7,"FuturisticLight_014","none"],[898,7,"FuturisticLight_014","none"],[915,7,"FuturisticLight_014","none"]]',
+        lights: '[[885,7,"FuturisticLight_014","standard"],[891,7,"FuturisticLight_014","standard"],[915,7,"FuturisticLight_014","standard"],[1174,5,"FuturisticLight_015","standardYellowDim"]]',
     }
     ,
     3: {

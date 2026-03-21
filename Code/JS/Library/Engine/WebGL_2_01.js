@@ -48,6 +48,8 @@ const WebGL = {
     USE_SHADOW: false,                  // if true draws shaow on the floor from the fake sun
     USE_INTERACTION: true,              // if true, draws interaction buffer
     FIRST_PERSON_DUAL_DISPLAY: true,    // if true displays alos the hero model
+
+    VIEWS_ALLOWED: new Set([1, 2, 3, 4, 5, 6, 7]),     //which cameras are set - default all, sys expects set
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -1392,9 +1394,7 @@ const WebGL = {
         },
         setFirstPerson() {
             WebGL.GAME.disableViewButton("#p1");
-            if (WebGL.CONFIG.cameraType === "first_person") return;
-            //WebGL.CONFIG.set("first_person", true);
-             WebGL.CONFIG.set("first_person", WebGL.FIRST_PERSON_DUAL_DISPLAY);
+            WebGL.CONFIG.set("first_person", WebGL.FIRST_PERSON_DUAL_DISPLAY);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.firstPersonCamera);
             WebGL.setCamera(WebGL.hero.firstPersonCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1402,7 +1402,6 @@ const WebGL = {
         },
         setThirdPerson() {
             WebGL.GAME.disableViewButton("#p3");
-            if (WebGL.CONFIG.cameraType === "third_person") return;
             WebGL.CONFIG.set("third_person", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.topCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1411,7 +1410,6 @@ const WebGL = {
         },
         setThirdPersonLowAngle() {
             WebGL.GAME.disableViewButton("#p2");
-            if (WebGL.CONFIG.cameraType === "third_person_low_angle") return;
             WebGL.CONFIG.set("third_person_low_angle", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.topCameraLowAngle);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1420,7 +1418,6 @@ const WebGL = {
         },
         setTopDownView() {
             WebGL.GAME.disableViewButton("#pt5");
-            if (WebGL.CONFIG.cameraType === "top_down") return;
             WebGL.CONFIG.set("top_down", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.overheadCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1429,7 +1426,6 @@ const WebGL = {
         },
         setOrtoTopDownView() {
             WebGL.GAME.disableViewButton("#pt7");
-            if (WebGL.CONFIG.cameraType === "orto_top_down") return;
             WebGL.CONFIG.set("orto_top_down", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.orto_overheadCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1438,7 +1434,6 @@ const WebGL = {
         },
         setAxonometricView() {
             WebGL.GAME.disableViewButton("#p4");
-            if (WebGL.CONFIG.cameraType === "axonometric") return;
             WebGL.CONFIG.set("axonometric", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.axonometric);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1447,7 +1442,6 @@ const WebGL = {
         },
         setSideView() {
             WebGL.GAME.disableViewButton("#pt6");
-            if (WebGL.CONFIG.cameraType === "sideCamera") return;
             WebGL.CONFIG.set("sideCamera", true);
             WebGL.hero.player.associateExternalCamera(WebGL.hero.sideCamera);
             WebGL.hero.player.moveSpeed = 2.0;
@@ -1463,33 +1457,22 @@ const WebGL = {
 
             const map = ENGINE.GAME.keymap;
 
-            if (map[ENGINE.KEY.map["1"]]) {
-                WebGL.GAME.setFirstPerson();
-                return;
-            }
-            if (map[ENGINE.KEY.map["2"]]) {
-                WebGL.GAME.setThirdPersonLowAngle();
-                return;
-            }
-            if (map[ENGINE.KEY.map["3"]]) {
-                WebGL.GAME.setThirdPerson();
-                return;
-            }
-            if (map[ENGINE.KEY.map["4"]]) {
-                WebGL.GAME.setAxonometricView();
-                return;
-            }
-            if (map[ENGINE.KEY.map["5"]]) {
-                WebGL.GAME.setTopDownView();
-                return;
-            }
-            if (map[ENGINE.KEY.map["6"]]) {
-                WebGL.GAME.setSideView();
-                return;
-            }
-            if (map[ENGINE.KEY.map["7"]]) {
-                WebGL.GAME.setOrtoTopDownView();
-                return;
+            const views = {
+                1: () => WebGL.GAME.setFirstPerson(),
+                2: () => WebGL.GAME.setThirdPersonLowAngle(),
+                3: () => WebGL.GAME.setThirdPerson(),
+                4: () => WebGL.GAME.setAxonometricView(),
+                5: () => WebGL.GAME.setTopDownView(),
+                6: () => WebGL.GAME.setSideView(),
+                7: () => WebGL.GAME.setOrtoTopDownView(),
+            };
+
+            for (const key in views) {
+                const n = Number(key);
+                if (map[ENGINE.KEY.map[key]] && WebGL.VIEWS_ALLOWED.has(n)) {
+                    views[key]();
+                    return;
+                }
             }
         }
     },
@@ -1711,29 +1694,36 @@ const WORLD = {
 
     },
     addCube(Y, grid, type, prune = null, scale = null) {
-        /*if (GRID.same3D(grid, new Grid3D(2, 12, 0))) {
-            console.error("debug add cube", ...arguments, "WebGL.PRUNE", WebGL.PRUNE);
-        }*/
-        if (!WebGL.PRUNE) return this.addElement(ELEMENT.CUBE, Y, grid, type);                                          //draws complete cube
+        if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
+            console.error("\ndebug add cube", Y, grid, type, prune, scale, "WebGL.PRUNE", WebGL.PRUNE);
+        }
+        if (!WebGL.PRUNE) return this.addElement(ELEMENT.CUBE, Y, grid, type);                                          //draws complete cube, no questions asked
 
-        const initialGrid = Grid3D.toClass(grid);                                                                       //cloned, for solving floor supports
         const GA = WORLD.GA;
 
         const rememberZ = grid.z;                                                                                       //this is pointer, don't screw it!
         grid.z = Y;                                                                                                     //face pruning
 
         for (let [index, dir] of ENGINE.directions3D.entries()) {
+
             const face = Direction3DToFace(dir);
             if (face === prune) continue;                                                                               //has texture decal, so let's prune it
-
             const checkGrid = grid.add(dir);
-            const above = initialGrid.add(dir);
 
-            if (GA.isDoor(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                                                          //doors
-            else if (Y == -1 && dir.z === 0 && GA.isHole(above)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports
-            else if (!GA.isOutOfBounds(grid) && GA.isOutOfBounds(checkGrid) && dir.z === 1) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    //visible quads - top 
-            else if (!(GA.isOutOfBounds(checkGrid) || GA.isWall(checkGrid))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                   //visible quads
-            else if (Y == -1 && dir.z === 0 && GA.isOutOfBounds(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                    // visible side supports for 3rd person isometric view, out ouf bound faces
+            if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
+                console.info("..grid", grid, "checkGrid", checkGrid);
+                console.info("...", "");
+            }
+
+            if (GA.isDoor(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                                                              //doors
+
+            else if (Y == -1 && dir.z === 0 && GA.isHole(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports
+            else if (!GA.isOutOfBounds(grid) && GA.isOutOfBounds(checkGrid) && dir.z === 1) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);        //visible quads - top 
+            else if (!(GA.isOutOfBounds(checkGrid) || (GA.isWall(checkGrid)))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                     //visible quads
+            else if (dir.y === 1 && GA.isOutOfBounds(checkGrid) && GA.isWall(grid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                //axonometric support, outer side
+            else if (Y == -1 && dir.z === 0 && GA.isOutOfBounds(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                        // visible side supports for 3rd person isometric view, out ouf bound faces
+
+            //else if (GA.isWall(grid) && GA.isHole(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    
         }
 
         grid.z = rememberZ;                                                                                             //revert to initial z value
@@ -1813,8 +1803,8 @@ const WORLD = {
                 case MAPDICT.WALL:
                 case MAPDICT.WALL + MAPDICT.STAIR:
                 case MAPDICT.WALL + MAPDICT.SHRINE:
-                    if (!WebGL.PRUNE_BLOCKS || GA.blockVisible(grid)) this.addCube(grid.z, grid, "wall", prune);                 //plain old wall - show only visible block
-                    if (WebGL.CONFIG.holesSupported && grid.z === 0) this.addCube(- 1, grid, "wall");                           //support for holes so that they have 3d look if in the floor
+                    if (!WebGL.PRUNE_BLOCKS || GA.blockVisible(grid) || GA.isTopGrid(grid)) this.addCube(grid.z, grid, "wall", prune);                  //plain old wall - show only visible block or top (for 3rd person view)
+                    if (WebGL.CONFIG.holesSupported && grid.z === 0) this.addCube(- 1, grid, "wall");                                                   //support for holes so that they have 3d look if in the floor
                     break;
                 case MAPDICT.HOLE:
                     if (grid.z === maxDepth) this.addCube(grid.z + 1, grid, "ceil");

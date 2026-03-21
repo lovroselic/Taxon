@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.3",
+    VERSION: "0.6.4",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -530,7 +530,7 @@ const GAME = {
         GAME.fps = new FPS_short_term_measurement(300);
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
-        
+
 
         ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
 
@@ -547,12 +547,15 @@ const GAME = {
         //WebGL.setSpecularStrength(0.0);
 
         //WebGL.PRUNE_BLOCKS = false;
+        //WebGL.PRUNE = false;
+
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
         WebGL.USE_INTERACTION = false;
         WebGL.INI.HERO_HEIGHT = 0;
         WebGL.FIRST_PERSON_DUAL_DISPLAY = false;
+        WebGL.VIEWS_ALLOWED = new Set([1, 3, 4, 6]);
         WebGL.GAME.setViewButtons();
     },
     nextLevel() {
@@ -577,13 +580,12 @@ const GAME = {
     levelExecute() {
         GAME.drawFirstFrame(GAME.level);
         ENGINE.GAME.resume();
-
     },
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
-        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                    //top back
-        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);               //zaxxon perspective
-        WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                 //side - for debug
+        WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
+        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
+        WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                      //side - for debug
 
 
         switch (WebGL.CONFIG.cameraType) {
@@ -823,31 +825,6 @@ const GAME = {
             HERO.changePosition(new Vector3(0, 0, 1), [0, 0, 1], "right", lapsedTime);
         }
 
-
-        /*
-        //setup
-        if (map[ENGINE.KEY.map.plus]) {
-            //WebGL.ambient_light_strength += 0.05;
-            WebGL.diffuse_light_strength += 1.0;
-            //WebGL.specular_light_strength += 0.20;
-            WebGL.ambient_light_strength = Math.min(WebGL.ambient_light_strength, 5.0);
-            WebGL.diffuse_light_strength = Math.min(WebGL.diffuse_light_strength, 50.0);
-            WebGL.specular_light_strength = Math.min(WebGL.specular_light_strength, 15.0);
-            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength, "WebGL.diffuse_light_strength", WebGL.diffuse_light_strength, "WebGL.specular_light_strength", WebGL.specular_light_strength);
-            return;
-        }
-        if (map[ENGINE.KEY.map.minus]) {
-            //WebGL.ambient_light_strength -= 0.05;
-            WebGL.diffuse_light_strength -= 1.0;
-            //WebGL.specular_light_strength -= 0.20;
-            WebGL.ambient_light_strength = Math.max(WebGL.ambient_light_strength, 0.0);
-            WebGL.diffuse_light_strength = Math.max(WebGL.diffuse_light_strength, 0.0);
-            WebGL.specular_light_strength = Math.max(WebGL.specular_light_strength, 0.0);
-            console.info("WebGL.ambient_light_strength", WebGL.ambient_light_strength, "WebGL.diffuse_light_strength", WebGL.diffuse_light_strength, "WebGL.specular_light_strength", WebGL.specular_light_strength);
-            return;
-        }
-            */
-
         return;
     },
     FPS(lapsedTime) {
@@ -888,7 +865,6 @@ const GAME = {
         if (DEBUG.VERBOSE) console.info("RESURECT");
         ENGINE.clearLayer("text");
         HERO.revive();
-        //ENTITY3D.POOL = ENTITY3D.POOL.filter(enemy => enemy && enemy.boss === true); //removes all but bosses, explicit check!
         BULLET3D.POOL.clear();
         GAME.levelStart();
     },

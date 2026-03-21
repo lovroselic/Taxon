@@ -1841,7 +1841,7 @@ class ArrayBasedDataStructure3D {
     isOutOfBounds(grid) {
         return grid.x < 0 || grid.x >= this.width || grid.y < 0 || grid.y >= this.height || grid.z < 0 || grid.z >= this.depth;
     }
-    inBounds(grid){
+    inBounds(grid) {
         return !this.isOutOfBounds(grid);
     }
     outside(grid) {
@@ -2245,6 +2245,9 @@ class GridArray3D extends Classes([ArrayBasedDataStructure3D, GA_Dimension_Agnos
             const checkGrid = grid.add(dir);
             return !(this.isOutOfBounds(checkGrid) || this.isWall(checkGrid) || this.isDoor(checkGrid));
         });
+    }
+    isTopGrid(grid) {
+        return grid.z === this.depth - 1;
     }
 }
 
