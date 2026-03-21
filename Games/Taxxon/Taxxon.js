@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.4",
+    VERSION: "0.6.5",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -405,38 +405,24 @@ const HERO = {
         ENGINE.GAME.ANIMATION.next(GAME.gameOverRun);
 
         GAME.restarted = true;
-        //MAP[GAME.level].map.storage.clear();
     },
     manage() {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
-        //console.error("*** collision check", HERO.player.pos, Grid3D);
-        // collision to inner walls, only in-bound
         if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width - 1) {
-
             const filledGridIndices = HERO.player.inWhichGridIndices();
             const hit = HERO.player.GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
-            //console.log(...filledGridIndices, hit);
             if (hit) {
                 return this.explode();
             }
-
         }
 
-        // falling to ground
-        if (this.falling && Grid3D.z < 0.5) return this.explode();
-
-        //bump obstacle
-        //bump actor
-        //bump enemy
-        //exit level
+        if (this.falling && Grid3D.z < 0.5) return this.explode();                                              // falling to ground
         if (HERO.player.pos.x > MAP[GAME.level].map.width + INI.PAD_BETWEEN_LEVELS) GAME.nextLevel();
-
-        //console.info("pos", HERO.player.pos);
     },
     fallingDown(lapsedTime) {
         HERO.setMode("falling");
         let length = (lapsedTime / 1000) * INI.FALL_SPEED;
-        const nextPos3 = HERO.player.pos.translate(new Vector3(1, -1, 0), length); //down and forward
+        const nextPos3 = HERO.player.pos.translate(new Vector3(1, -1, 0), length);                              //down and forward
         HERO.player.setPos(nextPos3);
         HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, [1, 0, 0]);
     },
@@ -491,7 +477,6 @@ const HERO = {
  */
 
 const GAME = {
-    //gold: 0,                                // WebGl relies on this as default gold source, keep! 
     restarted: false,
     start() {
         console.log("GAME started");
@@ -584,7 +569,8 @@ const GAME = {
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
-        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
+        //WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
+        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                      //side - for debug
 
 

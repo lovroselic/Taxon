@@ -1694,9 +1694,9 @@ const WORLD = {
 
     },
     addCube(Y, grid, type, prune = null, scale = null) {
-        if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
+        /*if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
             console.error("\ndebug add cube", Y, grid, type, prune, scale, "WebGL.PRUNE", WebGL.PRUNE);
-        }
+        }*/
         if (!WebGL.PRUNE) return this.addElement(ELEMENT.CUBE, Y, grid, type);                                          //draws complete cube, no questions asked
 
         const GA = WORLD.GA;
@@ -1710,20 +1710,19 @@ const WORLD = {
             if (face === prune) continue;                                                                               //has texture decal, so let's prune it
             const checkGrid = grid.add(dir);
 
-            if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
-                console.info("..grid", grid, "checkGrid", checkGrid);
+            /*if (GRID.same3D(grid, new Grid3D(20, 6, 0))) {
+                console.info("..grid", grid, "checkGrid", checkGrid, "dir", dir);
                 console.info("...", "");
-            }
+            }*/
 
             if (GA.isDoor(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                                                              //doors
-
-            else if (Y == -1 && dir.z === 0 && GA.isHole(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports
+            else if (Y == -1 && dir.z === 0 && GA.isHole(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                               //visible sub floor supports for holes
             else if (!GA.isOutOfBounds(grid) && GA.isOutOfBounds(checkGrid) && dir.z === 1) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);        //visible quads - top 
             else if (!(GA.isOutOfBounds(checkGrid) || (GA.isWall(checkGrid)))) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                     //visible quads
             else if (dir.y === 1 && GA.isOutOfBounds(checkGrid) && GA.isWall(grid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                //axonometric support, outer side
-            else if (Y == -1 && dir.z === 0 && GA.isOutOfBounds(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                        // visible side supports for 3rd person isometric view, out ouf bound faces
+            else if (Y == -1 && dir.z === 0 && GA.isOutOfBounds(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);                        // visible side supports for 3rd person isometric view, out ouf bound faces below 0
 
-            //else if (GA.isWall(grid) && GA.isHole(checkGrid)) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    
+            //else if (GA.isWall(grid) && GA.isHole(checkGrid) && dir.z === 0) this.addElement(ELEMENT[this.cubeFaces[index]], Y, grid, WORLD.faceTypes[index], scale);    //debug
         }
 
         grid.z = rememberZ;                                                                                             //revert to initial z value
