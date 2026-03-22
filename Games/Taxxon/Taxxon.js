@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.7",
+    VERSION: "0.6.8",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -506,7 +506,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 2;
+        GAME.level = 4;
         //GAME.score = 0;
         GAME.score = 3000;
 
@@ -528,7 +528,7 @@ const GAME = {
     },
     WebGL_settings() {
         WebGL.setAmbientStrength(0.1);
-        WebGL.setDiffuseStrength(1.0);
+        WebGL.setDiffuseStrength(0.5); //1.0
         //WebGL.setSpecularStrength(0.0);
 
         //WebGL.PRUNE_BLOCKS = false;

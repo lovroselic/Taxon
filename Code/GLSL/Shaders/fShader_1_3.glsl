@@ -21,7 +21,7 @@ struct Material {
 };
 
 const int N_LIGHTS = 1;                                         // replaced before compiling
-float illumination;
+//float illumination;
 
 uniform vec3 uPointLights[N_LIGHTS];
 uniform vec3 uLightColors[N_LIGHTS];
@@ -67,6 +67,7 @@ const float BEHIND_LIGHT_FACTOR = 0.02f;                         // ambient illu
 const float DISTANCE_LIGHT = 0.25f;                             // force illumination near the light source  - 0.475
 const float LIGHT_POS_Y_OFFSET = 0.35f;                          // vertical light position change 
 const float INTO_WALL = 0.01f;                                   // into wall target raycast offset: 0.01
+const float RAY_ORIGIN_BIAS = EPSILON * 5.0f;
 
 out vec4 fragColor;
 
@@ -157,7 +158,7 @@ vec3 CalcLight(
     vec3 lightDirection
 ) {
 
-    lightPosition.y -= LIGHT_POS_Y_OFFSET;
+    if (inner == 0) lightPosition.y -= LIGHT_POS_Y_OFFSET;
 
     float lightPosDistance = distance(lightPosition, FragPos);
     vec3 lightToFrag = normalize(FragPos - lightPosition);                    // lightToFrag: light -> fragment (incoming direction)
@@ -171,7 +172,7 @@ vec3 CalcLight(
     // -------------------- directional cone illumination --------------------
     // illumination in [0..1], based on angle between (light forward) and (light -> frag)
     float cone = 1.0f;
-    illumination = 1.0f;
+    float illumination = 1.0f;
     if (inner == 0 && !isOmniDirectional(lightDirection)) {
         cone = dot(lightToFrag, dirLight);                              // <0 means behind the light
         illumination = max(cone, 0.0f);
@@ -187,7 +188,6 @@ vec3 CalcLight(
 
     // Occlusion (only meaningful for non-inner light)
     bool occluded = Raycast3D(lightPosition, FragPos, illumination);
-    
 
     // Debug helpers
     //bool occluded = false;
@@ -245,15 +245,12 @@ vec3 CalcLight(
 bool Raycast3D(vec3 rayOrigin3D, vec3 rayTarget3D, float illumination) {
     vec3 direction = rayTarget3D - rayOrigin3D;
     float dirLen = length(direction);
-    if (dirLen < EPSILON) return false;
+    if (dirLen < EPSILON)
+        return false;
 
     vec3 dirNorm = direction / dirLen;
 
-    vec3 step = vec3(
-        direction.x > EPSILON ? 1.0 : (direction.x < -EPSILON ? -1.0 : 0.0),
-        direction.y > EPSILON ? 1.0 : (direction.y < -EPSILON ? -1.0 : 0.0),
-        direction.z > EPSILON ? 1.0 : (direction.z < -EPSILON ? -1.0 : 0.0)
-    );
+    vec3 step = vec3(direction.x > EPSILON ? 1.0f : (direction.x < -EPSILON ? -1.0f : 0.0f), direction.y > EPSILON ? 1.0f : (direction.y < -EPSILON ? -1.0f : 0.0f), direction.z > EPSILON ? 1.0f : (direction.z < -EPSILON ? -1.0f : 0.0f));
 
     float illumination2 = (illumination + EPSILON) * (illumination + EPSILON);
 
@@ -261,30 +258,31 @@ bool Raycast3D(vec3 rayOrigin3D, vec3 rayTarget3D, float illumination) {
     vec3 cellTarget = floor(rayTarget3D - dirNorm * INTO_WALL * illumination2);
 
     // walk cells
+    rayOrigin3D = rayOrigin3D + dirNorm * RAY_ORIGIN_BIAS;
     vec3 currentCell = floor(rayOrigin3D);
 
-    const float INF = 1e30;
+    const float INF = 1e30f;
     vec3 tDelta = vec3(INF);
-    vec3 tMax   = vec3(INF);
+    vec3 tMax = vec3(INF);
 
     // X axis
-    if (step.x != 0.0) {
-        tDelta.x = 1.0 / abs(direction.x);
-        float nextBoundaryX = (step.x > 0.0) ? (floor(rayOrigin3D.x) + 1.0) : floor(rayOrigin3D.x);
+    if (step.x != 0.0f) {
+        tDelta.x = 1.0f / abs(direction.x);
+        float nextBoundaryX = (step.x > 0.0f) ? (floor(rayOrigin3D.x) + 1.0f) : floor(rayOrigin3D.x);
         tMax.x = abs((nextBoundaryX - rayOrigin3D.x) / direction.x);
     }
 
     // Y axis
-    if (step.y != 0.0) {
-        tDelta.y = 1.0 / abs(direction.y);
-        float nextBoundaryY = (step.y > 0.0) ? (floor(rayOrigin3D.y) + 1.0) : floor(rayOrigin3D.y);
+    if (step.y != 0.0f) {
+        tDelta.y = 1.0f / abs(direction.y);
+        float nextBoundaryY = (step.y > 0.0f) ? (floor(rayOrigin3D.y) + 1.0f) : floor(rayOrigin3D.y);
         tMax.y = abs((nextBoundaryY - rayOrigin3D.y) / direction.y);
     }
 
     // Z axis
-    if (step.z != 0.0) {
-        tDelta.z = 1.0 / abs(direction.z);
-        float nextBoundaryZ = (step.z > 0.0) ? (floor(rayOrigin3D.z) + 1.0) : floor(rayOrigin3D.z);
+    if (step.z != 0.0f) {
+        tDelta.z = 1.0f / abs(direction.z);
+        float nextBoundaryZ = (step.z > 0.0f) ? (floor(rayOrigin3D.z) + 1.0f) : floor(rayOrigin3D.z);
         tMax.z = abs((nextBoundaryZ - rayOrigin3D.z) / direction.z);
     }
 
@@ -313,14 +311,17 @@ bool Raycast3D(vec3 rayOrigin3D, vec3 rayTarget3D, float illumination) {
 }
 
 bool isOccluded(vec3 position3D) {
-    vec3 cellCenter = floor(position3D) + vec3(0.5f);
-    vec3 tc = worldToNormalizedTexCoord3D(cellCenter);
+    ivec3 cell = ivec3(floor(position3D));
 
-    if (any(lessThan(tc, vec3(0.0f))) || any(greaterThan(tc, vec3(1.0f)))) {
-        return false; // OUTSIDE the occlusion volume = NOT occluded
+    // swap y/z to match texture layout
+    ivec3 texel = ivec3(cell.x, cell.z, cell.y);
+    ivec3 size  = ivec3(uGridSize);
+
+    if (any(lessThan(texel, ivec3(0))) || any(greaterThanEqual(texel, size))) {
+        return false;
     }
 
-    float occ = texture(uOcclusionMap, tc).r;
+    float occ = texelFetch(uOcclusionMap, texel, 0).r;
     return occ >= 0.5f;
 }
 
