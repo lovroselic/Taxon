@@ -196,6 +196,7 @@ const GAME = {
     let start_grid = MAP[level].map.startPosition.grid;
     start_grid = Vector3.from_Grid(Grid.toCenter(start_grid), 0.6);
     HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
+    
     WebGL.CONFIG.set("first_person", false);
 
     if (WebGL.CONFIG.firstperson) {
@@ -205,6 +206,7 @@ const GAME = {
     WebGL.init_required_IAM($MAP.map, HERO);
     this.buildWorld(level);
     this.setWorld(level);
+    WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
   },
   axonize() {
     console.warn("axxonizing", "floors", $MAP.depth, "$MAP.map.width", $MAP.map.width, "$MAP.map.height", $MAP.map.height);

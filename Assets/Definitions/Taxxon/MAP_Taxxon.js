@@ -45,16 +45,30 @@ const MAP = {
     }
     ,
     3: {
-        name: "Study level 3",
+        name: "Flicker test",
         sg: 0,
         maxSpawned: -1,
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":"30","height":"13","depth":7,"map":"ÁÁ11AA100BAA4BAA78ÁÁ2AA140ÁÁ7BB189ÁÁ45AA4BAA7$ÁÁ5AÁÁ1266BB6ÁÁ48BÁÁ22BB5ÁÁ780BB6"}',
-        wall: "BlackWall45",
-        floor: "GreyFloor27",
+        data: '{"width":"40","height":"11","depth":3,"map":"ÁÁ4AA18BAA16ÁAA2BAA32ÁÁ3AA10BB2AA4BAA30BAA23BAA10ÁAA11BAA24ÁAA45ÁAA97ÁÁ3BB97ÁÁ2BB2ÁÁ43$ÁÁ35AA7BAA2ÁAÁÁ210BÁÁ9BÁÁ562BB2"}',
+        wall: "GreyFloor27",
+        floor: "BlackWall45",
         ceil: "GreyFloor27",
-        start: '[1770,5]',
+        start: '[1120,5]',
+    }
+    ,
+    4: {
+        name: "Flicker test",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":20,"height":11,"depth":3,"map":"ÁÁ5AA12ÁAA4ÁAA5ÁAA2BAA4ÁAA5BAA3ÁAA4BAA6ÁAA8BAA13BAA12BAA46ÁÁ3BB36ÁBB3ÁÁ29AÁÁ7BÁÁ3$ÁÁ27AA2BAA6ÁAÁÁ392BÁÁ3B"}',
+        wall: "GreyFloor27",
+        floor: "BlackWall45",
+        ceil: "GreyFloor27",
+        start: '[100,5]',
     }
 };

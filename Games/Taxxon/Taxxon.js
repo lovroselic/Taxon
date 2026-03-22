@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.5",
+    VERSION: "0.6.6",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -506,7 +506,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 2;
+        GAME.level = 4;
         //GAME.score = 0;
         GAME.score = 3000;
 
@@ -569,7 +569,6 @@ const GAME = {
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
-        //WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 2.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -10), 4.0, 75);                      //side - for debug
 
@@ -612,7 +611,8 @@ const GAME = {
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-        start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
+        //start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
+        start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + 0.2874, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
         HERO.player.useCollision(HERO.player.boundingBoxCollision);
