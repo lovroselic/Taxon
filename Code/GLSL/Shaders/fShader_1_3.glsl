@@ -187,8 +187,10 @@ vec3 CalcLight(
 
     // Occlusion (only meaningful for non-inner light)
     bool occluded = Raycast3D(lightPosition, FragPos, illumination);
+    
 
     // Debug helpers
+    //bool occluded = false;
     // return debugDisplay(occluded);
     // return illuminationDisplay(illumination);
     // return occlusionDisplay(isOccluded(RayDebug(lightPosition, FragPos, illumination)));
@@ -242,66 +244,73 @@ vec3 CalcLight(
 
 bool Raycast3D(vec3 rayOrigin3D, vec3 rayTarget3D, float illumination) {
     vec3 direction = rayTarget3D - rayOrigin3D;
-    vec3 step = sign(direction);
+    float dirLen = length(direction);
+    if (dirLen < EPSILON) return false;
+
+    vec3 dirNorm = direction / dirLen;
+
+    vec3 step = vec3(
+        direction.x > EPSILON ? 1.0 : (direction.x < -EPSILON ? -1.0 : 0.0),
+        direction.y > EPSILON ? 1.0 : (direction.y < -EPSILON ? -1.0 : 0.0),
+        direction.z > EPSILON ? 1.0 : (direction.z < -EPSILON ? -1.0 : 0.0)
+    );
+
     float illumination2 = (illumination + EPSILON) * (illumination + EPSILON);
-    vec3 cellTarget = floor(rayTarget3D - step * INTO_WALL * illumination2);            // pull it from the wall boundary so they are illuminated if on border
 
-    vec3 tDelta = 1.0f / max(abs(direction), vec3(EPSILON));
-    vec3 startCell = floor(rayOrigin3D);                                                // integer cell containing the origin - assured non boundary
+    // pull back continuously
+    vec3 cellTarget = floor(rayTarget3D - dirNorm * INTO_WALL * illumination2);
 
-    // how far to the next boundary
-    vec3 tMax = vec3(0.0f);
+    // walk cells
+    vec3 currentCell = floor(rayOrigin3D);
 
-    for (int i = 0; i < 3; i++) {
-        float distToBoundary = (step[i] > 0.0f) ? (1.0f - fract(rayOrigin3D[i])) : fract(rayOrigin3D[i]);
-        tMax[i] = distToBoundary * tDelta[i];
+    const float INF = 1e30;
+    vec3 tDelta = vec3(INF);
+    vec3 tMax   = vec3(INF);
+
+    // X axis
+    if (step.x != 0.0) {
+        tDelta.x = 1.0 / abs(direction.x);
+        float nextBoundaryX = (step.x > 0.0) ? (floor(rayOrigin3D.x) + 1.0) : floor(rayOrigin3D.x);
+        tMax.x = abs((nextBoundaryX - rayOrigin3D.x) / direction.x);
     }
 
-    vec3 currentCell = rayOrigin3D;
+    // Y axis
+    if (step.y != 0.0) {
+        tDelta.y = 1.0 / abs(direction.y);
+        float nextBoundaryY = (step.y > 0.0) ? (floor(rayOrigin3D.y) + 1.0) : floor(rayOrigin3D.y);
+        tMax.y = abs((nextBoundaryY - rayOrigin3D.y) / direction.y);
+    }
 
-    // *** Walk along the ray in 3D, up to MAX_STEPS ***
+    // Z axis
+    if (step.z != 0.0) {
+        tDelta.z = 1.0 / abs(direction.z);
+        float nextBoundaryZ = (step.z > 0.0) ? (floor(rayOrigin3D.z) + 1.0) : floor(rayOrigin3D.z);
+        tMax.z = abs((nextBoundaryZ - rayOrigin3D.z) / direction.z);
+    }
+
     for (int i = 0; i < MAX_STEPS; i++) {
-
         if (isOccluded(currentCell)) {
             return true;
         }
 
-        if ((step.x > 0.0f && currentCell.x >= cellTarget.x) || (step.x < 0.0f && currentCell.x <= cellTarget.x)) {
-            if ((step.y > 0.0f && currentCell.y >= cellTarget.y) || (step.y < 0.0f && currentCell.y <= cellTarget.y)) {
-                if ((step.z > 0.0f && currentCell.z >= cellTarget.z) || (step.z < 0.0f && currentCell.z <= cellTarget.z)) {
-                    return false; // Target reached, stop raycasting
-                }
-            }
-        }
-
-        if (floor(currentCell) == cellTarget) {
+        if (all(equal(currentCell, cellTarget))) {
             return false;
         }
 
-        // How far in t we must go to step in x vs y vs z
-        if (tMax.x <= tMax.z) {  // Prioritize X and Z first
-            if (tMax.x <= tMax.y) {
-                tMax.x += tDelta.x;
-                currentCell.x += step.x;
-            } else {
-                tMax.y += tDelta.y;
-                currentCell.y += step.y;
-            }
+        if (tMax.x <= tMax.y && tMax.x <= tMax.z) {
+            currentCell.x += step.x;
+            tMax.x += tDelta.x;
+        } else if (tMax.y <= tMax.z) {
+            currentCell.y += step.y;
+            tMax.y += tDelta.y;
         } else {
-            if (tMax.z <= tMax.y) {
-                tMax.z += tDelta.z;
-                currentCell.z += step.z;
-            } else {
-                tMax.y += tDelta.y;
-                currentCell.y += step.y;
-            }
+            currentCell.z += step.z;
+            tMax.z += tDelta.z;
         }
-
     }
-    return false;                               // No occlusion detected, target not reached
-}
 
-// -------------------------- occlusion map sampling --------------------------
+    return false;
+}
 
 bool isOccluded(vec3 position3D) {
     vec3 cellCenter = floor(position3D) + vec3(0.5f);

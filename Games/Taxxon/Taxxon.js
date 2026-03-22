@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.6.6",
+    VERSION: "0.6.7",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -274,7 +274,7 @@ const PRG = {
 
         $("#bottom").css("margin-top", ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT);
         $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + 2 * ENGINE.sideWIDTH + 4);
-        ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "lives"], null);
+        ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title", "lives", "hiscore"], null);
         ENGINE.addBOX("LSIDE", INI.SCREEN_BORDER, ENGINE.gameHEIGHT, ["Lsideback", "alt", "altover"], "side");
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["background", "3d_webgl", "info", "text", "FPS", "button", "click"], "side");
         ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT, ["sideback", "score", "stage"], "fside");
@@ -506,7 +506,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 4;
+        GAME.level = 2;
         //GAME.score = 0;
         GAME.score = 3000;
 
@@ -662,7 +662,6 @@ const GAME = {
         console.log("GAME SETUP started");
         $("#conv").remove();
     },
-
     setTitle() {
         const text = GAME.generateTitleText();
         const RD = new RenderData("CPU", 24, "#0E0", "bottomText");
@@ -1126,7 +1125,8 @@ const TITLE = {
         }
     },
     hiScore() {
-        const CTX = LAYER.title;
+        ENGINE.clearLayer("hiscore");
+        const CTX = LAYER.hiscore;
         const fs = 20;
         CTX.font = fs + "px CPU";
         CTX.fillStyle = GAME.grad;
