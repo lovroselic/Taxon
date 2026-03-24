@@ -68,7 +68,7 @@ const INI = {
 };
 
 const PRG = {
-  VERSION: "0.17.4",
+  VERSION: "0.17.5",
   NAME: "MazEditor",
   YEAR: "2022, 2023, 2024, 2025",
   CSS: "color: #239AFF;",
@@ -153,8 +153,6 @@ const GAME = {
     WebGL.HERO_AS_INNER = true;
     WebGL.INI.BACKGROUND_ALPHA = 0.0;
     WebGL.USE_SHADOW = false;
-
-
     GAME.levelStart();
   },
   levelStart() {
@@ -196,12 +194,12 @@ const GAME = {
     let start_grid = MAP[level].map.startPosition.grid;
     start_grid = Vector3.from_Grid(Grid.toCenter(start_grid), 0.6);
     HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
-    
-    WebGL.CONFIG.set("first_person", false);
+    HERO.player.useCollision(HERO.player.boundingBoxCollision);
+    //WebGL.CONFIG.set("first_person", false);
 
-    if (WebGL.CONFIG.firstperson) {
+    /*if (WebGL.CONFIG.firstperson) {
       HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, null);
-    }
+    }*/
 
     WebGL.init_required_IAM($MAP.map, HERO);
     this.buildWorld(level);
@@ -419,6 +417,7 @@ const GAME = {
       case "light":
         console.log("light, value", currentValue, "grid", grid);
         switch (currentValue) {
+          case MAPDICT.HOLE:
           case MAPDICT.WALL:
             dir = GAME.getSelectedDir();
             console.log(".dir", dir);

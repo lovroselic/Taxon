@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.7.0",
+    VERSION: "0.7.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -505,8 +505,8 @@ const GAME = {
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
-        //GAME.level = 1;
-        GAME.level = 4;
+        GAME.level = 1;
+        //GAME.level = 4;
         //GAME.score = 0;
         GAME.score = 3000;
 
@@ -611,7 +611,6 @@ const GAME = {
 
         const start_dir = MAP[level].map.startPosition.vector;
         let start_grid = MAP[level].map.startPosition.grid;
-        //start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z - 0.75, start_grid.y + 0.5);
         start_grid = new Vector3(start_grid.x + 0.5 - INI.PAD_BETWEEN_LEVELS, start_grid.z + 0.2874, start_grid.y + 0.5);
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);

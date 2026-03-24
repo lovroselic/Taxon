@@ -92,8 +92,8 @@ const AI = {
          * assumption: shoot resolution, if no friendly fire
          */
         let playerPosition = Grid3D.toClass(ARG.playerPosition);    // grid coordinates
-        if (this.VERBOSE) console.log("\n------------------------------");
-        if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
+        //if (this.VERBOSE) console.log("\n------------------------------");
+        //if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
         //console.log(enemy.name, enemy.id, "enemy distance", enemy.airDistance, enemy);
         let nodeMap = enemy.parent.map.GA.airNodeMap;
         let grid = this.getPosition(enemy);                         //grid coordinates
@@ -113,7 +113,7 @@ const AI = {
         nextGrid = grid.add(goto);
         if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.z = 0;
 
-        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
+        i//f (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
 
         this.shootBullet(enemy, playerPosition, grid);
 
