@@ -46,14 +46,16 @@ const GRID = {
         );
 
     },
-    collisionPosInBoundingBox(pos, BB, FPgrid3D = new FP_Grid3D()) {
+    collisionPosInBoundingBox(pos, BB, FPgrid3D = new FP_Grid3D(), verbose = false) {
         const origin = Vector3.from_grid3D(FPgrid3D);
 
-        /*console.log("\n **************************");
-        console.log("x", pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x, pos.x, origin.x + BB.min.x, origin.x + BB.max.x);
-        console.log("y", pos.z >= origin.z + BB.min.z && pos.z <= origin.z + BB.max.z, pos.z, origin.z + BB.min.z, origin.z + BB.max.z);
-        console.log("z", pos.y >= origin.y + BB.min.y && pos.y <= origin.y + BB.max.y, pos.y, origin.y + BB.min.y, origin.y + BB.max.y);
-        console.log("\n --------------------------");*/
+        if (verbose) {
+            console.log("\n **************************");
+            console.log("x", pos.x >= origin.x + BB.min.x && pos.x <= origin.x + BB.max.x, "pos", pos.x, "min", origin.x + BB.min.x, "max", origin.x + BB.max.x);
+            console.log("y", pos.z >= origin.z + BB.min.z && pos.z <= origin.z + BB.max.z, "pos", pos.z, "min", origin.z + BB.min.z, "max", origin.z + BB.max.z);
+            console.log("z", pos.y >= origin.y + BB.min.y && pos.y <= origin.y + BB.max.y, "pos", pos.y, "min", origin.y + BB.min.y, "max", origin.y + BB.max.y);
+            console.log("\n --------------------------");
+        }
 
 
         return (

@@ -3669,20 +3669,16 @@ class $3D_MoveState {
         glMatrix.mat4.rotate(this.rotate, this.rotate, this.rotation_to_north + this.rotation_angle, [0, 1, 0]);
     }
     setRotatedBoundingBox() {
-        const axis = glMatrix.vec3.create();
-        const max = glMatrix.vec3.create();
-        const min = glMatrix.vec3.create();
-        glMatrix.vec3.rotateY(max, this.parent.boundingBox.max.array, axis, this.rotation_angle);
-        glMatrix.vec3.rotateY(min, this.parent.boundingBox.min.array, axis, this.rotation_angle);
-        this.boundingBox = new BoundingBox(max, min);
+        const totalAngle = this.rotation_to_north + this.rotation_angle;
+        const turns = BoundingBox.radToTurns(totalAngle);
+        this.rotatedBoundingBox = this.parent.boundingBox.getRotatedBoundingBoxYTurns(turns);
     }
     setGrid() {
         this.grid = Vector3.to_FP_Grid3D(this.pos);
         this.grid.z -= this.parent.minY;                                                                 //adjusted for minY because some of them are negative and can leak from grid boundaries
         this.grid.z += this.parent.heigth + $3D_MoveState.E;                                             // adjusted to height + small E   
         this.referencePos = Vector3.from_grid3D(this.grid);                                              //to display coordinates; which are used for fast collision detection between HERO and Enemies
-        //console.warn("....setGrid", this.parent.name, this.parent.id, this.grid );
-        this.absoluteBoundingBox = this.boundingBox.setAbsoluteBoundingBox(this.referencePos, this.parent.map);
+        this.absoluteBoundingBox = this.rotatedBoundingBox.setAbsoluteBoundingBox(this.pos);
     }
 }
 class _1D_MoveState {

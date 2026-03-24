@@ -65,7 +65,7 @@ const AI = {
         gridValue = gridValue.sum();
         const enemyGrid = this.getPosition(enemy);
         const directions = enemy.parent.map.GA.getDirectionsIfNot(enemyGrid, gridValue, enemy.fly, enemy.moveState.dir.mirror());
-        if (AI.VERBOSE) console.info(enemy.name, enemy.id, "WANDERER", enemy.moveState.pos, "gridValue", gridValue, "dirs", directions, "this.getPosition(enemy)", this.getPosition(enemy));
+        //if (AI.VERBOSE) console.info(enemy.name, enemy.id, "WANDERER", enemy.moveState.pos, "gridValue", gridValue, "dirs", directions, "this.getPosition(enemy)", this.getPosition(enemy));
         if (directions.length) {
             const randomDir = directions.chooseRandom();
             if (randomDir.constructor.name !== "Vector3D") throw "WTF!";
@@ -121,7 +121,7 @@ const AI = {
 
     },
     shootBullet(enemy, playerPosition, grid) {
-        console.warn("shootBullet from", grid, "to", playerPosition);
+        //console.warn("shootBullet from", grid, "to", playerPosition);
         const dX = grid.x - playerPosition.x;
 
         if (dX > enemy.shootDistance) {

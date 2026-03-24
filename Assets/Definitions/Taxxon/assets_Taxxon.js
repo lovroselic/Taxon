@@ -36,6 +36,7 @@ LoadTextures = [
     { srcName: "ObjectTextures/BlueMetal.webp", name: "BlueMetal" },
     { srcName: "ObjectTextures/Red.webp", name: "Red" },
     { srcName: "ObjectTextures/oildrum_basecolor.jpg", name: "OilDrum" },
+    { srcName: "ObjectTextures/AstroRed.jpg", name: "AstroRed" },
 
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
@@ -48,7 +49,7 @@ LoadTextures = [
     { srcName: "ObjectTextures/Explosion3.webp", name: "Explosion" },
     { srcName: "ObjectTextures/Tile.webp", name: "Tile" },
     //{ srcName: "ObjectTextures/WoodTexture.webp", name: "WoodTexture" },
-    //{ srcName: "ObjectTextures/RedLiquid.webp", name: "RedLiquid" },
+    { srcName: "ObjectTextures/RedLiquid.jpg", name: "RedLiquid" },
     //{ srcName: "ObjectTextures/FireTexture.webp", name: "FireTexture" },
     //{ srcName: "ObjectTextures/FireTexture2.webp", name: "FireTexture2" },
     //{ srcName: "ObjectTextures/FireTexture2_Blue.webp", name: "FireTexture2_Blue" },
@@ -79,7 +80,7 @@ LoadObjects = [
 ];
 
 LoadModels = [
-    "Taxxon.gltf", "Fighter.gltf", "Rocket.gltf", "SpaceShuttle.gltf", "XWing.gltf",
+    "Taxxon.gltf", "Fighter.gltf", "Rocket.gltf", "SpaceShuttle.gltf", "XWing.gltf", "Astro.gltf",
 ];
 
 LoadSprites = [

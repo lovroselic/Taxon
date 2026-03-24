@@ -2313,6 +2313,7 @@ class $3D_player {
         this.rotation = glMatrix.mat4.create();
         const angle = -FP_Vector.toClass(UP).radAngleBetweenVectors(Vector3.to_FP_Vector(this.dir));
         glMatrix.mat4.rotate(this.rotation, this.rotation, this.rotateToNorth + angle, [0, 1, 0]);
+        this.rotatedBoundingBox = this.boundingBox.getRotatedBoundingBoxYTurns(BoundingBox.radToTurns(this.rotateToNorth + angle));
     }
     setSpeed(speed) {
         this.moveSpeed = speed;
@@ -2328,8 +2329,7 @@ class $3D_player {
         }
         this.setMode('walking');
         this.setDepth();
-        if (this.boundingBox) this.absoluteBoundingBox = this.boundingBox.setAbsoluteBoundingBox(this.pos);
-
+        if (this.rotatedBoundingBox) this.absoluteBoundingBox = this.rotatedBoundingBox.setAbsoluteBoundingBox(this.pos);
     }
     resetBirth() {
         this.actor.birth = Date.now();
@@ -3869,24 +3869,62 @@ class Trap extends WallFeature3D {
 }
 
 class BoundingBox {
-    constructor(max, min, scale = null) {
+    constructor(max, min, scale = null, createCache = true) {
         this.max = Vector3.from_array(max);
-        if (scale) this.max = this.max.scaleVec3(scale);
         this.min = Vector3.from_array(min);
-        if (scale) this.min = this.min.scaleVec3(scale);
-        if (scale) this.scaled = true;
+        this.scaled = false;
+        this._rotY = null;
+        if (scale) this.scale(scale);
+        if (createCache) this._buildRotYCache();
+
     }
     scale(scale) {
         if (this.scaled) return;
         this.max = this.max.scaleVec3(scale);
         this.min = this.min.scaleVec3(scale);
         this.scaled = true;
+        this._rotY = null;
+    }
+    static radToTurns(rad = 0) {
+        return ((Math.round(rad * 2 / Math.PI) % 4) + 4) % 4;
     }
     setAbsoluteBoundingBox(origin) {
-        //origin needs to be Vector3
+        //origin needs to be Vector3, but we are not asserting that for performance!
         const max = this.max.add(origin);
         const min = this.min.add(origin);
-        return new BoundingBox(max.array, min.array, null);
+        return new BoundingBox(max.array, min.array, null, false);
+    }
+    _buildRotYCache() {
+        if (this._rotY) return;
+
+        const minX = this.min.x;
+        const minY = this.min.y;
+        const minZ = this.min.z;
+
+        const maxX = this.max.x;
+        const maxY = this.max.y;
+        const maxZ = this.max.z;
+
+        this._rotY = [
+            { min: [minX, minY, minZ], max: [maxX, maxY, maxZ] },
+            { min: [minZ, minY, -maxX], max: [maxZ, maxY, -minX] },             // 90° : (x, z) -> ( z, -x )
+            { min: [-maxX, minY, -maxZ], max: [-minX, maxY, -minZ] },           // 180° : (x, z) -> ( -x, -z )
+            { min: [-maxZ, minY, minX], max: [-minZ, maxY, maxX] },             // 270° : (x, z) -> ( -z, x )
+        ];
+    }
+    getRotatedBoundingBoxYTurns(turns = 0) {
+        const rot = this.getRotatedYTurns(turns);
+        const bb = new BoundingBox(rot.max, rot.min);
+        bb.scaled = this.scaled;
+        return bb;
+    }
+    getRotatedYTurns(turns = 0) {
+        if (!this._rotY) this._buildRotYCache();
+        return this._rotY[((turns % 4) + 4) % 4];
+    }
+
+    getRotatedYRad(rad = 0) {
+        return this.getRotatedYTurns(BoundingBox.radToTurns(rad));
     }
 }
 

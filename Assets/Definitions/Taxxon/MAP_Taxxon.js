@@ -65,11 +65,13 @@ const MAP = {
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":20,"height":11,"depth":3,"map":"ÁÁ4AA9ÁAA3ÁAA4ÁAA2BAA3BÁAA4BAA4ÁAA4BAA6ÁÁ2AA7BAA14BAA15BAA48ÁÁ3BB36ÁBÁÁ2BB2ÁÁ31AÁÁ8BÁÁ4$ÁÁ33ABAA7ÁAÁÁ18BÁÁ9BÁÁ354BB2"}',
+        data: '{"width":"20","height":"11","depth":3,"map":"ÁÁ4ABÁAA3BAÁAA4BB2AA2ÁÁ2AA5BAA4ÁAA7ÁABAA4BÁAA10BAA5BAA14BAA12BAA46ÁÁ3BB36ÁBÁÁ2BB2ÁÁ31AÁÁ6BÁÁ6$ÁÁ33AA8BÁAÁÁ18BÁÁ9BÁÁ354BB2"}',
         wall: "GreyFloor27",
         floor: "BlackWall45",
         ceil: "GreyFloor27",
         start: '[100,5]',
         lights: '[[648,1,"FuturisticLight_014","standardVeryFaint"]]',
+        monsters: '[[86,"Astro"],[165,"Astro"],[115,"AstroRed"],[287,"Fighter"],[288,"Fighter"],[289,"Fighter"],[409,"XWing"],[410,"XWing"],[411,"XWing"],[412,"XWing"]]',
+        objects: '[[87,"Oil"],[108,"Oil"],[128,"Oil"],[149,"Oil"],[168,"Oil"],[189,"Oil"],[175,"Oil"],[92,"Oil"],[54,"Oil"],[75,"Oil"]]',
     }
 };

@@ -132,10 +132,8 @@ class IAM {
                 this.poolToIA(map[this.IA]);
                 break;
             case "3D":
-                //console.error("this.IA", this.IA, this, this.constructor.name);
                 map[this.IA] = new IndexArray3D(map.width, map.height, map.depth, byte, banks);
                 this.poolToIA3D(map[this.IA]);
-                //console.warn("sanity", Array.from(map[this.IA].map).sum());
                 break;
             default:
                 throw new Error(`wrong type: ${type} for Index Array`);
@@ -1046,11 +1044,15 @@ class Bullet3D extends IAM {
             for (let P of possibleEnemies) {
                 const enemy = this.entity_IAM.show(P);
                 if (enemy) {
-                    const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox);
+                    //console.info("obj.pos", JSON.stringify(obj.pos), "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox), "height", enemy.heigth, "midHeight", enemy.midHeight);
+                    console.info("BB collision for", enemy.id, enemy.name, "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox));
+                    const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox, new FP_Grid3D(), true);
                     if (hit) {
+                        console.warn("...... was hit")
                         obj.clean();
                         enemy.kill();
                         this.game.addScore(enemy.score);
+                        break;      // only kill one at once
                     }
                 }
             }
@@ -1143,7 +1145,7 @@ class Animated_3d_entity extends IAM {
         for (const enemy of this.POOL) {
             if (enemy === null) continue;
 
-            const BB = enemy.moveState.boundingBox;
+            const BB = enemy.moveState.rotatedBoundingBox;
             const grids = [];
             const xVals = [BB.min.x, BB.max.x];
             const zVals = [BB.min.z, BB.max.z];
@@ -1207,7 +1209,6 @@ class Animated_3d_entity extends IAM {
 
                 //enemy/player collision
                 if (!this.hero.dead || this.hero.player.isJumping) {
-                    //const EP_hit = this.hero.player.circleCollision(entity);
                     const EP_hit = this.hero.player.collisionMethod(entity);
 
                     if (EP_hit) {
