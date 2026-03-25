@@ -113,7 +113,7 @@ const AI = {
         nextGrid = grid.add(goto);
         if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.z = 0;
 
-        i//f (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
+        //if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
 
         this.shootBullet(enemy, playerPosition, grid);
 

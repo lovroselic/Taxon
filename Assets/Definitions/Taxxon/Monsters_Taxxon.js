@@ -33,13 +33,25 @@ const INTERACTION_OBJECT = {
         name: "Oil",
         score: 10,
         category: "fuel",
-        fuel: 1,          // barrel
+        fuel: 1.5,                              // barrel
         element: "OIL",
         scale: 1.0 / 2 ** 1,
         glueToFloor: true,
         texture: "OilDrum",
         material: MATERIAL.standard,
         explosionType: ParticleExplosion,
+    },
+    WoodenCrate: {
+        name: "WoodenCrate",
+        score: 20,
+        category: "fuel",
+        fuel: 2.0,                              // barrel
+        element: "FRAGILE_CRATE",
+        scale: 1.36 / (2 ** 4),
+        glueToFloor: true,
+        texture: "WoodenCrateTexture58",
+        material: MATERIAL.standardShine,
+        explosionType: WoodExplosion,
     },
 };
 
@@ -58,7 +70,7 @@ const MONSTER_TYPE = {
     Rocket: {
         name: "Rocket",
         model: "Rocket",
-        scale: 1.5 / 2 ** 2,
+        scale: 1.4 / 2 ** 2,
         rotateToNorth: Math.PI / 2,
         midHeight: 0.0, //
         fly: 0.001,
@@ -73,7 +85,7 @@ const MONSTER_TYPE = {
     SpaceShuttle: {
         name: "SpaceShuttle",
         model: "SpaceShuttle",
-        scale: 1.3 / 2 ** 4,
+        scale: 1.2 / 2 ** 4,
         rotateToNorth: Math.PI,
         midHeight: 0.0, //
         fly: 0.001,
@@ -88,7 +100,7 @@ const MONSTER_TYPE = {
     Fighter: {
         name: "Fighter",
         model: "Fighter",
-        scale: 1.8 / 2 ** 9,
+        scale: 1.6 / 2 ** 9,
         rotateToNorth: 0,
         midHeight: 0.0, //
         fly: 0.001,

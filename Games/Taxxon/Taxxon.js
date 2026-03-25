@@ -202,19 +202,19 @@ const INI = {
     HERO_SHOOT_TIMEOUT: 250,
     SCREEN_BORDER: 256,
     SUN_HEIGHT_FACTOR: 7.5, //7.5
-    CREEP_SPEED: 2.0,
+    CREEP_SPEED: 1.8,
     PAD_BETWEEN_LEVELS: 5,
     LAST_LEVEL: 3,
     SIDE_SPEED: 5.0,
     FALL_SPEED: 5.0,
     SHIT_ROT_ANGLE: Math.radians(30),
     FUEL_BIN: 15,
-    FUEL_CONSUMPTION: 25, //units per grid
+    FUEL_CONSUMPTION: 20, //units per grid
     MONSTER_SHOOT_TIMEOUT: 1999,
 };
 
 const PRG = {
-    VERSION: "0.7.1",
+    VERSION: "0.7.2",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -369,6 +369,9 @@ const HERO = {
     hitObstacle() {
         this.explode();
     },
+    burn(){
+        return this.explode();
+    },
     explode() {
         if (HERO.dead) return;
         EXPLOSION3D.add(new BigFireExplosion(this.player.pos));
@@ -505,10 +508,10 @@ const GAME = {
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
-        GAME.level = 1;
-        //GAME.level = 4;
-        //GAME.score = 0;
-        GAME.score = 3000;
+        //GAME.level = 1;
+        GAME.level = 3;
+        GAME.score = 0;
+        //GAME.score = 3000;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -552,6 +555,8 @@ const GAME = {
     },
     levelStart() {
         console.log("starting level", GAME.level);
+        HERO.fuel = HERO.maxFuel;
+        TITLE.fuelPlot();
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
         //WebGL.GAME.setFirstPerson();                        //my preference
@@ -569,7 +574,8 @@ const GAME = {
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
-        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
+        //WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
+        WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -13), 4.0, 75);                      //side - for debug
 
 
