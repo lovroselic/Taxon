@@ -187,7 +187,7 @@ LoadTextures = [
     { srcName: "ObjectTextures/FireTexture2_Blue.webp", name: "FireTexture2_Blue" },
     { srcName: "ObjectTextures/FireTexture2_Green.webp", name: "FireTexture2_Green" },
     { srcName: "ObjectTextures/RedFireTexture.webp", name: "RedFireTexture" },
-
+    { srcName: "ObjectTextures/BluBallTexture.webp", name: "BluBallTexture" },
 ];
 
 LoadAudio = [
@@ -213,6 +213,7 @@ LoadObjects = [
 
 LoadModels = [
     "Taxxon.gltf", "Fighter.gltf", "Rocket.gltf", "SpaceShuttle.gltf", "XWing.gltf", "Astro.gltf", "Zeppelin.gltf",
+    "Balloon.gltf",
 ];
 
 LoadSprites = [

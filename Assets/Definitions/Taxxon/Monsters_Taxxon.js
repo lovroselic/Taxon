@@ -177,9 +177,9 @@ const MONSTER_TYPE = {
         scale: 1.4 / 2 ** 3,
         rotateToNorth: Math.PI,
         midHeight: 0.0, //
-        deathType: "ParticleExplosion",
+        deathType: "BlueExplosion",
         behaviourArguments: [Infinity, ["immobile"], 40, ["creep"]],
-        moveSpeed: 1.0,
+        moveSpeed: 0.75,
         material: MATERIAL.standard,
         fly: 0.001,
         flier: true,
@@ -187,6 +187,21 @@ const MONSTER_TYPE = {
         caster: false,
         score: 100,
         fuel: 4.0,  
+    },
+    Balloon: {
+        name: "Balloon",
+        model: "Balloon",
+        scale: 1.4 / 2 ** 5,
+        rotateToNorth: Math.PI,
+        midHeight: 0.0, //
+        fly: 0.001,
+        flier: true,
+        score: 50,
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 12, ["ascent"]],
+        moveSpeed: 0.7,
+        material: MATERIAL.standard,
+        ignoreWalls: true,
     },
 };
 

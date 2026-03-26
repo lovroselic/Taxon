@@ -63,4 +63,19 @@ const MAP = {
         monsters: '[[1973,"Zeppelin"],[13,"SpaceShuttle"],[180,"SpaceShuttle"],[389,"SpaceShuttle"],[76,"SpaceShuttle"],[326,"SpaceShuttle"],[127,"Rocket"],[415,"Rocket"],[224,"Rocket"],[70,"Rocket"],[355,"Rocket"],[490,"XWing"],[650,"XWing"],[810,"XWing"],[577,"XWing"],[777,"XWing"],[661,"XWing"],[1015,"XWing"],[1175,"XWing"],[1106,"XWing"],[1848,"XWing"],[2128,"XWing"],[1899,"XWing"],[2099,"XWing"],[1993,"XWing"],[2701,"XWing"],[3021,"XWing"],[2719,"Fighter"],[2919,"Fighter"],[3039,"Fighter"],[2752,"Fighter"],[2952,"Fighter"],[2865,"Fighter"],[2315,"Fighter"],[2555,"Fighter"],[2345,"Fighter"],[2505,"Fighter"],[2419,"Fighter"],[1866,"Fighter"],[2106,"Fighter"],[1436,"Fighter"],[1676,"Fighter"],[1471,"Fighter"],[1631,"Fighter"],[1504,"Fighter"],[1544,"Fighter"],[906,"Fighter"],[1306,"Fighter"],[462,"Fighter"],[862,"Fighter"],[148,"Fighter"],[308,"Fighter"],[235,"Fighter"],[212,"Fighter"],[2714,"Zeppelin"],[3034,"Zeppelin"],[583,"Zeppelin"],[1588,"Zeppelin"]]',
         objects: '[[46,"Oil"],[248,"Oil"],[132,"Oil"],[97,"Oil"],[296,"Oil"],[371,"Oil"],[342,"Oil"],[65,"Oil"],[267,"Oil"],[234,"Oil"],[358,"Oil"],[393,"Oil"]]',
     }
+    ,
+    4: {
+        name: "Give Up",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":"40","height":"11","depth":7,"map":"ÁÁ11AA330ÁÁ7BB231ÁÁ47$ÁÁ41BAA9ÁÁ5AÁÁ2376BÁÁ15BB5"}',
+        wall: "FuturisticTexture_115",
+        floor: "FuturisticTexture_109",
+        ceil: "FuturisticTexture_095",
+        start: '[1960,5]',
+        monsters: '[[218,"Balloon"]]',
+    }
 };
