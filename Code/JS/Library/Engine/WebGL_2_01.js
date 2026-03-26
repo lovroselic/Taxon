@@ -4760,8 +4760,12 @@ class $3D_Entity {
         this.IAM.map.killCount++;
         this.IAM.map.totalKills++;
     }
-    kill() {
+    kill(bonus = false) {
         /** simplified die */
+        if (bonus) {
+            if (this.score) WebGL.game.addScore(this.score);
+            if (this.fuel) WebGL.hero.addFuel(this.fuel);
+        }
         this.remove();
         if (this.IAM.usingReIndex) this.IAM.setReindex();
         EXPLOSION3D.add(new (eval(this.deathType))(this.moveState.pos.translate(DIR_UP, this.midHeight)));
@@ -4807,7 +4811,7 @@ class $3D_Entity {
     }
     shootBullet(GA) {
         if (!this.shooter) return;
-        console.error("-------------------->", this.name, this.id, "shoots");
+        //console.error("-------------------->", this.name, this.id, "shoots");
 
         const position = this.moveState.pos.translate(DIR_BACKWARD, this.r);
         const bullet = new Bullet(position, DIR_BACKWARD, COMMON_ITEM_TYPE.Bullet);

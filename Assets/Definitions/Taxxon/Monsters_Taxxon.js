@@ -100,7 +100,7 @@ const MONSTER_TYPE = {
     Fighter: {
         name: "Fighter",
         model: "Fighter",
-        scale: 1.6 / 2 ** 9,
+        scale: 1.3 / 2 ** 9,
         rotateToNorth: 0,
         midHeight: 0.0, //
         fly: 0.001,
@@ -119,7 +119,7 @@ const MONSTER_TYPE = {
     XWing: {
         name: "XWing",
         model: "XWing",
-        scale: 1.5 / 2 ** 2,
+        scale: 1.4 / 2 ** 2,
         rotateToNorth: 3 * Math.PI / 2,
         midHeight: 0.0, //
         fly: 0.001,
@@ -170,6 +170,23 @@ const MONSTER_TYPE = {
         caster: false,
         floored: true,
         score: 400,
+    },
+    Zeppelin: {
+        name: "Zeppelin",
+        model: "Zeppelin",
+        scale: 1.4 / 2 ** 3,
+        rotateToNorth: Math.PI,
+        midHeight: 0.0, //
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 40, ["creep"]],
+        moveSpeed: 1.0,
+        material: MATERIAL.standard,
+        fly: 0.001,
+        flier: true,
+        shooter: false,
+        caster: false,
+        score: 100,
+        fuel: 4.0,  
     },
 };
 

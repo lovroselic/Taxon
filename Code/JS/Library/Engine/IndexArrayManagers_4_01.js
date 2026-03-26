@@ -76,16 +76,21 @@ class IAM {
             let grid = null;
 
             if (obj.moveState) {
-                grid = Vector3.to_Grid3D(obj.moveState.pos);
+                let initial = Vector3.to_Grid3D(obj.moveState.pos);
+                grid = [initial];
+                //console.warn(initial, grid);
+                //throw "debug"; preparing for multi grid object, not yet finalized
             } else if (obj.pos) {
-                grid = Vector3.to_Grid3D(obj.pos);
+                grid = [Vector3.to_Grid3D(obj.pos)];
             } else if (obj.grid.constructor.name === "FP_Grid3D") {
-                grid = Grid3D.toClass(obj.grid);
-            } else grid = obj.grid;
+                grid = [Grid3D.toClass(obj.grid)];
+            } else grid = [obj.grid];
 
 
-            if (!IA.has(grid, obj.id)) {
-                IA.next(grid, obj.id);
+            for (const G of grid) {
+                if (!IA.has(G, obj.id)) {
+                    IA.next(G, obj.id);
+                }
             }
         }
     }
@@ -1045,12 +1050,12 @@ class Bullet3D extends IAM {
                 const enemy = this.entity_IAM.show(P);
                 if (enemy) {
                     //console.info("obj.pos", JSON.stringify(obj.pos), "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox), "height", enemy.heigth, "midHeight", enemy.midHeight);
-                    console.info("BB collision for", enemy.id, enemy.name, "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox));
-                    const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox, new FP_Grid3D(), true);
+                    //console.info("BB collision for", enemy.id, enemy.name, "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox));
+                    const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox, new FP_Grid3D(), false);
                     if (hit) {
-                        console.warn("...... was hit")
+                        //console.warn("...... was hit")
                         obj.clean();
-                        enemy.kill();
+                        enemy.kill(true);
                         this.game.addScore(enemy.score);
                         break;      // only kill one at once
                     }
@@ -1146,22 +1151,30 @@ class Animated_3d_entity extends IAM {
             if (enemy === null) continue;
 
             const BB = enemy.moveState.rotatedBoundingBox;
-            const grids = [];
-            const xVals = [BB.min.x, BB.max.x];
-            const zVals = [BB.min.z, BB.max.z];
-            const yVals = [-(enemy.heigth - 0.001)];                    //just check the feet adjusted by small E
+            const LOW = Grid3D.toClass(enemy.moveState.grid.add(new FP_Vector3D(BB.min.x, BB.min.z, BB.min.y)));
+            const HI = Grid3D.toClass(enemy.moveState.grid.add(new FP_Vector3D(BB.max.x, BB.max.z, BB.max.y)));
 
-            for (const x of xVals) {
-                for (const z of zVals) {
-                    for (const y of yVals) {
-                        grids.push(Grid3D.toClass(enemy.moveState.grid.add(new FP_Vector3D(x, z, y))));
+
+            /*console.info("BB", BB);
+            console.error("pos", enemy.moveState.pos);
+            console.error("enemy.moveState.grid", enemy.moveState.grid);
+            console.error("LOW", LOW);
+            console.error("HI", HI);*/
+            //throw "debug";
+
+            const grids = [];
+
+            for (let x = LOW.x; x <= HI.x; x++) {
+                for (let z = LOW.z; z <= HI.z; z++) {
+                    for (let y = LOW.y; y <= HI.y; y++) {
+                        grids.push(new Grid3D(x, y, z));
                     }
                 }
             }
 
-            const uniqueGrids = Array.from(new Map(grids.map(grid => [`${grid.x},${grid.y},${grid.z}`, grid])).values());
+            //console.error("grids", grids);
 
-            for (let grid of uniqueGrids) {
+            for (let grid of grids) {
                 IA.next(grid, enemy.id);
             }
         }

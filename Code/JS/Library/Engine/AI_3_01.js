@@ -86,6 +86,9 @@ const AI = {
         //if (this.VERBOSE) console.warn(`${enemy.name}-${enemy.id} Ascending`);
         return [ABOVE3];
     },
+    creep(enemy) {
+        return [DIR_BACKWARD];
+    },
     interceptor(enemy, ARG) {
         /**
          * assumption: interceptor creeps in -x dir, and reduces deistance to hero, trying to reach to the same plane > line
@@ -95,13 +98,13 @@ const AI = {
         //if (this.VERBOSE) console.log("\n------------------------------");
         //if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
         //console.log(enemy.name, enemy.id, "enemy distance", enemy.airDistance, enemy);
-        let nodeMap = enemy.parent.map.GA.airNodeMap;
+        //let nodeMap = enemy.parent.map.GA.airNodeMap;
         let grid = this.getPosition(enemy);                         //grid coordinates
         const GA = enemy.parent.map.GA;
         //if (this.VERBOSE) console.log(".....enemy position grid", grid, "playerPosition.x", playerPosition.x, "GA.airNodeMap", GA.airNodeMap[grid.x][grid.y][grid.z]);
         if (grid.x <= playerPosition.x || playerPosition.x <= 0) return [new Vector3D(-1, 0, 0)];        //creep forward, no shooting anymore
 
-        
+
         const path = GRID.pathFromNodeMap3D(grid, GA.airNodeMap);
         const dirs = GRID.directionsFromPath(path);
         //console.info("dirs", dirs);

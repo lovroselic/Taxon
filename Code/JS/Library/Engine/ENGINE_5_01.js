@@ -2465,7 +2465,7 @@ const ENGINE = {
             }
             return start;
         },
-        write(point, text, color = "#000") {
+        write(point, text, color = "#9f3a3aff") {
             this.CTX.fillStyle = color;
             this.CTX.font = "10px Arial";
             this.CTX.textAlign = "center";
