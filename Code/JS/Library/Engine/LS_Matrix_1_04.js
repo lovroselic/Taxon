@@ -119,16 +119,16 @@ class Vector3 {
         let z = this.z + length * vector.z;
         return new Vector3(x, y, z);
     }
-    add(vector) {
-        let x = this.x + vector.x;
-        let y = this.y + vector.y;
-        let z = this.z + vector.z;
+    add(vector, factor = 1) {
+        let x = this.x + vector.x * factor;
+        let y = this.y + vector.y * factor;
+        let z = this.z + vector.z * factor;
         return new Vector3(x, y, z);
     }
-    sub(vector) {
-        let x = this.x - vector.x;
-        let y = this.y - vector.y;
-        let z = this.z - vector.z;
+    sub(vector, factor = 1) {
+        let x = this.x - vector.x * factor;
+        let y = this.y - vector.y * factor;
+        let z = this.z - vector.z * factor;
         return new Vector3(x, y, z);
     }
     mul(factor) {

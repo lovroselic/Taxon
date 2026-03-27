@@ -197,6 +197,8 @@ LoadAudio = [
     { srcName: "Explosion1.mp3", name: "Explosion" },
     { srcName: "Alarm.mp3", name: "Alarm" },
     { srcName: "BulletThud.mp3", name: "BulletThud" },
+    { srcName: "ExtraLife.mp3", name: "ExtraLife" },
+
 
 ];
 
@@ -213,7 +215,7 @@ LoadObjects = [
 
 LoadModels = [
     "Taxxon.gltf", "Fighter.gltf", "Rocket.gltf", "SpaceShuttle.gltf", "XWing.gltf", "Astro.gltf", "Zeppelin.gltf",
-    "Balloon.gltf",
+    "Balloon.gltf", "Tie.gltf",
 ];
 
 LoadSprites = [

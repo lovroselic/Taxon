@@ -4765,6 +4765,7 @@ class $3D_Entity {
         if (bonus) {
             if (this.score) WebGL.game.addScore(this.score);
             if (this.fuel) WebGL.hero.addFuel(this.fuel);
+            if (this.multishot) WebGL.hero.multishot();
         }
         this.remove();
         if (this.IAM.usingReIndex) this.IAM.setReindex();

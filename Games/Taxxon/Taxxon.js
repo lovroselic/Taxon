@@ -204,7 +204,7 @@ const INI = {
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 1.8,
     PAD_BETWEEN_LEVELS: 5,
-    LAST_LEVEL: 4,
+    LAST_LEVEL: 5,
     SIDE_SPEED: 5.0,
     FALL_SPEED: 5.0,
     SHIT_ROT_ANGLE: Math.radians(30),
@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.7.4",
+    VERSION: "0.7.5",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -334,6 +334,7 @@ const HERO = {
         this.setMode("idle");
         this.maxFuel = 750;
         this.fuel = HERO.maxFuel;
+        this.multi = false;
     },
     revive() {
         this.dead = false;
@@ -350,17 +351,31 @@ const HERO = {
         this.player.resetDefaultRotation();
     },
     shoot() {
+
         if (HERO.dead) return;
         if (HERO.falling) return;
         if (!HERO.canShoot) return;
 
-        const bullet = new Bullet(this.player.pos.add(new Vector3(this.player.bb_deltas.x, -0.05, 0.015)), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet);
-        BULLET3D.add(bullet);
+        const origin = this.player.pos.add(new Vector3(this.player.bb_deltas.x, -0.05, 0.015));
+        BULLET3D.add(new Bullet(origin, DIR_FORWARD, COMMON_ITEM_TYPE.Bullet));
+
+        if (this.multi) {
+            const offset = 0.25;
+            const vectors = [DIR_LEFT, DIR_RIGHT, DIR_DOWN, DIR_UP];
+
+            for (const V of vectors) {
+                BULLET3D.add(new Bullet(origin.add(V, offset), DIR_FORWARD, COMMON_ITEM_TYPE.Bullet));
+            }
+        }
+
         this.useFuel(1);
         HERO.canShoot = false;
 
         setTimeout(() => (HERO.canShoot = true), INI.HERO_SHOOT_TIMEOUT);
         return;
+    },
+    multishot() {
+        this.multi = true;
     },
     hitByMissile(missile) {
         if (DEBUG.VERBOSE) console.warn("HERO hit by missile", missile,);
@@ -369,7 +384,7 @@ const HERO = {
     hitObstacle() {
         this.explode();
     },
-    burn(){
+    burn() {
         return this.explode();
     },
     explode() {
@@ -509,9 +524,9 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 4;
+        GAME.level = 5;
         GAME.score = 0;
-        //GAME.score = 3000;
+        //GAME.score = 9990;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -555,7 +570,7 @@ const GAME = {
     },
     levelStart() {
         console.log("starting level", GAME.level);
-        HERO.fuel = HERO.maxFuel;
+        HERO.reset();
         TITLE.fuelPlot();
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
@@ -1158,6 +1173,7 @@ const TITLE = {
             GAME.lives++;
             GAME.extraLife.shift();
             TITLE.lives();
+            AUDIO.ExtraLife.play();
         }
     },
     music() {

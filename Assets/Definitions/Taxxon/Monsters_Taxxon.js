@@ -100,7 +100,7 @@ const MONSTER_TYPE = {
     Fighter: {
         name: "Fighter",
         model: "Fighter",
-        scale: 1.3 / 2 ** 9,
+        scale: 1.8 / 2 ** 8,
         rotateToNorth: 0,
         midHeight: 0.0, //
         fly: 0.001,
@@ -119,7 +119,7 @@ const MONSTER_TYPE = {
     XWing: {
         name: "XWing",
         model: "XWing",
-        scale: 1.4 / 2 ** 2,
+        scale: 1.9 / 2 ** 1,
         rotateToNorth: 3 * Math.PI / 2,
         midHeight: 0.0, //
         fly: 0.001,
@@ -131,6 +131,25 @@ const MONSTER_TYPE = {
         behaviourArguments: [Infinity, ["immobile"], 40, ["interceptor"]],
         shootDistance: 9,
         moveSpeed: 3.0,
+        material: MATERIAL.standard,
+        preventRotation: true,
+        ignoreWalls: false,
+    },
+    Tie: {
+        name: "Tie",
+        model: "Tie",
+        scale: 1.0 / 2 ** 1,
+        rotateToNorth: 3 * Math.PI / 2,
+        midHeight: 0.0, //
+        fly: 0.001,
+        flier: true,
+        shooter: true,
+        caster: false,
+        score: 500,
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 40, ["interceptor"]],
+        shootDistance: 15,
+        moveSpeed: 4.0,
         material: MATERIAL.standard,
         preventRotation: true,
         ignoreWalls: false,
@@ -157,7 +176,7 @@ const MONSTER_TYPE = {
         name: "AstroRed",
         texture: "AstroRed",
         model: "Astro",
-        scale: 1.9 / 2 ** 5,
+        scale: 1.99 / 2 ** 4,
         rotateToNorth: Math.PI,
         midHeight: 0.5,
         deathType: "BloodExplosion",
@@ -202,6 +221,7 @@ const MONSTER_TYPE = {
         moveSpeed: 0.7,
         material: MATERIAL.standard,
         ignoreWalls: true,
+        multishot: true,
     },
 };
 
