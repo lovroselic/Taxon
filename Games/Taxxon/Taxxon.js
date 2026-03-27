@@ -214,7 +214,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.7.5",
+    VERSION: "0.7.6",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -574,8 +574,8 @@ const GAME = {
         TITLE.fuelPlot();
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
-        //WebGL.GAME.setFirstPerson();                        //my preference
-        WebGL.GAME.setAxonometricView();                        //taxxon
+        WebGL.GAME.setFirstPerson();                        //my preference
+        //WebGL.GAME.setAxonometricView();                        //taxxon
         //WebGL.GAME.setThirdPerson();   
         GAME.continueLevel(GAME.level);
     },
