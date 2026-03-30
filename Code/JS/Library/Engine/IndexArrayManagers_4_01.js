@@ -1211,11 +1211,11 @@ class Animated_3d_entity extends IAM {
                 entity.setDistanceFromNodeMap(map.GA.airNodeMap, "airDistance");
                 if (entity.petrified) continue;
 
-                const entityGrid = Grid3D.toClass(entity.moveState.grid);
+                /*const entityGrid = Grid3D.toClass(entity.moveState.grid);
                 if (GA.isOutOfBounds(entityGrid)) {
                     entity.remove();
                     continue;
-                }
+                }*/
 
                 //enemy/enemy collision resolution
                 if (IndexArrayManagers.EE_COLLISION_CHECK && this.enemy_enemy_collision_resolution(entity, map, date)) continue;
@@ -1294,7 +1294,8 @@ class Animated_3d_entity extends IAM {
                     };
 
                     entity.dirStack = AI[entity.behaviour.strategy](entity, ARG);
-                    if (IndexArrayManagers.VERBOSE) console.info(`${entity.name} ${entity.id} dirStack`, entity.dirStack, "dir", entity.moveState.dir, "strategy", entity.behaviour.strategy);
+                    if (IndexArrayManagers.VERBOSE) console.info(`${entity.name} ${entity.id} dirStack`, entity.dirStack, "dir", entity.moveState.dir, "strategy", entity.behaviour.strategy, `distance: ${distance}`);
+                    //console.info(`${entity.name} ${entity.id} dirStack`, entity.dirStack, entity.dirStack.constructor.name, "dir", entity.moveState.dir, entity.moveState.dir.constructor.name, "strategy", entity.behaviour.strategy, `distance: ${distance}`);
                 }
                 entity.makeMove();
             }

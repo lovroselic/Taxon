@@ -87,40 +87,44 @@ const AI = {
         return [ABOVE3];
     },
     creep(enemy) {
-        return [DIR_BACKWARD];
+        return [LEFT3];
     },
     interceptor(enemy, ARG) {
         /**
          * assumption: interceptor creeps in -x dir, and reduces deistance to hero, trying to reach to the same plane > line
          * assumption: shoot resolution, if no friendly fire
          */
-        let playerPosition = Grid3D.toClass(ARG.playerPosition);    // grid coordinates
-        //if (this.VERBOSE) console.log("\n------------------------------");
-        //if (this.VERBOSE) console.info(`interceptor analysis for ${enemy.name}-${enemy.id}, player position: ${JSON.stringify(playerPosition)}, enemy.ms.endPos: ${JSON.stringify(enemy.moveState.endPos)}`);
-        //console.log(enemy.name, enemy.id, "enemy distance", enemy.airDistance, enemy);
-        //let nodeMap = enemy.parent.map.GA.airNodeMap;
-        let grid = this.getPosition(enemy);                         //grid coordinates
-        const GA = enemy.parent.map.GA;
-        //if (this.VERBOSE) console.log(".....enemy position grid", grid, "playerPosition.x", playerPosition.x, "GA.airNodeMap", GA.airNodeMap[grid.x][grid.y][grid.z]);
-        if (grid.x <= playerPosition.x || playerPosition.x <= 0) return [new Vector3D(-1, 0, 0)];        //creep forward, no shooting anymore
 
+        let _goto;
+        let playerPosition = Grid3D.toClass(ARG.playerPosition);                                    // grid coordinates
+        let grid = this.getPosition(enemy);                                                         //grid coordinates
+        if (grid.x <= playerPosition.x) {
+            //console.error("interceptor early exit", enemy.id, enemy.name);
+            return [LEFT3];     //creep forward, no shooting anymore
+        }
 
-        const path = GRID.pathFromNodeMap3D(grid, GA.airNodeMap);
-        const dirs = GRID.directionsFromPath(path);
-        //console.info("dirs", dirs);
-        const goto = GRID.getUnifiedDirFromPathDirections(dirs);
+        if (probable(enemy.huntProbability)) {
+           // console.log("interceptor hunting", enemy.id, enemy.name);
+            const GA = enemy.parent.map.GA;
+            const path = GRID.pathFromNodeMap3D(grid, GA.airNodeMap);
+            const dirs = GRID.directionsFromPath(path);
+            _goto = GRID.getUnifiedDirFromPathDirections(dirs);
 
-        /** check for walls and simplify goto */
-        let nextGrid = grid.add(goto);
-        if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.y = 0;
-        nextGrid = grid.add(goto);
-        if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) goto.z = 0;
+            /** check for walls and simplify _goto */
+            let nextGrid = grid.add(_goto);
+            if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z] || nextGrid.y <= 0) _goto.y = 0;
+            nextGrid = grid.add(_goto);
+            if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) _goto.z = 0;
+        } else {
+            //console.info("interceptor creeping", enemy.id, enemy.name);
+            _goto = LEFT3;
+        }
 
-        //if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
+        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> _goto:`, JSON.stringify(_goto), "strategy", enemy.behaviour.strategy, "_goto cons", _goto.constructor.name);
 
         this.shootBullet(enemy, playerPosition, grid);
 
-        return [goto];
+        return [_goto];
 
     },
     shootBullet(enemy, playerPosition, grid) {
@@ -135,8 +139,6 @@ const AI = {
         const IA = enemy.parent.map.enemyIA;
         let sourceIndex = IA.gridToIndex(grid);
 
-        //console.info("..dX", dX, "sourceIndex", sourceIndex);
-
         /** only if the creep direction is clear, no friendly fire allowed */
         if (IA.emptyGrids(sourceIndex - dX, dX)) {
             enemy.canShoot = true;
@@ -150,10 +152,10 @@ const AI = {
         let nodeMap = enemy.parent.map.GA.nodeMap;
         let grid = this.getPosition(enemy);
         if (this.VERBOSE) console.log(".....enemy position grid", grid);
-        let goto = nodeMap[grid.x][grid.y][grid.z]?.goto || NOWAY3;
-        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} hunting -> goto:`, goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
-        if (GRID.same3D(goto, NOWAY3) && (this.setting === "3D" || this.setting === "3D3")) return this.hunt_FP(enemy, exactPosition);
-        return [goto];
+        let _goto = nodeMap[grid.x][grid.y][grid.z]?._goto || NOWAY3;
+        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} hunting -> _goto:`, _goto, "strategy", enemy.behaviour.strategy, "node", JSON.stringify(nodeMap[grid.x][grid.y][grid.z]));
+        if (GRID.same3D(_goto, NOWAY3) && (this.setting === "3D" || this.setting === "3D3")) return this.hunt_FP(enemy, exactPosition);
+        return [_goto];
     },
 
     hunt_FP(enemy, exactPosition) {
@@ -231,7 +233,7 @@ const AI = {
         console.error("running away - untested", enemy);
         let nodeMap = enemy.parent.map.GA.nodeMap;
         let grid = this.getPosition(enemy);
-        let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(grid, nodeMap, enemy.fly, nodeMap[grid.x][grid.y][grid.z].goto);
+        let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(grid, nodeMap, enemy.fly, nodeMap[grid.x][grid.y][grid.z]._goto);
         directions.push(NOWAY3);
         let distances = [];
         for (const dir of directions) {
@@ -241,7 +243,7 @@ const AI = {
         let maxDistance = Math.max(...distances);
         return [directions[distances.indexOf(maxDistance)]];
     },
-    goto(enemy) {
+    _goto(enemy) {
         const gridValue = this.getGridValue(enemy);
         const goal = enemy.guardPosition; // should be set in SPAWN!
         const Astar = enemy.parent.map.GA.findPath_AStar_fast(this.getPosition(enemy), goal, gridValue, "exclude", enemy.fly);

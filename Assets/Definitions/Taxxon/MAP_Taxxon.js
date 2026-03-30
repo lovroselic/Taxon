@@ -99,4 +99,21 @@ const MAP = {
         objects: '[[43,"Oil"],[84,"Oil"],[125,"Oil"],[164,"Oil"],[203,"Oil"],[245,"Oil"],[284,"Oil"],[325,"Oil"],[363,"Oil"],[404,"Oil"],[131,"Oil"],[211,"Oil"],[176,"Oil"],[98,"Oil"],[333,"Oil"],[370,"Oil"],[816,"Oil"],[738,"Oil"],[540,"Oil"],[660,"Oil"],[820,"Oil"],[784,"WoodenCrate"],[826,"WoodenCrate"],[749,"WoodenCrate"],[870,"WoodenCrate"],[1021,"WoodenCrate"],[984,"WoodenCrate"],[1104,"WoodenCrate"],[1148,"WoodenCrate"],[1272,"WoodenCrate"],[991,"WoodenCrate"],[1393,"WoodenCrate"],[1513,"WoodenCrate"],[1633,"WoodenCrate"],[1713,"WoodenCrate"],[1874,"WoodenCrate"],[1995,"WoodenCrate"],[2115,"WoodenCrate"],[2154,"WoodenCrate"],[49,"WoodenCrate"]]',
         fires: '[[166,4,"RedBonfire"],[246,4,"RedBonfire"]]',
     }
+    ,
+    6: {
+        name: "Halt and Catch Fire",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":"40","height":"11","depth":7,"map":"ÁBB2AA24BB2AA9BAA11BAA2BB2AA46ÁAA5BAA3BB3AA7ÁÁ2BABB2AA5ÁAA7BAA4ÁAA18BAÁAA2BAA2BAA7BB3AA37BAA3BAA5BAA44BAA9ÁAA17ÁBÁBAA9ÁAÁÁ5AA2ÁAÁÁ5AA2ÁÁ11BB4ÁÁ4BÁÁ3AA2BB4AÁAA4BB54AA2BB3AA4BB3AA3ÁÁ7BB224ÁÁ5BB2ÁÁ3BÁÁ19BB2ÁÁ8AÁÁ3AÁÁ39BB2ÁÁ250BÁÁ4BÁÁ8AÁÁ27$ÁÁ6BÁÁ144BÁÁ51AÁÁ6AÁÁ62BÁÁ69BÁBAA3ÁAA5ÁAÁBB2ABÁÁ8BÁÁ24BÁÁ2BB19ÁÁ3BÁÁ17BÁÁ2BÁÁ17AÁÁ7AÁÁ29BÁÁ18BÁBÁÁ4AÁÁ2AÁÁ7AÁBÁÁ5BÁÁ21BÁÁ37AÁÁ125AÁÁ32BÁÁ2BÁAA2ÁÁ88AÁÁ148AÁÁ20AÁÁ63AÁÁ56AÁÁ102BÁÁ5AÁÁ2BÁÁ49AÁÁ27BAÁÁ125AÁÁ41AÁAÁÁ91AÁÁ133AA2ÁÁ89BÁBÁBB17ÁÁ163ABABB21"}',
+        wall: "FuturisticTexture_114",
+        floor: "FuturisticTexture_124",
+        ceil: "FuturisticTexture_044",
+        start: '[1960,5]',
+        lights: '[[2436,3,"FuturisticLight_001","standard2"]]',
+        monsters: '[[1012,"Rocket"],[1217,"Rocket"],[1104,"Rocket"],[1269,"Rocket"],[89,"SpaceShuttle"],[330,"SpaceShuttle"],[217,"SpaceShuttle"],[383,"SpaceShuttle"],[107,"SpaceShuttle"],[316,"SpaceShuttle"],[196,"SpaceShuttle"],[1493,"XWing"],[1613,"XWing"],[1416,"XWing"],[1696,"XWing"],[1898,"Tie"],[2098,"Tie"],[1861,"Tie"],[2142,"Tie"],[1828,"Tie"],[2188,"Tie"],[2311,"Fighter"],[2431,"Fighter"],[2511,"Fighter"],[2631,"Fighter"],[2354,"Fighter"],[2594,"Fighter"],[140,"Balloon"],[2694,"Zeppelin"],[3062,"Zeppelin"],[2792,"Zeppelin"]]',
+        objects: '[[286,"Oil"],[209,"Oil"],[254,"Oil"],[415,"Oil"],[57,"Oil"],[407,"Oil"],[221,"Oil"],[102,"Oil"],[109,"Oil"],[234,"Oil"],[116,"Oil"],[385,"Oil"],[392,"Oil"],[613,"Oil"],[536,"Oil"],[772,"Oil"],[736,"Oil"],[819,"Oil"],[704,"Oil"],[627,"Oil"],[710,"Oil"],[1047,"WoodenCrate"],[1057,"WoodenCrate"],[1252,"WoodenCrate"],[1181,"WoodenCrate"],[1151,"WoodenCrate"],[994,"WoodenCrate"],[1275,"WoodenCrate"],[963,"Oil"],[1043,"Oil"],[1123,"Oil"],[1203,"Oil"],[1283,"Oil"],[156,"WoodenCrate"],[236,"WoodenCrate"],[356,"WoodenCrate"],[631,"WoodenCrate"],[571,"Oil"],[624,"Oil"],[53,"Oil"],[305,"Oil"],[426,"Oil"],[154,"Oil"]]',
+    }
 };
