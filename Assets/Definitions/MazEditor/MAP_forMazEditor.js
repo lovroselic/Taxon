@@ -18,6 +18,8 @@ const TEXTURE_LIST = [
     "FuturisticTexture_097", "FuturisticTexture_098", "FuturisticTexture_099", "FuturisticTexture_100", "FuturisticTexture_101", "FuturisticTexture_102", "FuturisticTexture_103", "FuturisticTexture_104", "FuturisticTexture_105", "FuturisticTexture_106", "FuturisticTexture_107", "FuturisticTexture_108",
     "FuturisticTexture_109", "FuturisticTexture_110", "FuturisticTexture_111", "FuturisticTexture_112", "FuturisticTexture_113", "FuturisticTexture_114", "FuturisticTexture_115", "FuturisticTexture_116", "FuturisticTexture_117", "FuturisticTexture_118", "FuturisticTexture_119", "FuturisticTexture_120",
     "FuturisticTexture_121", "FuturisticTexture_122", "FuturisticTexture_123", "FuturisticTexture_124", "FuturisticTexture_125", "FuturisticTexture_126", "FuturisticTexture_127", "FuturisticTexture_128", "FuturisticTexture_129", "FuturisticTexture_130", "FuturisticTexture_131", "FuturisticTexture_132",
+    "Sand1", "Sand10", "Sand11", "Sand12", "Sand13", "Sand14", "Sand15", "Sand16", "Sand2", "Sand3", "Sand4", "Sand5",
+    "Sand6", "Sand7", "Sand8", "Sand9"
 ].sort();
 
 /** Decals */

@@ -207,7 +207,7 @@ const INI = {
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 1.8,
     PAD_BETWEEN_LEVELS: 5,
-    LAST_LEVEL: 7,
+    LAST_LEVEL: 10,
     SIDE_SPEED: 5.0,
     FALL_SPEED: 5.0,
     SHIT_ROT_ANGLE: Math.radians(30),
@@ -217,7 +217,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.7.7",
+    VERSION: "0.7.8",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -527,7 +527,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 6;
+        GAME.level = 10;
         GAME.score = 0;
         //GAME.score = 9990;
 
@@ -561,6 +561,7 @@ const GAME = {
         WebGL.USE_INTERACTION = false;
         WebGL.INI.HERO_HEIGHT = 0;
         WebGL.FIRST_PERSON_DUAL_DISPLAY = false;
+        WebGL.NO_TOP_CEILING = true;
         WebGL.VIEWS_ALLOWED = new Set([1, 3, 4, 6]);
         WebGL.GAME.setViewButtons();
     },

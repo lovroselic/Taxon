@@ -104,7 +104,7 @@ const AI = {
         }
 
         if (probable(enemy.huntProbability)) {
-           // console.log("interceptor hunting", enemy.id, enemy.name);
+            //console.log("interceptor hunting", enemy.id, enemy.name);
             const GA = enemy.parent.map.GA;
             const path = GRID.pathFromNodeMap3D(grid, GA.airNodeMap);
             const dirs = GRID.directionsFromPath(path);
@@ -112,15 +112,17 @@ const AI = {
 
             /** check for walls and simplify _goto */
             let nextGrid = grid.add(_goto);
-            if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z] || nextGrid.y <= 0) _goto.y = 0;
-            nextGrid = grid.add(_goto);
-            if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) _goto.z = 0;
+            if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z] || nextGrid.y <= 0) {
+                _goto.y = 0;
+                nextGrid = grid.add(_goto);
+                if (!GA.airNodeMap[nextGrid.x][nextGrid.y][nextGrid.z]) _goto.z = 0;
+            }
         } else {
             //console.info("interceptor creeping", enemy.id, enemy.name);
             _goto = LEFT3;
         }
 
-        if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> _goto:`, JSON.stringify(_goto), "strategy", enemy.behaviour.strategy, "_goto cons", _goto.constructor.name);
+        //if (this.VERBOSE) console.info(`...${enemy.name}-${enemy.id} interceptor -> _goto:`, JSON.stringify(_goto), "strategy", enemy.behaviour.strategy, "_goto cons", _goto.constructor.name);
 
         this.shootBullet(enemy, playerPosition, grid);
 

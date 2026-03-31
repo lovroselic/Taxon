@@ -48,6 +48,7 @@ const WebGL = {
     USE_SHADOW: false,                  // if true draws shaow on the floor from the fake sun
     USE_INTERACTION: true,              // if true, draws interaction buffer
     FIRST_PERSON_DUAL_DISPLAY: true,    // if true displays alos the hero model
+    NO_TOP_CEILING: false,              // if true we don't display ctop ceiling  regardless of first person
 
     VIEWS_ALLOWED: new Set([1, 2, 3, 4, 5, 6, 7]),     //which cameras are set - default all, sys expects set
     INI: {
@@ -1796,8 +1797,8 @@ const WORLD = {
                 case MAPDICT.EMPTY:
                 case MAPDICT.DOOR:
                 case MAPDICT.WALL + MAPDICT.DOOR:                                                                               //adding grids for floor and ceiling
-                    if (grid.z === 0) this.addCube(- 1, grid, "floor");
-                    if (grid.z === maxDepth) this.addCube(grid.z + 1, grid, "ceil");
+                    if (grid.z === 0) this.addCube(- 1, grid, "floor");                                                         // bottom flor
+                    if (grid.z === maxDepth && !WebGL.NO_TOP_CEILING) this.addCube(grid.z + 1, grid, "ceil");                                            // top ceiling
                     break;
                 case MAPDICT.WALL:
                 case MAPDICT.WALL + MAPDICT.STAIR:
@@ -1806,7 +1807,7 @@ const WORLD = {
                     if (WebGL.CONFIG.holesSupported && grid.z === 0) this.addCube(- 1, grid, "wall");                                                   //support for holes so that they have 3d look if in the floor
                     break;
                 case MAPDICT.HOLE:
-                    if (grid.z === maxDepth) this.addCube(grid.z + 1, grid, "ceil");
+                    if (grid.z === maxDepth && !WebGL.NO_TOP_CEILING) this.addCube(grid.z + 1, grid, "ceil");                  // top ceiling - can be forecefully excluded
                     break;
                 case MAPDICT.BLOCKWALL:
                     this.addBlockWall(grid.z, grid, "wall");
@@ -3400,6 +3401,7 @@ class Bullet extends GeneralMissile {
         }
     }
 }
+
 class Missile extends GeneralMissile {
     constructor(position, direction, type, magic, explosionType = null, friendly = false) {
         super(position, direction, type);
@@ -4522,6 +4524,7 @@ class $3D_Entity {
         if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
         this.minY = this.model.meshes[0].primitives[0].positions.min[1] * this.scale[1];
         this.translate = Vector3.from_Grid(grid, this.minY + this.fly + this.grid.z);
+        //console.error("setting entity", this.name, "with Y", this.minY + this.fly + this.grid.z, "min", this.minY, "fly", this.fly, "Z", this.grid.z, "sensible", this.minY + this.fly + this.grid.z > this.grid.z);
         this.boundingBox = new BoundingBox(this.model.meshes[0].primitives[0].positions.max, this.model.meshes[0].primitives[0].positions.min, this.scale);
         this.actor = new $3D_ACTOR(this, this.model.animations, this.model.skins[0], this.jointMatrix);
 
@@ -4762,6 +4765,8 @@ class $3D_Entity {
     }
     kill(bonus = false) {
         /** simplified die */
+        this.health -= 1;
+        if (this.health > 0) return; // support fgor multihit bosses
         if (bonus) {
             if (this.score) WebGL.game.addScore(this.score);
             if (this.fuel) WebGL.hero.addFuel(this.fuel);

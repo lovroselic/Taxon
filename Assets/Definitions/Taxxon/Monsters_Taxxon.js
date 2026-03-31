@@ -81,6 +81,7 @@ const MONSTER_TYPE = {
         moveSpeed: 1.2,
         material: MATERIAL.standard,
         ignoreWalls: true,
+        health: 1,
     },
     SpaceShuttle: {
         name: "SpaceShuttle",
@@ -96,6 +97,7 @@ const MONSTER_TYPE = {
         moveSpeed: 0.7,
         material: MATERIAL.standard,
         ignoreWalls: true,
+        health: 1,
     },
     Fighter: {
         name: "Fighter",
@@ -103,7 +105,7 @@ const MONSTER_TYPE = {
         scale: 1.8 / 2 ** 8,
         rotateToNorth: 0,
         midHeight: 0.0, //
-        fly: 0.001,
+        fly: 0.5,
         flier: true,
         shooter: true,
         caster: false,
@@ -116,6 +118,7 @@ const MONSTER_TYPE = {
         material: MATERIAL.standard,
         preventRotation: true,
         ignoreWalls: false,
+        health: 1,
     },
     XWing: {
         name: "XWing",
@@ -123,7 +126,7 @@ const MONSTER_TYPE = {
         scale: 1.9 / 2 ** 1,
         rotateToNorth: 3 * Math.PI / 2,
         midHeight: 0.0, //
-        fly: 0.001,
+        fly: 0.5,
         flier: true,
         shooter: true,
         caster: false,
@@ -136,6 +139,7 @@ const MONSTER_TYPE = {
         material: MATERIAL.standard,
         preventRotation: true,
         ignoreWalls: false,
+        health: 1,
     },
     Tie: {
         name: "Tie",
@@ -143,7 +147,7 @@ const MONSTER_TYPE = {
         scale: 1.0 / 2 ** 1,
         rotateToNorth: 3 * Math.PI / 2,
         midHeight: 0.0, //
-        fly: 0.001,
+        fly: 0.5,
         flier: true,
         shooter: true,
         caster: false,
@@ -156,6 +160,7 @@ const MONSTER_TYPE = {
         material: MATERIAL.standard,
         preventRotation: true,
         ignoreWalls: false,
+        health: 1,
     },
     Astro: {
         name: "Astro",
@@ -174,6 +179,7 @@ const MONSTER_TYPE = {
         caster: false,
         floored: true,
         score: 500,
+        health: 1,
     },
     AstroRed: {
         name: "AstroRed",
@@ -192,6 +198,7 @@ const MONSTER_TYPE = {
         caster: false,
         floored: true,
         score: 400,
+        health: 1,
     },
     Zeppelin: {
         name: "Zeppelin",
@@ -203,12 +210,13 @@ const MONSTER_TYPE = {
         behaviourArguments: [Infinity, ["immobile"], 40, ["creep"]],
         moveSpeed: 0.75,
         material: MATERIAL.standard,
-        fly: 0.001,
+        fly: 0.5,
         flier: true,
         shooter: false,
         caster: false,
         score: 100,
-        fuel: 4.0,  
+        fuel: 4.0,
+        health: 1,
     },
     Balloon: {
         name: "Balloon",
@@ -225,6 +233,7 @@ const MONSTER_TYPE = {
         material: MATERIAL.standard,
         ignoreWalls: true,
         multishot: true,
+        health: 1,
     },
 };
 
