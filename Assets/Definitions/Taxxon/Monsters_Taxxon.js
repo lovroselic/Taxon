@@ -235,6 +235,25 @@ const MONSTER_TYPE = {
         multishot: true,
         health: 1,
     },
+    Tank: {
+        name: "Tank",
+        model: "Tank",
+        scale: 1.0 / 2 ** 3,
+        rotateToNorth: Math.PI / 2,
+        midHeight: 0.0, //
+        fly: 0.0,
+        flier: false,
+        shooter: true,
+        caster: false,
+        score: 100,
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["sentinel"], -1],
+        shootDistance: 15,
+        moveSpeed: 0.0,
+        material: MATERIAL.standard,
+        ignoreWalls: true,
+        health: 1,
+    },
 };
 
 const FIRE_TYPES = {

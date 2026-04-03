@@ -1255,6 +1255,9 @@ class Vector3D extends MasterVectorClass3D {
         this.y = Math.trunc(y);
         this.z = Math.trunc(z);
     }
+    static fromVector2D(vector2d, z) {
+        return new Vector3D(vector2d.x, vector2d.y, z)
+    }
     static toVector2D(vector) {
         return new Vector(vector.x, vector.y);
     }

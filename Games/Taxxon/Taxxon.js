@@ -217,7 +217,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.7.8",
+    VERSION: "0.8.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -527,7 +527,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 10;
+        GAME.level = 10; //9,10
         GAME.score = 0;
         //GAME.score = 9990;
 

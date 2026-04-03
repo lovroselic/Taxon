@@ -89,6 +89,16 @@ const AI = {
     creep(enemy) {
         return [LEFT3];
     },
+    sentinel(enemy, ARG) {
+        /**
+         * sentinel is immobile but shoots, and avoids friendly fire
+         * shoot dir:
+         */
+        let playerPosition = Grid3D.toClass(ARG.playerPosition);                                    // grid coordinates
+        let grid = this.getPosition(enemy);
+        this.shootBullet(enemy, playerPosition, grid);
+        return [NOWAY3];
+    },
     interceptor(enemy, ARG) {
         /**
          * assumption: interceptor creeps in -x dir, and reduces deistance to hero, trying to reach to the same plane > line
@@ -130,7 +140,6 @@ const AI = {
 
     },
     shootBullet(enemy, playerPosition, grid) {
-        //console.warn("shootBullet from", grid, "to", playerPosition);
         const dX = grid.x - playerPosition.x;
 
         if (dX > enemy.shootDistance) {
@@ -144,6 +153,7 @@ const AI = {
         /** only if the creep direction is clear, no friendly fire allowed */
         if (IA.emptyGrids(sourceIndex - dX, dX)) {
             enemy.canShoot = true;
+            //console.warn("shootBullet from", grid, "to", playerPosition);
             return;
         }
         enemy.canShoot = false;

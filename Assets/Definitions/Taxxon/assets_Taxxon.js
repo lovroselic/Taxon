@@ -231,7 +231,7 @@ LoadObjects = [
 
 LoadModels = [
     "Taxxon.gltf", "Fighter.gltf", "Rocket.gltf", "SpaceShuttle.gltf", "XWing.gltf", "Astro.gltf", "Zeppelin.gltf",
-    "Balloon.gltf", "Tie.gltf",
+    "Balloon.gltf", "Tie.gltf", "Tank.gltf",
 ];
 
 LoadSprites = [

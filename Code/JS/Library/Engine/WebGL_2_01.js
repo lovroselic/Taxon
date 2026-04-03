@@ -4817,10 +4817,16 @@ class $3D_Entity {
     }
     shootBullet(GA) {
         if (!this.shooter) return;
-        //console.error("-------------------->", this.name, this.id, "shoots");
+        //const dir = this.moveState.dir;
+        const dir = Vector3.from_3D_dir(this.moveState.dir);
+        const R_factor = 1.85;
+        //console.error("-------------------->", this.name, this.id, "shoots", dir);
 
-        const position = this.moveState.pos.translate(DIR_BACKWARD, this.r);
-        const bullet = new Bullet(position, DIR_BACKWARD, COMMON_ITEM_TYPE.Bullet);
+        const position = this.moveState.pos.translate(dir, this.r * R_factor);
+        //console.log("..", "obj", this.moveState.pos, "bullet", position, "R", this.r * R_factor);
+        //console.log("...pos", position.z, "BB", this.moveState.absoluteBoundingBox.max.z, "min", this.moveState.absoluteBoundingBox.min.z);
+        const bullet = new Bullet(position, dir, COMMON_ITEM_TYPE.Bullet);
+        //console.warn("hit", GRID.collisionPosInBoundingBox(bullet.pos, this.moveState.absoluteBoundingBox, new FP_Grid3D(), false));
         BULLET3D.add(bullet);
 
         this.canShoot = false;

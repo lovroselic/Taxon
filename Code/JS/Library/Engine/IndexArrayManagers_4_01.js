@@ -1010,7 +1010,7 @@ class Bullet3D extends IAM {
 
                 const pos = Vector3.to_Grid3D(obj.pos);
 
-                if (pos.x > GA.width || (pos.x < 0) && obj.dir.same(DIR_BACKWARD)) {                         // out of bounds in the forward/back direction
+                if (GA.isOutOfBounds(pos)) {                         
                     obj.clean();
                     continue;
                 }
@@ -1236,7 +1236,7 @@ class Animated_3d_entity extends IAM {
                             if (IndexArrayManagers.VERBOSE) console.info(`${entity.name}-${entity.id} attacking`);
                         }
 
-                        entity.setView(this.hero.player.pos);
+                        entity.setView(this.hero.player.pos);       // this never runs if IndexArrayManagers.DEADLY_TOUCH
                         entity.update(date);
                         continue;
                     }

@@ -480,7 +480,10 @@ const GAME = {
           case MAPDICT.EMPTY:
           case MAPDICT.HOLE:
             let monsterValue = $("#monster_type")[0].value;
-            $MAP.map.monsters.push(Array(gridIndex, monsterValue));
+            dir = GAME.getSelectedDir();
+            if ($("input[name='directional']")[0].checked && !dir.same(NOWAY)) {
+              $MAP.map.monsters.push(Array(gridIndex, monsterValue, dir.toInt()));
+            } else $MAP.map.monsters.push(Array(gridIndex, monsterValue));
             break;
           default:
             $("#error_message").html(`Monster placement not supported on value: ${currentValue}`);

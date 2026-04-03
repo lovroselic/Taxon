@@ -2472,6 +2472,13 @@ const ENGINE = {
             this.CTX.textBaseLine = "middle";
             this.CTX.fillText(text, point.x, point.y);
         },
+        dirLine(point, dir) {
+            let pEnd = point.translate(dir, this.W);
+            this.CTX.beginPath();
+            this.CTX.moveTo(point.x, point.y);
+            this.CTX.lineTo(pEnd.x, pEnd.y);
+            this.CTX.stroke();
+        },
         decalDraw(maze, z) {
             if (maze.start) {
                 this.start(maze.start, z);
@@ -2745,6 +2752,10 @@ const ENGINE = {
             let grid = this.GA.indexTo2DGridSlice(monster[0], z);
             if (!grid) return;
             let mid = GRID.gridToCenterPX(grid);
+            if (monster.length > 2) {
+                let dir = Vector.fromInt(monster[2]);
+                this.dirLine(mid, dir);
+            }
             this.write(mid, monster[1]);
         },
         scroll(scroll, z) {
