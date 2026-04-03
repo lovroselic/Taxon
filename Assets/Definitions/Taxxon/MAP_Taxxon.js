@@ -166,19 +166,17 @@ const MAP = {
         objects: '[[123,"Oil"],[241,"Oil"],[363,"Oil"],[87,"Oil"],[251,"Oil"],[409,"Oil"],[336,"Oil"],[218,"Oil"],[101,"Oil"],[223,"Oil"],[146,"Oil"],[267,"Oil"],[349,"Oil"],[392,"Oil"],[275,"Oil"],[156,"WoodenCrate"],[396,"WoodenCrate"],[270,"WoodenCrate"],[65,"WoodenCrate"],[302,"WoodenCrate"],[373,"WoodenCrate"],[172,"WoodenCrate"],[49,"WoodenCrate"],[406,"WoodenCrate"],[644,"WoodenCrate"],[683,"WoodenCrate"],[724,"WoodenCrate"],[861,"WoodenCrate"],[783,"WoodenCrate"],[1085,"WoodenCrate"],[1263,"WoodenCrate"],[1094,"WoodenCrate"],[1494,"Oil"],[1565,"Oil"],[1495,"Oil"],[1704,"Oil"],[1743,"Oil"],[1511,"Oil"],[1895,"Oil"],[1911,"Oil"],[2184,"Oil"],[1165,"Oil"],[1302,"Oil"],[1224,"Oil"],[2294,"Oil"],[2296,"Oil"],[2311,"Oil"],[2692,"Oil"],[2697,"Oil"],[2709,"Oil"],[2712,"Oil"]]',
     }
     ,
-    10: {
-        name: "Death Maze",
+    11: {
+        name: "Not Bored",
         sg: 0,
         maxSpawned: -1,
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":"40","height":"11","depth":7,"map":"ÁBB5AA5ÁBB6AA9BB3AA12BB3AA60BAA6BAA9ÁÁ5AA9BAÁAA29BAA2BAA2BB3AA140ÁÁ3AA14ÁÁ7BB224ÁÁ83AA6BÁÁ3AÁÁ20BB2ÁÁ30BB4ÁÁ665BÁÁ10$ÁÁ548BB2ÁÁ21BB19ÁÁ30BÁÁ10BÁÁ4BB18ÁÁ5BB20ÁBB10ÁÁ43BÁÁ38BÁÁ3BB4ÁÁ12BB5ÁÁ6BAA3BB12ÁÁ21BB20ÁÁ10BB5ÁÁ15BB20ÁÁ4BÁÁ18BB14ÁÁ45BB21ÁÁ37BÁÁ8BÁÁ43BB2ÁÁ279BB9ÁÁ21BB9ÁÁ49BÁBÁÁ18BB11ÁÁ2BB9ÁÁ2BB2ÁÁ8BB15ÁÁ34BB16ÁÁ8BB4ÁÁ44BB5ÁÁ30BB6"}',
-        wall: "FuturisticTexture_065",
-        floor: "FuturisticTexture_127",
+        data: '{"width":40,"height":11,"depth":7,"map":"ÁÁ11AA330ÁÁ7BB231ÁÁ47$ÁÁ41BAA9ÁÁ5AÁÁ2376BÁÁ15BB5"}',
+        wall: "FuturisticTexture_012",
+        floor: "FuturisticTexture_129",
         ceil: "Sand1",
-        start: '[1960,5]',
-        lights: '[[1329,7,"FuturisticLight_001","standardYellowSoft"],[1344,7,"FuturisticLight_006","standardYellowSoft"],[913,7,"FuturisticLight_009","standardYellowSoft"]]',
-        monsters: '[[47,"Tank",7]]',
+        start: '[2000,5]',
     }
 };

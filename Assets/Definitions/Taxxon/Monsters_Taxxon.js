@@ -238,7 +238,26 @@ const MONSTER_TYPE = {
     Tank: {
         name: "Tank",
         model: "Tank",
-        scale: 1.0 / 2 ** 3,
+        scale: 1.9 / 2 ** 4,
+        rotateToNorth: Math.PI / 2,
+        midHeight: 0.0, //
+        fly: 0.0,
+        flier: false,
+        shooter: true,
+        caster: false,
+        score: 100,
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["sentinel"], -1],
+        shootDistance: 15,
+        moveSpeed: 0.0,
+        material: MATERIAL.standard,
+        ignoreWalls: true,
+        health: 1,
+    },
+    Tank2: {
+        name: "Tank2",
+        model: "Tank2",
+        scale: 1.7 / 2 ** 4,
         rotateToNorth: Math.PI / 2,
         midHeight: 0.0, //
         fly: 0.0,
