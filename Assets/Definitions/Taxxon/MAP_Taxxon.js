@@ -166,6 +166,23 @@ const MAP = {
         objects: '[[123,"Oil"],[241,"Oil"],[363,"Oil"],[87,"Oil"],[251,"Oil"],[409,"Oil"],[336,"Oil"],[218,"Oil"],[101,"Oil"],[223,"Oil"],[146,"Oil"],[267,"Oil"],[349,"Oil"],[392,"Oil"],[275,"Oil"],[156,"WoodenCrate"],[396,"WoodenCrate"],[270,"WoodenCrate"],[65,"WoodenCrate"],[302,"WoodenCrate"],[373,"WoodenCrate"],[172,"WoodenCrate"],[49,"WoodenCrate"],[406,"WoodenCrate"],[644,"WoodenCrate"],[683,"WoodenCrate"],[724,"WoodenCrate"],[861,"WoodenCrate"],[783,"WoodenCrate"],[1085,"WoodenCrate"],[1263,"WoodenCrate"],[1094,"WoodenCrate"],[1494,"Oil"],[1565,"Oil"],[1495,"Oil"],[1704,"Oil"],[1743,"Oil"],[1511,"Oil"],[1895,"Oil"],[1911,"Oil"],[2184,"Oil"],[1165,"Oil"],[1302,"Oil"],[1224,"Oil"],[2294,"Oil"],[2296,"Oil"],[2311,"Oil"],[2692,"Oil"],[2697,"Oil"],[2709,"Oil"],[2712,"Oil"]]',
     }
     ,
+    10: {
+        name: "Death Maze",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":"40","height":"11","depth":7,"map":"ÁBB5AA5ÁBB6AA9BB3AA12BB3AA60BAA6BAA9ÁÁ5AA9BAÁAA29BAA2BAA2BB3AA129ÁAA3ÁAA8ÁÁ3AA14ÁÁ7BB224ÁÁ83AA6BÁÁ4AÁÁ19BB2ÁÁ30BB4ÁÁ669BÁÁ12$ÁÁ552BB2ÁÁ21BB19ÁÁ30ABÁÁ9BÁÁ4BB18ÁÁ5BB20ÁBB10ÁÁ44BB2ÁÁ37BÁÁ3BB4ÁÁ12BB4ÁÁ6BAA3BB3ÁÁ2BB9ÁÁ21BB20ÁÁ10BB5ÁÁ15BB20ÁÁ3BAÁÁ18BB14ÁÁ44BÁBB21ÁÁ36BÁÁ8BÁÁ42BB2ÁÁ276BB9ÁÁ21BB9ÁÁ33BÁÁ14BÁÁ2BÁÁ17BB12ÁBB8ÁÁ2BB2ÁÁ8BB14ÁÁ33BB16ÁÁ7BB4ÁÁ40BB4ÁÁ30BB6"}',
+        wall: "FuturisticTexture_065",
+        floor: "FuturisticTexture_127",
+        ceil: "Sand1",
+        start: '[1960,5]',
+        lights: '[[1329,7,"FuturisticLight_001","standardYellowSoft"],[1344,7,"FuturisticLight_006","standardYellowSoft"],[913,7,"FuturisticLight_009","standardYellowSoft"]]',
+        monsters: '[[47,"Tank",7],[53,"Tank",7],[59,"Tank2",7],[68,"Tank2",7],[73,"Tank2",7],[343,"Tank2",3],[195,"Tank",3],[355,"Tank",3],[1064,"Balloon"],[1089,"Tank2",3],[328,"Tank",3],[1894,"Zeppelin"],[1908,"Zeppelin"],[2914,"Zeppelin"],[1414,"Tie"],[1622,"Tie"],[1508,"Tie"],[1714,"Tie"],[1974,"XWing"],[2047,"XWing"],[2022,"XWing"],[1994,"XWing"],[2407,"Fighter"],[2574,"Fighter"],[2422,"Fighter"],[2468,"Fighter"],[2473,"Fighter"],[1127,"XWing"],[1053,"XWing"],[1217,"XWing"],[986,"XWing"],[1157,"XWing"],[534,"Fighter"],[781,"Fighter"],[544,"Fighter"],[750,"Fighter"],[677,"Fighter"]]',
+        objects: '[[203,"Oil"],[284,"Oil"],[403,"Oil"],[128,"Oil"],[172,"Oil"],[295,"Oil"],[417,"Oil"],[261,"Oil"],[182,"Oil"],[103,"Oil"],[146,"Oil"],[155,"Oil"],[269,"Oil"],[431,"Oil"],[392,"Oil"],[313,"Oil"],[235,"Oil"],[169,"WoodenCrate"],[248,"WoodenCrate"],[215,"WoodenCrate"],[302,"WoodenCrate"],[383,"WoodenCrate"],[64,"WoodenCrate"],[187,"WoodenCrate"],[230,"WoodenCrate"],[276,"WoodenCrate"],[390,"WoodenCrate"]]',
+    }
+    ,
     11: {
         name: "Not Bored",
         sg: 0,
