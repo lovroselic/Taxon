@@ -233,4 +233,20 @@ const MAP = {
         objects: '[[130,"Oil"],[251,"Oil"],[335,"Oil"],[138,"Oil"],[261,"Oil"],[63,"Oil"],[189,"Oil"],[352,"Oil"],[381,"WoodenCrate"],[332,"WoodenCrate"],[108,"WoodenCrate"],[194,"WoodenCrate"],[123,"WoodenCrate"],[202,"WoodenCrate"],[283,"WoodenCrate"],[342,"Oil"],[302,"Oil"],[223,"Oil"],[195,"Oil"],[274,"Oil"],[2304,"Oil"],[2405,"Oil"]]',
         fires: '[[293,4,"Fire"],[333,4,"Fire"],[373,4,"Fire"]]',
     }
+    ,
+    14: {
+        name: "Space Fight",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":40,"height":11,"depth":7,"map":"ÁÁ2AÁAA14ÁAA5ÁAA4ÁAA9ÁAA3ÁAA11ÁAA6ÁAA7ÁAA28ÁAA22ÁAA19ÁAA42ÁAÁAA13ÁÁ2AA4ÁAA18ÁAA2ÁAA8ÁAA10ÁAA5ÁAA6ÁAA9ÁAA41ÁÁ3AÁAÁAA3ÁÁ3AA4ÁAA4ÁAA2ÁÁ46AÁAÁÁ2AÁÁ3AÁÁ4AA3ÁÁ5AÁAÁÁ69$ÁÁ2600A"}',
+        wall: "FuturisticTexture_123",
+        floor: "FuturisticTexture_132",
+        ceil: "Sand1",
+        start: '[1960,5]',
+        monsters: '[[2769,"Zeppelin"],[2929,"Tie"],[2814,"Tie"],[3015,"Tie"],[2655,"Tie"],[2702,"Tie"],[2984,"Tie"],[2867,"Tie"],[2672,"Tie"],[3072,"Tie"],[2834,"Tie"],[2958,"Tie"],[2759,"Tie"],[1845,"XWing"],[2125,"XWing"],[2008,"XWing"],[1772,"XWing"],[2175,"XWing"],[1897,"XWing"],[2100,"XWing"],[1986,"XWing"],[1951,"XWing"],[2076,"XWing"],[1838,"XWing"],[1008,"Fighter"],[1168,"Fighter"],[934,"Fighter"],[1254,"Fighter"],[1062,"Fighter"],[1142,"Fighter"],[907,"Fighter"],[1307,"Fighter"],[1150,"Fighter"],[1074,"Fighter"],[1118,"Fighter"],[1412,"Zeppelin"],[1669,"Zeppelin"],[2258,"Zeppelin"],[2275,"Zeppelin"],[2566,"Zeppelin"],[52,"Tank2",3],[92,"Tank2",3],[132,"Tank2",3],[172,"Tank2",3],[212,"Tank2",3],[252,"Tank2",3],[292,"Tank2",3],[332,"Tank2",3],[372,"Tank2",3],[412,"Tank2",3],[267,"Balloon"],[136,"AstroRed"],[257,"AstroRed"],[379,"AstroRed"],[101,"AstroRed"],[262,"AstroRed"],[188,"AstroRed"],[66,"AstroRed"],[231,"AstroRed"],[430,"AstroRed"],[349,"AstroRed"],[235,"AstroRed"]]',
+        objects: '[[195,"Oil"],[315,"Oil"],[311,"Oil"],[151,"Oil"],[72,"Oil"],[153,"Oil"],[268,"Oil"],[146,"Oil"],[141,"Oil"],[260,"Oil"],[383,"Oil"],[220,"Oil"],[345,"Oil"],[183,"Oil"],[107,"Oil"]]',
+    }
 };
