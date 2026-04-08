@@ -2205,7 +2205,8 @@ class $3D_player {
     inWhichGridIndices() {
         const indices = new Set();
         const pos = this.pos;
-        let off = new Vector3(this.bb_deltas.x, 2.1 * this.bb_deltas.z, this.bb_deltas.y);
+        //let off = new Vector3(this.bb_deltas.x, 2.1 * this.bb_deltas.z, this.bb_deltas.y);
+        let off = new Vector3(this.bb_deltas.x, this.bb_deltas.z, this.bb_deltas.y);
         const BL = Vector3.to_Grid3D(pos.sub(off));
         const TR = Vector3.to_Grid3D(pos.add(off));
         for (let x = BL.x; x <= TR.x; x++) {
@@ -4861,8 +4862,6 @@ class $3D_Entity {
         const GA = this.parent.map.GA;
         const BL = Vector3.to_Grid3D(this.moveState.absoluteBoundingBox.min);
         const TR = Vector3.to_Grid3D(this.moveState.absoluteBoundingBox.max);
-
-
         for (let x = BL.x; x <= TR.x; x++) {
             for (let y = BL.y; y <= TR.y; y++) {
                 for (let z = BL.z; z <= TR.z; z++) {

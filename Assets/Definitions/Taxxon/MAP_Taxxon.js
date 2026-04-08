@@ -190,10 +190,12 @@ const MAP = {
         killCountdown: -1,
         killsRequiredToStopSpawning: 99,
         spawnDelay: -1,
-        data: '{"width":40,"height":11,"depth":7,"map":"ÁÁ11AA330ÁÁ7BB231ÁÁ47$ÁÁ41BAA9ÁÁ5AÁÁ2376BÁÁ15BB5"}',
+        data: '{"width":"40","height":"11","depth":7,"map":"ÁÁ5AA4BB10AA28BAA3BB2ABB3AA140ÁÁ5AA35BB30AA70BB148ÁÁ6BB460ÁÁ10BB50ÁÁ10BB30ÁÁ10BB10ÁÁ17BB210ÁÁ5BB36ÁÁ196$ÁÁ153BÁÁ3BÁÁ9BÁÁ9BÁÁ9BAA9ÁÁ3AÁÁ3BÁBÁÁ634AA9ÁÁ2AÁÁ69AA9ÁAÁÁ50AA10ÁÁ26AA4ÁÁ5AA5ÁAÁÁ73AÁÁ27AÁÁ2BB5AÁÁ319AÁÁ79A"}',
         wall: "FuturisticTexture_012",
         floor: "FuturisticTexture_129",
         ceil: "Sand1",
         start: '[2000,5]',
+        monsters: '[[2776,"Zeppelin"],[2981,"Zeppelin"],[2829,"Zeppelin"],[2959,"Zeppelin"],[184,"Rocket"],[264,"Rocket"],[344,"Rocket"],[64,"Rocket"],[424,"Rocket"],[981,"Rocket"],[1061,"Rocket"],[1261,"Rocket"],[1181,"Rocket"],[1977,"Rocket"],[1419,"SpaceShuttle"],[1539,"SpaceShuttle"],[1619,"SpaceShuttle"],[1699,"SpaceShuttle"],[502,"SpaceShuttle"],[623,"SpaceShuttle"],[702,"SpaceShuttle"],[783,"SpaceShuttle"],[862,"SpaceShuttle"],[1101,"Balloon"],[1119,"Fighter"],[997,"Fighter"],[1277,"Fighter"],[1429,"XWing"],[1709,"XWing"],[1554,"XWing"],[1544,"XWing"],[1862,"Tie"],[2142,"Tie"],[2295,"Tie"],[2575,"Tie"],[2451,"Tie"],[2413,"Tie"],[1807,"AstroRed"],[1817,"AstroRed"],[2177,"AstroRed"],[2167,"AstroRed"],[149,"Astro"],[309,"Astro"],[153,"Astro"],[394,"Astro"]]',
+        objects: '[[2323,"Oil"],[2525,"Oil"],[2725,"Oil"],[1924,"Oil"],[2005,"Oil"],[1966,"Oil"],[2047,"Oil"],[1889,"Oil"],[1931,"Oil"],[1852,"Oil"],[1815,"Oil"],[2090,"Oil"],[2171,"Oil"],[2093,"Oil"],[2134,"Oil"],[2175,"Oil"],[146,"Oil"],[267,"Oil"],[68,"Oil"],[191,"Oil"],[425,"Oil"],[311,"Oil"],[113,"Oil"],[236,"Oil"],[436,"Oil"],[111,"WoodenCrate"],[229,"WoodenCrate"],[353,"WoodenCrate"],[388,"WoodenCrate"],[156,"WoodenCrate"],[316,"WoodenCrate"],[1897,"WoodenCrate"],[2057,"WoodenCrate"],[1974,"WoodenCrate"],[2010,"WoodenCrate"],[2326,"WoodenCrate"]]',
     }
 };

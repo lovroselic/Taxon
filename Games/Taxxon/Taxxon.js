@@ -214,10 +214,11 @@ const INI = {
     FUEL_BIN: 15,
     FUEL_CONSUMPTION: 20, //units per grid
     MONSTER_SHOOT_TIMEOUT: 1999,
+    DOWNWARD_GUARD_FACTOR: 2.7, 
 };
 
 const PRG = {
-    VERSION: "0.8.2",
+    VERSION: "0.8.4",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -431,6 +432,7 @@ const HERO = {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
         if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width - 1) {
             const filledGridIndices = HERO.player.inWhichGridIndices();
+            //console.warn("filledGridIndices", filledGridIndices);
             const hit = HERO.player.GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
             if (hit) {
                 return this.explode();
@@ -472,14 +474,18 @@ const HERO = {
         if (HERO.mode === "idle" || HERO.mode === mode) {
             let length = (lapsedTime / 1000) * INI.SIDE_SPEED;
             let nextPos3 = HERO.player.pos.translate(posDir, length);
+            let bottomPos3 = nextPos3.translate(new Vector3(0, -this.player.bb_deltas.y * INI.DOWNWARD_GUARD_FACTOR, 0)); //2.7
             let FPGrid3D = Vector3.to_FP_Grid3D(nextPos3);
+            let BottomFPGrid3D = Vector3.to_FP_Grid3D(bottomPos3);
 
-            //console.warn("changePosition FPGrid3D", FPGrid3D);
             if (this.outOfBounds(FPGrid3D)) return;                               // we will not apply the move
+            //limit move downward
+            let gridDown = Grid3D.toClass(BottomFPGrid3D);
+            //if (posDir.y === -1) console.error("bottomPos3", bottomPos3, "FPGrid3D", FPGrid3D, "BottomFPGrid3D", BottomFPGrid3D,"gridDown", gridDown, "wall below", this.player.GA.isWall(gridDown), "index", this.player.GA.gridToIndex(gridDown));
+            if (posDir.y === -1 && this.player.GA.isWall(gridDown)) return; //don't crash moving down
             HERO.player.setPos(nextPos3);
             HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
             HERO.setMode(mode);
-
         }
         return;
     },
@@ -527,7 +533,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 11; 
+        GAME.level = 11;
         GAME.score = 0;
         //GAME.score = 9990;
 
