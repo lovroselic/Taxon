@@ -249,4 +249,21 @@ const MAP = {
         monsters: '[[2769,"Zeppelin"],[2929,"Tie"],[2814,"Tie"],[3015,"Tie"],[2655,"Tie"],[2702,"Tie"],[2984,"Tie"],[2867,"Tie"],[2672,"Tie"],[3072,"Tie"],[2834,"Tie"],[2958,"Tie"],[2759,"Tie"],[1845,"XWing"],[2125,"XWing"],[2008,"XWing"],[1772,"XWing"],[2175,"XWing"],[1897,"XWing"],[2100,"XWing"],[1986,"XWing"],[1951,"XWing"],[2076,"XWing"],[1838,"XWing"],[1008,"Fighter"],[1168,"Fighter"],[934,"Fighter"],[1254,"Fighter"],[1062,"Fighter"],[1142,"Fighter"],[907,"Fighter"],[1307,"Fighter"],[1150,"Fighter"],[1074,"Fighter"],[1118,"Fighter"],[1412,"Zeppelin"],[1669,"Zeppelin"],[2258,"Zeppelin"],[2275,"Zeppelin"],[2566,"Zeppelin"],[52,"Tank2",3],[92,"Tank2",3],[132,"Tank2",3],[172,"Tank2",3],[212,"Tank2",3],[252,"Tank2",3],[292,"Tank2",3],[332,"Tank2",3],[372,"Tank2",3],[412,"Tank2",3],[267,"Balloon"],[136,"AstroRed"],[257,"AstroRed"],[379,"AstroRed"],[101,"AstroRed"],[262,"AstroRed"],[188,"AstroRed"],[66,"AstroRed"],[231,"AstroRed"],[430,"AstroRed"],[349,"AstroRed"],[235,"AstroRed"]]',
         objects: '[[195,"Oil"],[315,"Oil"],[311,"Oil"],[151,"Oil"],[72,"Oil"],[153,"Oil"],[268,"Oil"],[146,"Oil"],[141,"Oil"],[260,"Oil"],[383,"Oil"],[220,"Oil"],[345,"Oil"],[183,"Oil"],[107,"Oil"]]',
     }
+    ,
+    15: {
+        name: "Dark Days Ahead",
+        sg: 0,
+        maxSpawned: -1,
+        killCountdown: -1,
+        killsRequiredToStopSpawning: 99,
+        spawnDelay: -1,
+        data: '{"width":"40","height":"11","depth":7,"map":"ÁBB10AA10BB10ÁÁ10AA220ÁÁ20BB10ÁÁ10AA10ÁÁ10BB10ÁÁ10BB10AA10BB110AA10ÁBB16ÁBB4ÁÁ2BB5ÁÁ10BB16ÁBÁBB12AA10BB108ÁBB24ÁBB88ÁÁ10AA10BB24ÁÁ62BÁÁ176BÁÁ86$ÁÁ113AA9ÁÁ61BÁÁ14BÁÁ125AÁÁ98BB10ÁÁ40BB10ÁÁ44AA10ÁÁ44BÁÁ142BB10ÁÁ20BÁÁ45AA9ÁÁ11BB10ÁÁ14BÁÁ130AÁÁ45BÁÁ40AA9ÁÁ855A"}',
+        wall: "FuturisticTexture_019",
+        floor: "FuturisticTexture_124",
+        ceil: "FuturisticTexture_001",
+        start: '[1960,5]',
+        lights: '[[1092,3,"FuturisticLight_001","standardYellowFaint"],[1092,5,"FuturisticLight_001","standardYellowFaint"],[1104,3,"FuturisticLight_005","standardYellowFaint"]]',
+        monsters: '[[2719,"StarDestroyer"],[3039,"StarDestroyer"],[2757,"StarDestroyer"],[2997,"StarDestroyer"],[2795,"StarDestroyer"],[2955,"StarDestroyer"],[2834,"StarDestroyer"],[2914,"StarDestroyer"],[2873,"StarDestroyer"],[3079,"StarDestroyer"],[2271,"StarDestroyer"],[2631,"StarDestroyer"],[2310,"StarDestroyer"],[2590,"StarDestroyer"],[2349,"StarDestroyer"],[2549,"StarDestroyer"],[2388,"StarDestroyer"],[2508,"StarDestroyer"],[2427,"StarDestroyer"],[2467,"StarDestroyer"],[1822,"Tie"],[2182,"Tie"],[1900,"Tie"],[2100,"Tie"],[1978,"Tie"],[2019,"Tie"],[43,"Rocket"],[403,"Rocket"],[123,"Rocket"],[323,"Rocket"],[243,"Rocket"],[84,"SpaceShuttle"],[164,"SpaceShuttle"],[284,"SpaceShuttle"],[364,"SpaceShuttle"],[531,"Tank",3],[571,"Tank",3],[651,"Tank",3],[691,"Tank",3],[771,"Tank",3],[811,"Tank",3],[983,"Tank2",3],[1063,"Tank2",3],[1143,"Tank2",3],[1223,"Tank2",3],[1303,"Tank2",3],[218,"Balloon"]]',
+        objects: '[[47,"WoodenCrate"],[207,"WoodenCrate"],[166,"WoodenCrate"],[287,"WoodenCrate"],[326,"WoodenCrate"],[366,"WoodenCrate"],[408,"WoodenCrate"],[368,"WoodenCrate"],[248,"WoodenCrate"],[128,"WoodenCrate"],[89,"WoodenCrate"],[169,"WoodenCrate"],[329,"WoodenCrate"],[250,"WoodenCrate"],[491,"Oil"],[611,"Oil"],[731,"Oil"],[851,"Oil"],[943,"Oil"],[1023,"Oil"],[1103,"Oil"],[1183,"Oil"],[1263,"Oil"],[97,"WoodenCrate"],[217,"WoodenCrate"],[378,"WoodenCrate"],[376,"WoodenCrate"],[141,"WoodenCrate"],[179,"WoodenCrate"],[298,"WoodenCrate"],[380,"WoodenCrate"],[220,"WoodenCrate"],[421,"WoodenCrate"],[301,"WoodenCrate"],[341,"WoodenCrate"],[101,"WoodenCrate"],[59,"WoodenCrate"],[138,"WoodenCrate"]]',
+    }
 };

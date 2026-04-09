@@ -218,7 +218,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.8.7",
+    VERSION: "0.8.8",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -533,7 +533,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 14;
+        GAME.level = 15;
         GAME.score = 0;
         //GAME.score = 9990;
 
@@ -1300,5 +1300,5 @@ $(() => {
     SCORE.init("SC", "TAXXON", 10, 2500);
     SCORE.loadHS();
     SCORE.hiScore();
-    SCORE.extraLife = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, Infinity];
+    SCORE.extraLife = [10000, 25000, 50000, 100000, 200000, 500000, 1000000, Infinity];
 });

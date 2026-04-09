@@ -142,6 +142,8 @@ const AI = {
     shootBullet(enemy, playerPosition, grid) {
         const dX = grid.x - playerPosition.x;
 
+        //console.warn("can enemy shoots?, dX", dX, dX <= enemy.shootDistance);
+
         if (dX > enemy.shootDistance) {
             enemy.canShoot = false;
             return;

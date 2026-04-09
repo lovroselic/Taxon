@@ -162,6 +162,27 @@ const MONSTER_TYPE = {
         ignoreWalls: false,
         health: 1,
     },
+    StarDestroyer: {
+        name: "StarDestroyer",
+        model: "StarDestroyer",
+        scale: 1.8 / 2 ** 5,
+        rotateToNorth: Math.PI,
+        midHeight: 0.0, //
+        fly: 0.5,
+        flier: true,
+        shooter: true,
+        caster: false,
+        score: 1000,
+        deathType: "ParticleExplosion",
+        behaviourArguments: [Infinity, ["immobile"], 50, ["interceptor"]],
+        shootDistance: 40,
+        huntProbability: 65,
+        moveSpeed: 0.2,
+        material: MATERIAL.standard,
+        preventRotation: true,
+        ignoreWalls: false,
+        health: 10,//10
+    },
     Astro: {
         name: "Astro",
         model: "Astro",

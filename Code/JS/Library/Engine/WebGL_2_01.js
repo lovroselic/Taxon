@@ -4767,7 +4767,7 @@ class $3D_Entity {
     kill(bonus = false) {
         /** simplified die */
         this.health -= 1;
-        if (this.health > 0) return; // support fgor multihit bosses
+        if (this.health > 0) return; // support for multihit bosses
         if (bonus) {
             if (this.score) WebGL.game.addScore(this.score);
             if (this.fuel) WebGL.hero.addFuel(this.fuel);
@@ -4818,7 +4818,7 @@ class $3D_Entity {
     }
     shootBullet(GA) {
         if (!this.shooter) return;
-        //const dir = this.moveState.dir;
+
         const dir = Vector3.from_3D_dir(this.moveState.dir);
         const R_factor = 1.85;
         //console.error("-------------------->", this.name, this.id, "shoots", dir);
