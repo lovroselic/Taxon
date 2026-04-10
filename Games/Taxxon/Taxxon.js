@@ -207,7 +207,7 @@ const INI = {
     SUN_HEIGHT_FACTOR: 7.5, //7.5
     CREEP_SPEED: 1.8,
     PAD_BETWEEN_LEVELS: 5,
-    LAST_LEVEL: 16,
+    LAST_LEVEL: 17,
     SIDE_SPEED: 5.0,
     FALL_SPEED: 5.0,
     SHIT_ROT_ANGLE: Math.radians(30),
@@ -218,7 +218,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.8.9",
+    VERSION: "0.8.10",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -533,7 +533,7 @@ const GAME = {
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
         //GAME.level = 1;
-        GAME.level = 16;
+        GAME.level = 17;
         GAME.score = 0;
         //GAME.score = 9990;
 
