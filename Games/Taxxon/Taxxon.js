@@ -218,7 +218,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.8.10",
+    VERSION: "0.8.11",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -432,7 +432,6 @@ const HERO = {
         let Grid3D = Vector3.to_Grid3D(HERO.player.pos);
         if (Grid3D.x > 0 && Grid3D.x < MAP[GAME.level].map.width - 1) {
             const filledGridIndices = HERO.player.inWhichGridIndices();
-            //console.warn("filledGridIndices", filledGridIndices);
             const hit = HERO.player.GA.checkIndicesAny(filledGridIndices, MAPDICT.WALL);
             if (hit) {
                 return this.explode();
@@ -478,11 +477,9 @@ const HERO = {
             let FPGrid3D = Vector3.to_FP_Grid3D(nextPos3);
             let BottomFPGrid3D = Vector3.to_FP_Grid3D(bottomPos3);
 
-            if (this.outOfBounds(FPGrid3D)) return;                               // we will not apply the move
-            //limit move downward
+            if (this.outOfBounds(FPGrid3D)) return;                                 // we will not apply the move
             let gridDown = Grid3D.toClass(BottomFPGrid3D);
-            //if (posDir.y === -1) console.error("bottomPos3", bottomPos3, "FPGrid3D", FPGrid3D, "BottomFPGrid3D", BottomFPGrid3D,"gridDown", gridDown, "wall below", this.player.GA.isWall(gridDown), "index", this.player.GA.gridToIndex(gridDown));
-            if (posDir.y === -1 && this.player.GA.isWall(gridDown)) return; //don't crash moving down
+            if (posDir.y === -1 && this.player.GA.isWall(gridDown)) return;         //don't crash moving down
             HERO.player.setPos(nextPos3);
             HERO.player.changeRotation(INI.SHIT_ROT_ANGLE, rotationAxis);
             HERO.setMode(mode);
@@ -568,7 +565,7 @@ const GAME = {
         WebGL.INI.HERO_HEIGHT = 0;
         WebGL.FIRST_PERSON_DUAL_DISPLAY = false;
         WebGL.NO_TOP_CEILING = true;
-        WebGL.VIEWS_ALLOWED = new Set([1, 3, 4, 6]);
+        WebGL.VIEWS_ALLOWED = new Set([1, 3, 4]);
         WebGL.GAME.setViewButtons();
     },
     nextLevel() {
@@ -601,7 +598,7 @@ const GAME = {
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
         //WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
-        WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -13), 4.0, 75);                      //side - for debug
+        //WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -13), 4.0, 75);                      //side - for debug
 
 
         switch (WebGL.CONFIG.cameraType) {
@@ -736,12 +733,10 @@ const GAME = {
         HERO.player.animateAction();
         HERO.creep(lapsedTime);
         HERO.manage();
-        //MISSILE3D.manage(lapsedTime);
         BULLET3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
-        //ITEM3D.manage(lapsedTime);
         ITEM3D.checkCollisionToHero();
 
         GAME.respond(lapsedTime);
