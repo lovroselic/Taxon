@@ -41,16 +41,16 @@ const WebGL = {
     VERSION: "2.01",
     CSS: "color: gold",
     CTX: null,
-    VERBOSE: false,                     // default: false
-    PRUNE: true,                        // if true, only visible faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
-    PRUNE_BLOCKS: true,                 // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
-    HERO_AS_INNER: false,               // if true inner light comes from hero player pos, not from camera
-    USE_SHADOW: false,                  // if true draws shaow on the floor from the fake sun
-    USE_INTERACTION: true,              // if true, draws interaction buffer
-    FIRST_PERSON_DUAL_DISPLAY: true,    // if true displays alos the hero model
-    NO_TOP_CEILING: false,              // if true we don't display ctop ceiling  regardless of first person
-
-    VIEWS_ALLOWED: new Set([1, 2, 3, 4, 5, 6, 7]),     //which cameras are set - default all, sys expects set
+    VERBOSE: false,                                     // default: false
+    PRUNE: true,                                        // if true, only visible faces are considered - looks bad in 3rd person, but the amount of vertices are significantlly reduced
+    PRUNE_BLOCKS: true,                                 // if true, only visible blocks considered - looks better 3rd person, a compromise which allows separate pruning of faces
+    HERO_AS_INNER: false,                               // if true inner light comes from hero player pos, not from camera
+    USE_SHADOW: false,                                  // if true draws shaow on the floor from the fake sun
+    USE_INTERACTION: true,                              // if true, draws interaction buffer
+    FIRST_PERSON_DUAL_DISPLAY: true,                    // if true displays alos the hero model
+    NO_TOP_CEILING: false,                              // if true we don't display ctop ceiling  regardless of first person
+    VIEWS_ALLOWED: new Set([1, 2, 3, 4, 5, 6, 7]),      //which cameras are set - default all, sys expects set
+    BUTTONS_APPENDED: false,                            // perspective buttons already appended  
     INI: {
         PIC_WIDTH: 0.5,
         PIC_HEIGHT: 0.7,
@@ -1366,7 +1366,10 @@ const WebGL = {
         </div>
         `,
         addButtons() {
-            $("#buttons").append(WebGL.HTML.buttons);
+            if (!WebGL.BUTTONS_APPENDED) {
+                $("#buttons").append(WebGL.HTML.buttons);
+                WebGL.BUTTONS_APPENDED = true;
+            }
         }
     },
     GAME: {
