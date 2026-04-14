@@ -25,9 +25,9 @@ const DEBUG = {
     VERBOSE: true,
     _2D_display: true,
     INVINCIBLE: false,
-    FREE_MAGIC: false,
-    keys: false,
-    killAllAllowed: false,
+    FREE_FUEL: true,
+    keys: true,
+    killAllAllowed: true,
     max17: false,
     stop() {
         HERO.player.setSpeed(0);
@@ -44,9 +44,7 @@ const DEBUG = {
     kill() {
         if (DEBUG.killAllAllowed) {
             console.log("KILL all");
-            LAIR.stop();
             ENTITY3D.POOL.clear();
-            MISSILE3D.POOL.clear();
         }
         const alive = ENTITY3D.POOL.filter(el => el);
         if (alive.length > 0) {
@@ -218,7 +216,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.8.13",
+    VERSION: "0.9.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -454,6 +452,7 @@ const HERO = {
         TITLE.fuelPlot();
     },
     useFuel(consumption) {
+        if (DEBUG.FREE_FUEL) return;
         HERO.fuel -= consumption;
         HERO.fuel = Math.max(0, HERO.fuel);
         if (HERO.fuel === 0) {
@@ -790,28 +789,6 @@ const GAME = {
             if (!DEBUG.keys) return;
             DEBUG.kill();
             ENGINE.GAME.keymap[ENGINE.KEY.map.F8] = false;
-        }
-        if (map[ENGINE.KEY.map.F9]) {
-            console.info(" -------------------- Getting help --------------------");
-            GAME.help();
-            console.info(" --------------------  ***** --------------------");
-            ENGINE.GAME.keymap[ENGINE.KEY.map.F9] = false;
-
-            if (!DEBUG.keys) return;
-
-            console.log("\nDEBUG:");
-            console.log("#######################################################");
-            ENTITY3D.display();
-            ENTITY3D.analyze();
-            console.log("------------------------------------------------------");
-            console.log("map", MAP[GAME.level].map);
-            console.log("MAP", MAP[GAME.level]);
-            console.log("HERO", HERO);
-            console.info("Inventory:");
-            DEBUG.displayInv();
-            DEBUG.killStatus();
-            DEBUG.displayCompleteness();
-            console.log("#######################################################");
         }
 
         //controls
