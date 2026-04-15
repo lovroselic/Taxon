@@ -4528,7 +4528,6 @@ class $3D_Entity {
         if (typeof (this.scale) === "number") this.scale = new Float32Array([this.scale, this.scale, this.scale]);
         this.minY = this.model.meshes[0].primitives[0].positions.min[1] * this.scale[1];
         this.translate = Vector3.from_Grid(grid, this.minY + this.fly + this.grid.z);
-        //console.error("setting entity", this.name, "with Y", this.minY + this.fly + this.grid.z, "min", this.minY, "fly", this.fly, "Z", this.grid.z, "sensible", this.minY + this.fly + this.grid.z > this.grid.z);
         this.boundingBox = new BoundingBox(this.model.meshes[0].primitives[0].positions.max, this.model.meshes[0].primitives[0].positions.min, this.scale);
         this.actor = new $3D_ACTOR(this, this.model.animations, this.model.skins[0], this.jointMatrix);
 
@@ -4824,15 +4823,9 @@ class $3D_Entity {
 
         const dir = Vector3.from_3D_dir(this.moveState.dir);
         const R_factor = 1.85;
-        //console.error("-------------------->", this.name, this.id, "shoots", dir);
-
         const position = this.moveState.pos.translate(dir, this.r * R_factor);
-        //console.log("..", "obj", this.moveState.pos, "bullet", position, "R", this.r * R_factor);
-        //console.log("...pos", position.z, "BB", this.moveState.absoluteBoundingBox.max.z, "min", this.moveState.absoluteBoundingBox.min.z);
         const bullet = new Bullet(position, dir, COMMON_ITEM_TYPE.Bullet);
-        //console.warn("hit", GRID.collisionPosInBoundingBox(bullet.pos, this.moveState.absoluteBoundingBox, new FP_Grid3D(), false));
         BULLET3D.add(bullet);
-
         this.canShoot = false;
         this.shooter = false;
         setTimeout(this.resetShooting.bind(this), INI.MONSTER_SHOOT_TIMEOUT);

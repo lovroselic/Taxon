@@ -1051,7 +1051,6 @@ class Bullet3D extends IAM {
                     if (hit) {
                         obj.clean();
                         enemy.kill(true);
-                        //this.game.addScore(enemy.score);
                         break;      
                     }
                 }
@@ -1149,14 +1148,6 @@ class Animated_3d_entity extends IAM {
             const LOW = Grid3D.toClass(enemy.moveState.grid.add(new FP_Vector3D(BB.min.x, BB.min.z, BB.min.y)));
             const HI = Grid3D.toClass(enemy.moveState.grid.add(new FP_Vector3D(BB.max.x, BB.max.z, BB.max.y)));
 
-
-            /*console.info("BB", BB);
-            console.error("pos", enemy.moveState.pos);
-            console.error("enemy.moveState.grid", enemy.moveState.grid);
-            console.error("LOW", LOW);
-            console.error("HI", HI);*/
-            //throw "debug";
-
             const grids = [];
 
             for (let x = LOW.x; x <= HI.x; x++) {
@@ -1166,8 +1157,6 @@ class Animated_3d_entity extends IAM {
                     }
                 }
             }
-
-            //console.error("grids", grids);
 
             for (let grid of grids) {
                 IA.next(grid, enemy.id);
@@ -1189,7 +1178,7 @@ class Animated_3d_entity extends IAM {
 
         const heroRefGrid = Vector3.to_Grid3D(this.hero.player.pos);
         if (GA.isOutOfBounds(heroRefGrid)) return;                                                  // nothing to do if hero is OOB
-        //console.warn("heroRefGrid",heroRefGrid, GA.isOutOfBounds(heroRefGrid));
+        
         GRID.calcDistancesBFS_A_3D(heroRefGrid, map, false, GROUND_MOVE_GRID_EXCLUSION);            //ground exlusion 3d on xy plane, this needs to be separate because of hunting on exact position!
         GRID.calcDistancesBFS_A_3D(heroRefGrid, map, true, AIR_MOVE_GRID_EXCLUSION, "airNodeMap");  //air exclusion fully 3d
 
@@ -1205,12 +1194,6 @@ class Animated_3d_entity extends IAM {
                 entity.setDistanceFromNodeMap(map.GA.nodeMap);
                 entity.setDistanceFromNodeMap(map.GA.airNodeMap, "airDistance");
                 if (entity.petrified) continue;
-
-                /*const entityGrid = Grid3D.toClass(entity.moveState.grid);
-                if (GA.isOutOfBounds(entityGrid)) {
-                    entity.remove();
-                    continue;
-                }*/
 
                 //enemy/enemy collision resolution
                 if (IndexArrayManagers.EE_COLLISION_CHECK && this.enemy_enemy_collision_resolution(entity, map, date)) continue;
@@ -1275,8 +1258,6 @@ class Animated_3d_entity extends IAM {
                     distance = entity.airDistance;
                 }
 
-                //console.log(`${entity.id}-${entity.name} distance: ${distance}`);
-
                 entity.behaviour.manage(entity, distance, passiveFlag);
                 if (!entity.hasStack()) {
 
@@ -1290,7 +1271,6 @@ class Animated_3d_entity extends IAM {
 
                     entity.dirStack = AI[entity.behaviour.strategy](entity, ARG);
                     if (IndexArrayManagers.VERBOSE) console.info(`${entity.name} ${entity.id} dirStack`, entity.dirStack, "dir", entity.moveState.dir, "strategy", entity.behaviour.strategy, `distance: ${distance}`);
-                    //console.info(`${entity.name} ${entity.id} dirStack`, entity.dirStack, entity.dirStack.constructor.name, "dir", entity.moveState.dir, entity.moveState.dir.constructor.name, "strategy", entity.behaviour.strategy, `distance: ${distance}`);
                 }
                 entity.makeMove();
             }

@@ -25,9 +25,9 @@ const DEBUG = {
     VERBOSE: false,
     _2D_display: false,
     INVINCIBLE: false,
-    FREE_FUEL: true,
-    keys: true,
-    killAllAllowed: true,
+    FREE_FUEL: false,
+    keys: false,
+    killAllAllowed: false,
     max17: false,
     stop() {
         HERO.player.setSpeed(0);
@@ -57,72 +57,6 @@ const DEBUG = {
     goto(grid) {
         HERO.player.pos = Vector3.from_Grid(Grid.toCenter(grid), 0.5);
     },
-    checkPoint() {
-
-        console.info("DEBUG::Starting from checkpoint, this may clash with LOAD");
-
-        GAME.level = 17;
-        GAME.gold = 20000;
-        //GAME.gold = 5;
-        GAME.lives = 3;
-
-        HERO.reference_magic = 55;
-        HERO.reference_attack = 55;
-        HERO.reference_defense = 55;
-
-        HERO.magic = 55;
-        HERO.attack = 55;
-        HERO.defense = 55;
-
-        HERO.mana = 500;
-        HERO.maxMana = 500;
-        HERO.health = 1;
-        HERO.maxHealth = 500;
-
-        HERO.attackExp = 18;
-        HERO.attackExpGoal = 100;
-        HERO.defenseExp = 4;
-        HERO.defenseExpGoal = 100;
-        HERO.magicExp = 0;
-        HERO.magicExpGoal = 100;
-
-
-        let actItems = [
-        ];
-
-        for (let obj of actItems) {
-            let item = new ActionItem(obj.which, obj.inventorySprite);
-            HERO.inventory.scroll.add(item);
-        }
-
-        let scrollTypes = [
-            "FeatherFall", "Flight", "Radar", "Flight", "Invisibility"
-        ];
-
-        for (let scrType of scrollTypes) {
-            let scroll = new Scroll(scrType);
-            HERO.inventory.scroll.add(scroll);
-        }
-
-        TITLE.stack.scrollIndex = Math.max(TITLE.stack.scrollIndex, 0);
-        TITLE.scrolls();
-
-        let invItems = [
-
-        ];
-
-        for (let itm of invItems) {
-            const item = new NamedInventoryItem(itm, itm);
-            HERO.inventory.item.push(item);
-        }
-
-        let keys = [];
-        for (let key of keys) {
-            const K = new Key(key, `${key}Key`);
-            HERO.inventory.key.push(K);
-        }
-        TITLE.keys();
-    },
     killStatus() {
         console.log("-------------------------------------------");
         console.warn("level:", GAME.level, "totalKills", MAP[GAME.level].map.totalKills, "killsRequiredToStopSpawning", MAP[GAME.level].map.killsRequiredToStopSpawning, "stopped", MAP[GAME.level].map.stopSpawning, "delay", MAP[GAME.level].map.spawnDelay,
@@ -130,49 +64,10 @@ const DEBUG = {
         );
         console.info("monsterList", MAP[GAME.level].monsterList);
     },
-    displayCompleteness() {
-        console.log("-------------------------------------------");
-        console.log("HERO position", Vector3.toGrid(HERO.player.pos));
-        const remains = ITEM3D.POOL.filter(el => el.active);
-        if (remains.length > 0) {
-            console.log("remains", remains);
-            console.log("---- remaining items ----");
-            for (const item of remains) {
-                console.log(item.id, item.name, item.grid, item.instanceIdentification, "category", item.category);
-            }
-        }
-        console.log("-------------------------------------------");
-        const int_decals = INTERACTIVE_DECAL3D.POOL.filter(el => el.interactive);
-        if (int_decals.length > 0) {
-            console.log("int_decals", int_decals);
-            for (const ent of int_decals) {
-                console.log(ent.id, ent.name, ent.grid, "wants", ent.wants, "gives", ent.gives, "which", ent.which, "int.cat", ent.interactionCategory, "price", ent.price);
-            }
-        }
-        console.log("-------------------------------------------");
-        const dynamic = DYNAMIC_ITEM3D.POOL.filter(el => el);
-        if (dynamic.length > 0) {
-            console.log("dynamic", dynamic);
-            for (const din of dynamic) {
-                console.log(din.id, din.name, din.grid);
-            }
-        }
-        console.log("-------------------------------------------");
-        for (const gate of INTERACTIVE_BUMP3D.POOL) {
-            console.log(gate.name, gate.grid, gate.destination.level, gate.color, "dest", gate.destination, "to", MAP[gate.destination.level].name);
-        }
-
-        console.info("**** HERO experience ****");
-        console.log("------ EXP ------");
-        for (const type of ["attack", "defense", "magic"]) {
-            console.log(type, ":", HERO[`${type}Exp`], " /", HERO[`${type}ExpGoal`]);
-        }
-        console.log("------------");
-    },
     automaticTests() {
         console.time("automaticTests");
         console.info("***** Automatic level testing *****");
-        for (let level = 1; level <= 125; level++) {
+        for (let level = 1; level <= 20; level++) {
             console.log("testing level", level);
             GAME.level = level;
             GAME.levelStart();
@@ -180,22 +75,6 @@ const DEBUG = {
         }
         console.info("***** Automatic level testing END *****");
         console.timeEnd("automaticTests");
-    },
-    dropItem(name) {
-        for (const [index, item] of HERO.inventory.item.entries()) {
-            if (item.name === name) {
-                HERO.inventory.item.splice(index, 1);
-                console.warn("..removed", index, item);
-                break;
-            }
-        }
-        TITLE.keys();
-    },
-    getItem(name) {
-        const item = new NamedInventoryItem(name, name);
-        HERO.inventory.item.push(item);
-        console.warn("..added", item);
-        TITLE.keys();
     },
 };
 
@@ -216,7 +95,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.9.1",
+    VERSION: "0.10.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -314,15 +193,6 @@ const PRG = {
     }
 };
 
-/**
- * *******************************************************************************************
- */
-
-
-/**
- * *******************************************************************************************
- */
-
 const HERO = {
     construct() {
         this.player = null;
@@ -398,12 +268,12 @@ const HERO = {
     },
     die() {
         if (HERO.dead) return;
-        console.warn("hero dies");
+         if (DEBUG.VERBOSE) console.warn("hero dies");
         HERO.dead = true;
         HERO.canShoot = false;
     },
     death() {
-        console.error("HERO DEATH");
+         if (DEBUG.VERBOSE) console.error("HERO DEATH");
         GAME.lives--;
         TITLE.lives();
         if (GAME.lives <= 0) return HERO.finalDeath();
@@ -412,7 +282,7 @@ const HERO = {
         ENGINE.GAME.ANIMATION.next(GAME.lifeLostRun);
     },
     finalDeath() {
-        console.error("HERO FINAL death");
+         if (DEBUG.VERBOSE) console.error("HERO FINAL death");
 
         GAME.checkScore();
         TITLE.hiScore();
@@ -495,9 +365,6 @@ const HERO = {
     },
 };
 
-/**
- * *******************************************************************************************
- */
 
 const GAME = {
     restarted: false,
@@ -531,7 +398,6 @@ const GAME = {
         GAME.level = 1;
         //GAME.level = 20;
         GAME.score = 0;
-        //GAME.score = 9990;
 
         HERO.construct();
         ENGINE.VECTOR2D.configure("player");
@@ -540,6 +406,11 @@ const GAME = {
         GAME.time = new Timer("Main");
 
         ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
+
+        if (DEBUG.AUTO_TEST) {
+            return DEBUG.automaticTests();
+        }
+
         GAME.levelStart();
     },
     IAM_settings() {
@@ -549,7 +420,7 @@ const GAME = {
     },
     WebGL_settings() {
         WebGL.setAmbientStrength(0.1);
-        WebGL.setDiffuseStrength(0.5); //1.0
+        WebGL.setDiffuseStrength(0.5); 
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
@@ -574,7 +445,7 @@ const GAME = {
         TITLE.fuelPlot();
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
-        WebGL.GAME.setFirstPerson();                        //my preference
+        WebGL.GAME.setFirstPerson();                        
         GAME.continueLevel(GAME.level);
     },
     continueLevel(level) {
@@ -752,7 +623,6 @@ const GAME = {
             BULLET3D.draw();
             ENTITY3D.drawVector2D();
             DYNAMIC_ITEM3D.drawVector2D();
-            //WebGL.visualizeTexture3DSlice(map.occlusionMap, map.width, map.height, map.depth, 0, LAYER.debug); //debug
             GRID.paintCoord3D("coord", MAP[GAME.level].map, HERO.player.depth);
         }
     },
@@ -854,7 +724,7 @@ const GAME = {
         GAME.lifeLostFrameDraw(lapsedTime);
     },
     won() {
-        console.info("GAME WON");
+         if (DEBUG.VERBOSE) console.info("GAME WON");
         ENGINE.GAME.ANIMATION.resetTimer();
         TITLE.setEndingCreditsScroll();
         ENGINE.GAME.pauseBlock();
@@ -1030,7 +900,6 @@ const TITLE = {
         TITLE.stage();
     },
     fuelPlot() {
-        //const CTX = LAYER.fuelPlot;
         ENGINE.clearLayer("fuelPlot");
 
         const y = ENGINE.bottomHEIGHT / 2;
@@ -1100,7 +969,6 @@ const TITLE = {
         ENGINE.clearLayer("alt");
         const maxAlt = MAP[GAME.level].map.depth - 1 + R / 2;
         const currAlt = HERO.player.pos.y - R;
-        //console.log(HERO.player.pos.y, "currAlt", currAlt, "maxAlt", maxAlt);
         const fillH = (currAlt / maxAlt * TITLE.stack.H) >>> 0;
         const y = TITLE.stack.H - fillH + TITLE.stack.y;
 
