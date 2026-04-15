@@ -72,7 +72,6 @@ LoadTextures = [
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
     { srcName: "Title/DarkNight.webp", name: "DarkNight" },
-    { srcName: "Title/DarkNight.webp", name: "WinPic" },
 
     //explosions
     { srcName: "ObjectTextures/Explosion2.webp", name: "Explosion2" },
@@ -96,8 +95,6 @@ LoadAudio = [
     { srcName: "Alarm.mp3", name: "Alarm" },
     { srcName: "BulletThud.mp3", name: "BulletThud" },
     { srcName: "ExtraLife.mp3", name: "ExtraLife" },
-
-
 ];
 
 LoadShaders = [
@@ -117,6 +114,8 @@ LoadModels = [
 ];
 
 LoadSprites = [
+
+    { srcName: "EntityPictures/TaxxonEnd.webp", name: "WinPic" },
 
     //UI, skills
     { srcName: "UI/wavyL.webp", name: "wavyL" },

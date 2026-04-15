@@ -95,7 +95,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.10.0",
+    VERSION: "0.11.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -394,9 +394,8 @@ const GAME = {
 
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
-        GAME.lives = 3;
+        GAME.lives = 4;
         GAME.level = 1;
-        //GAME.level = 20;
         GAME.score = 0;
 
         HERO.construct();
@@ -735,7 +734,7 @@ const GAME = {
         const delay = 4000;
         ENGINE.fillLayer("background", "#000");
         WebGL.transparent();
-        ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.Title.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.Title.height) / 2, TEXTURE.Title);
+        ENGINE.draw("background", (ENGINE.gameWIDTH - SPRITE.WinPic.width) / 2, (ENGINE.gameHEIGHT - SPRITE.WinPic.height) / 2, SPRITE.WinPic);
         GAME.checkScore();
         setTimeout(function () {
             ENGINE.clearLayer("subtitle");
