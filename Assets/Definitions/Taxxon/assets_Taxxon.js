@@ -189,6 +189,7 @@ LoadTextures = [
     //title
     { srcName: "Title/Taxxon_title_768.webp", name: "Title" },
     { srcName: "Title/DarkNight.webp", name: "DarkNight" },
+    { srcName: "Title/DarkNight.webp", name: "WinPic" },
 
     //explosions
     { srcName: "ObjectTextures/Explosion2.webp", name: "Explosion2" },

@@ -21,9 +21,9 @@ retests:
 const DEBUG = {
     SETTING: true,
     AUTO_TEST: false,
-    FPS: true,
-    VERBOSE: true,
-    _2D_display: true,
+    FPS: false,
+    VERBOSE: false,
+    _2D_display: false,
     INVINCIBLE: false,
     FREE_FUEL: true,
     keys: true,
@@ -212,11 +212,11 @@ const INI = {
     FUEL_BIN: 15,
     FUEL_CONSUMPTION: 20, //units per grid
     MONSTER_SHOOT_TIMEOUT: 1999,
-    DOWNWARD_GUARD_FACTOR: 2.7, 
+    DOWNWARD_GUARD_FACTOR: 2.7,
 };
 
 const PRG = {
-    VERSION: "0.9.0",
+    VERSION: "0.9.1",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -528,8 +528,8 @@ const GAME = {
         GAME.completed = false;
         GAME.extraLife = SCORE.extraLife.clone();
         GAME.lives = 3;
-        //GAME.level = 1;
-        GAME.level = 20;
+        GAME.level = 1;
+        //GAME.level = 20;
         GAME.score = 0;
         //GAME.score = 9990;
 
@@ -539,9 +539,7 @@ const GAME = {
         GAME.prepareForRestart();
         GAME.time = new Timer("Main");
 
-
         ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.DarkNight.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.DarkNight.height) / 2, TEXTURE.DarkNight);
-
         GAME.levelStart();
     },
     IAM_settings() {
@@ -552,11 +550,6 @@ const GAME = {
     WebGL_settings() {
         WebGL.setAmbientStrength(0.1);
         WebGL.setDiffuseStrength(0.5); //1.0
-        //WebGL.setSpecularStrength(0.0);
-
-        //WebGL.PRUNE_BLOCKS = false;
-        //WebGL.PRUNE = false;
-
         WebGL.HERO_AS_INNER = true;
         WebGL.INI.BACKGROUND_ALPHA = 0.0;
         WebGL.USE_SHADOW = true;
@@ -570,7 +563,8 @@ const GAME = {
     nextLevel() {
         GAME.level++;
         if (GAME.level > INI.LAST_LEVEL) {
-            throw "last level reached";
+            ENGINE.GAME.ANIMATION.stop();
+            return GAME.won();
         }
         GAME.levelStart();
     },
@@ -581,8 +575,6 @@ const GAME = {
         WebGL.playerList.clear();                           //requred for restart after resurrection
         GAME.initLevel(GAME.level);
         WebGL.GAME.setFirstPerson();                        //my preference
-        //WebGL.GAME.setAxonometricView();                        //taxxon
-        //WebGL.GAME.setThirdPerson();   
         GAME.continueLevel(GAME.level);
     },
     continueLevel(level) {
@@ -595,10 +587,7 @@ const GAME = {
     setCameraView() {
         WebGL.hero.firstPersonCamera = new $3D_Camera(WebGL.hero.player, DIR_NOWAY, 0.0, new Vector3(0, 0, 0), 0);
         WebGL.hero.topCamera = new $3D_Camera(WebGL.hero.player, DIR_UP, 4, new Vector3(0, -1, 0), 2, 80);                                          //top back
-        //WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.0, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
         WebGL.hero.axonometric = new $3D_Camera(WebGL.hero.player, new Vector3(0, 1, 1), 4.5, new Vector3(0, -0.5, -1.0), 3.0, 80);                 //zaxxon perspective
-        //WebGL.hero.sideCamera = new $3D_Camera(WebGL.hero.player, new Vector3(1, 0, 1), 5.0, new Vector3(0, 0, -13), 4.0, 75);                      //side - for debug
-
 
         switch (WebGL.CONFIG.cameraType) {
             case "first_person":
@@ -642,7 +631,6 @@ const GAME = {
         HERO.player = new $3D_player(start_grid, Vector3.from_2D_dir(start_dir), MAP[level].map, HERO_TYPE.Taxxon);
         HERO.player.setSpeed(INI.CREEP_SPEED);
         HERO.player.useCollision(HERO.player.boundingBoxCollision);
-
 
         this.buildWorld(level);
         GAME.setCameraView();
@@ -732,6 +720,7 @@ const GAME = {
         HERO.player.animateAction();
         HERO.creep(lapsedTime);
         HERO.manage();
+        if (ENGINE.GAME.stopAnimation) return;                          // game might be won!
         BULLET3D.manage(lapsedTime);
         EXPLOSION3D.manage(date);
         FIRE3D.manage(date);
@@ -775,7 +764,6 @@ const GAME = {
         if (HERO.dead) return;
         if (HERO.falling) return;
 
-        //HERO.player.respond(lapsedTime);
         WebGL.GAME.respond(lapsedTime);
         ENGINE.GAME.respond(lapsedTime);
 
@@ -861,22 +849,24 @@ const GAME = {
             ENGINE.GAME.ANIMATION.waitThen(TITLE.startTitle);
         }
         const date = Date.now();
-        //WebGL.GAME.setFirstPerson();
         EXPLOSION3D.manage(date);
         ENTITY3D.manage(lapsedTime, date, [HERO.invisible, HERO.dead]);
         GAME.lifeLostFrameDraw(lapsedTime);
     },
     won() {
         console.info("GAME WON");
-        ENGINE.TIMERS.stop();
         ENGINE.GAME.ANIMATION.resetTimer();
         TITLE.setEndingCreditsScroll();
         ENGINE.GAME.pauseBlock();
-        const layersToClear = ["FPS", "info"];
+        const layersToClear = ["FPS", "info", "fuel", "fuelPlot", "alt", "altover", "background"];
         layersToClear.forEach(item => ENGINE.layersToClear.add(item));
         ENGINE.clearLayerStack();
         ENGINE.GAME.ANIMATION.stop();
         const delay = 4000;
+        ENGINE.fillLayer("background", "#000");
+        WebGL.transparent();
+        ENGINE.draw("background", (ENGINE.gameWIDTH - TEXTURE.Title.width) / 2, (ENGINE.gameHEIGHT - TEXTURE.Title.height) / 2, TEXTURE.Title);
+        GAME.checkScore();
         setTimeout(function () {
             ENGINE.clearLayer("subtitle");
             TITLE.music();
@@ -915,7 +905,7 @@ const TITLE = {
     },
     startTitle() {
         if (DEBUG.VERBOSE) console.log("TITLE started");
-        //if (AUDIO.Title) AUDIO.Title.play(); //dev
+        if (AUDIO.Title) AUDIO.Title.play(); //dev
         ENGINE.GAME.pauseBlock();
         TITLE.clearAllLayers();
         TITLE.blackBackgrounds();
@@ -1121,7 +1111,7 @@ const TITLE = {
         ENGINE.clearLayer("lives");
         const cX = 3 * INI.SCREEN_BORDER / 2 - 40;
         const y = ENGINE.titleHEIGHT / 2;
-        const spread = ENGINE.spreadAroundCenter(GAME.lives, cX, 48);
+        const spread = ENGINE.spreadAroundCenter(GAME.lives - 1, cX, 48);
         for (let x of spread) {
             ENGINE.spriteDraw("lives", x, y, SPRITE.Lives);
         }
@@ -1162,38 +1152,21 @@ const TITLE = {
         AUDIO.Title.play();
     },
     setEndingCreditsScroll() {
-        console.group("endingCredits");
         const text = this.generateEndingCredits();
-        const RD = new RenderData("Pentagram", 30, "#DAA520", "text", "#000", 1, 1, 1);
+        const RD = new RenderData("CPU", 30, "#DAA520", "text", "#000", 1, 1, 1);
         GAME.endingCreditText = new VerticalScrollingText(text, 1, RD);
-        console.groupEnd("endingCredits");
     },
     generateEndingCredits() {
         const text = `Congratulations!
 
-        You have completed
-        Haunting the Hauntessa
+        You have completed TaXXon,
         in ${GAME.time.timeString()}.
 
-        Apparitias defeated,
-        Hauntessa Spookish
-        turned to ash and dust.
-
-        A power vacuum yawns
-        in the Hauntosphere.
-        Who will seize it?
-        Not your problem,
-        for now ...
-
-        You live happily ever after
-        as the Princess.
-
-        Are your cousins plotting?
-        Those bitches.
-        You may need to get
-        your heels dirty again!
-        
-        Maybe in the next game ...
+        You brought taxes to all corners of the galaxy.
+        What a glorious achievement.
+        Bitchosa Grande will be celebrated
+        for aeons, or at least until
+        the next audit.
 
         CREDITS:
         Code and direction, Lovro Selic
@@ -1206,17 +1179,18 @@ const TITLE = {
         Graphics from free sources,
         plus PiskelApp and Blender
         Textures and images by AI:
-        Stable Diffusion, Ideogram, 
+        Stable Diffusion, Ideogram,
         Flux.1D, Flux.2D.
 
         Supplementary tools,
         JavaScript, Python, C++
 
-        Music, 'Graveyard In The Moonlight'
+        Music, 'Ex Nihilo'
         written and performed by LaughingSkull,
-        \u00A9 2006 Lovro Selic
+        \u00A9 2007 Lovro Selic
 
-        Thanks for sticking to the end.`;
+        Thanks for sticking it out
+        until the bitter, taxable end.`;
         return text;
     },
     _label(CTX, txt, fs, x, y) {

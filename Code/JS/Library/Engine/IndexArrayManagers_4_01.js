@@ -1040,24 +1040,19 @@ class Bullet3D extends IAM {
         const IA = this.map[this.enemyIA];
         if (!IA) return false;
 
-        //console.info("grid", grid);
-
         if (!IA.empty(grid)) {
             const possibleEnemies = IA.unroll(grid);
-            //console.warn("possibleEnemies", possibleEnemies);
 
             for (let P of possibleEnemies) {
                 const enemy = this.entity_IAM.show(P);
                 if (enemy) {
-                    //console.info("obj.pos", JSON.stringify(obj.pos), "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox), "height", enemy.heigth, "midHeight", enemy.midHeight);
-                    //console.info("BB collision for", enemy.id, enemy.name, "enemy.moveState.absoluteBoundingBox", JSON.stringify(enemy.moveState.absoluteBoundingBox));
+            
                     const hit = GRID.collisionPosInBoundingBox(obj.pos, enemy.moveState.absoluteBoundingBox, new FP_Grid3D(), false);
                     if (hit) {
-                        //console.warn("...... was hit")
                         obj.clean();
                         enemy.kill(true);
-                        this.game.addScore(enemy.score);
-                        break;      // only kill one at once
+                        //this.game.addScore(enemy.score);
+                        break;      
                     }
                 }
             }
