@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <!-- bootstrap, css -->
-    <meta charset="UTF-8">
-    <link href="/CSS/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="/CSS/LaughingStyle.css" rel="stylesheet" type="text/css">
-    <link href="/CSS/Taxxon.css" rel="stylesheet" type="text/css">
-    <!-- END -->
-
-    <title>Taxxon</title>
-</head>
-
-<body>
-
-    <!-- copy start-->
+<!-- copy start-->
     <div id="preload" class="hidden"></div>
     <div class="container my-5 p-5 cool_page">
         <div id="setup">
@@ -52,6 +36,9 @@
                     Prototype LIB: <span id="lib_version"></span><br>
                     WebGL: <span id="webgl_version"></span><br>
                     MAP Tools: <span id="maptools_version"></span><br>
+                    SPEECH: <span id="speech_version"></span><br>
+                    <br>
+                    <p id="speech_sources"></p>
                 </fieldset>
             </div>
         </div>
@@ -147,27 +134,3 @@
         <div id="temp2" class="hidden"></div>
     </div>
     <!-- COPY END -->
-
-    <!-- External JS -->
-    <script src="/External/bootstrap.bundle.min.js"></script>
-    <script src="/External/jquery-3.6.0.min.js"></script>
-    <script src="/External/gl-matrix-min.js" type="text/javascript"></script>
-    <!-- JS -->
-    <script src='/Code/JS/Library/Engine/Prototype_5_02.js' type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/LS_Matrix_1_04.js" type="text/javascript"></script>
-    <script src='/Code/JS/Library/Engine/ENGINE_5_01.js' type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/GRID_4_01.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/AI_3_01.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/MAZE_5_00.js" type="text/javascript"></script>
-    <script src='/Code/JS/Library/Engine/IndexArrayManagers_4_01.js'></script>
-    <script src="/Code/JS/Library/Engine/BWT_1_00.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/WebGL_2_01.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/GenericTimers_1_03.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/Lights_and_materials_1_05.js" type="text/javascript"></script>
-    <script src="/Assets/Definitions/Taxxon/assets_Taxxon.js" type="text/javascript"></script>
-    <script src="/Assets/Definitions/Taxxon/Monsters_Taxxon.js" type="text/javascript"></script>
-    <script src="/Assets/Definitions/Taxxon/MAP_Taxxon.js" type="text/javascript"></script>
-    <script src="/Code/JS/Library/Engine/MAP and SPAWN tools_2_01.js" type="text/javascript"></script>
-    <script src='/Code/JS/Library/Misc/score_1_05.js'></script>
-    <script src="/Games/Taxxon/Taxxon.js" type="text/javascript"></script>
-</body>

@@ -95,7 +95,7 @@ const INI = {
 };
 
 const PRG = {
-    VERSION: "0.11.0",
+    VERSION: "0.90.0",
     NAME: "TaXXon",
     YEAR: "2026",
     SG: "TAXXON",
@@ -120,12 +120,10 @@ const PRG = {
         if (DEBUG.SETTING) {
             $("#engine_version").html(ENGINE.VERSION);
             $("#grid_version").html(GRID.VERSION);
-            $("#maze_version").html(DUNGEON.VERSION);
             $("#iam_version").html(IndexArrayManagers.VERSION);
             $("#lib_version").html(LIB.VERSION);
             $("#webgl_version").html(WebGL.VERSION);
             $("#maptools_version").html(MAP_TOOLS.VERSION);
-            $("#speech_version").html(SPEECH.VERSION);
         } else {
             $('#debug').hide();
         }
@@ -181,11 +179,6 @@ const PRG = {
         $(ENGINE.topCanvas).off("click", ENGINE.mouseClick);
         $(ENGINE.topCanvas).css("cursor", "");
 
-        if (SPEECH.VERBOSE) {
-            console.info("SPEECH available voices");
-            console.table(SPEECH.voices);
-            console.info(SPEECH.voices);
-        }
 
         $("#startGame").addClass("hidden");
         ENGINE.disableDefaultKeys();
@@ -559,7 +552,7 @@ const GAME = {
              
             Music: 'Ex Nihilo' written and performed by LaughingSkull, ${"\u00A9"
             } 2017 Lovro Selič. `;
-        text += "     ENGINE, SPEECH, GRID, MAZE, Burrows-Wheeler RLE Compression, WebGL, shaders and GAME code by Lovro Selič using JavaScript and GLSL. ";
+        text += "     ENGINE, GRID, MAZE, Burrows-Wheeler RLE Compression, WebGL, shaders and GAME code by Lovro Selič using JavaScript and GLSL. ";
         text += "     glMatrix library by Brandon Jones and Colin MacKenzie IV. Thanks. ";
         text = text.split("").join(String.fromCharCode(8202));
         return text;
@@ -568,7 +561,6 @@ const GAME = {
         if (ENGINE.GAME.stopAnimation) return;
         GAME.movingText.process();
         GAME.titleFrameDraw();
-        SPEECH.silence();
     },
     titleFrameDraw() {
         GAME.movingText.draw();
@@ -1105,7 +1097,6 @@ const TITLE = {
 
 // -- main --
 $(() => {
-    SPEECH.init();
     PRG.INIT();
     PRG.setup();
     ENGINE.LOAD.preload();
